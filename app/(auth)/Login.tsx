@@ -140,7 +140,7 @@ const LoginScreen: React.FC = () => {
           }
         );
       }
-
+      console.log("Login response:", response.data);
       if (response.data.success) {
         await AsyncStorage.setItem("isLoggedIn", "true");
         await AsyncStorage.setItem("role", role);
@@ -152,7 +152,18 @@ const LoginScreen: React.FC = () => {
         );
 
         Alert.alert("Success", response.data.message || "Login successful!");
-        router.push("/");
+        // Navigate based on role
+if (role === "farmer") {
+  router.push("/(farmer)/home");
+} else if (role === "trader") {
+  router.push("/(trader)/home");
+} else if (role === "transport") {
+  router.push("/");
+} else {
+  // fallback (optional)
+  router.push("/(auth)/Login");
+}
+
       }
     } catch (err: any) {
       setError(
@@ -188,12 +199,12 @@ const LoginScreen: React.FC = () => {
                 <View className="items-center mb-6">
                   <View className="h-18 w-18 items-center justify-center mb-3">
                     {/* green logo */}
-                    <Text className="text-[#1FAD4E] text-2xl font-bold">🌾</Text>
+                    <Text className="text-[#1FAD4E] text-2xl font-inter-semibold">🌾</Text>
                   </View>
-                  <Text className="text-2xl font-bold text-slate-900">
+                  <Text className="text-2xl font-inter-semibold text-slate-900">
                     Welcome back
                   </Text>
-                  <Text className="text-xs text-slate-500 mt-1">
+                  <Text className="text-xs text-slate-500 mt-1 font-inter-semibold">
                     Login to Your {role === "farmer" ? "Farmer" : "Trader"} Account.
                   </Text>
                 </View>
@@ -201,18 +212,18 @@ const LoginScreen: React.FC = () => {
                 {/* Card */}
                 <View className="px-5 pt-4 pb-6">
                   {/* Phone label */}
-                  <Text className="text-xs text-slate-600 mb-1">
+                  <Text className="text-xs text-slate-600 mb-1 font-inter-semibold">
                     Phone number
                   </Text>
 
                   {/* Phone input */}
-                  <View className="flex-row items-center border border-slate-200 rounded-xl px-3 py-2 mb-1 bg-slate-50">
+                  <View className="flex-row items-center border border-slate-200 rounded-xl px-3 py-2 mb-1 bg-slate-50 font-inter-semibold">
                     <MaterialCommunityIcons
                       name="phone"
                       size={18}
                       color="#64748B"
                     />
-                    <Text className="text-slate-700 font-medium mx-2">
+                    <Text className="text-slate-700 font-medium mx-2 ">
                       +91
                     </Text>
                     <View className="h-5 w-px bg-slate-200 mr-2" />
@@ -230,7 +241,7 @@ const LoginScreen: React.FC = () => {
                     />
                   </View>
 
-                  <Text className="text-[11px] text-slate-500 mb-4">
+                  <Text className="text-[11px] text-slate-500 mb-4 font-inter-semibold">
                     We&apos;ll send an OTP to this number.
                   </Text>
 
@@ -251,19 +262,19 @@ const LoginScreen: React.FC = () => {
                                 color="#fff"
                                 size="small"
                               />
-                              <Text className="text-white font-semibold text-sm ml-2">
+                              <Text className="text-white font-inter-semibold text-sm ml-2 font-inter-semibold">
                                 Sending OTP...
                               </Text>
                             </View>
                           ) : (
-                            <Text className="text-white font-semibold text-sm">
+                            <Text className="text-white font-inter-semibold text-sm font-inter-semibold">
                               Send OTP via WhatsApp
                             </Text>
                           )}
                         </TouchableOpacity>
                       ) : (
                         <>
-                          <View className="mb-3">
+                          <View className="mb-3 font-inter-semibold">
                             <Text className="text-xs text-slate-600 mb-1">
                               Enter OTP <Text className="text-red-500">*</Text>
                             </Text>
@@ -298,12 +309,12 @@ const LoginScreen: React.FC = () => {
                                   color="#fff"
                                   size="small"
                                 />
-                                <Text className="text-white font-semibold text-sm ml-2">
+                                <Text className="text-white font-inter-semibold text-sm ml-2">
                                   Verifying...
                                 </Text>
                               </View>
                             ) : (
-                              <Text className="text-white font-semibold text-sm">
+                              <Text className="text-white font-inter-semibold text-sm">
                                 Login
                               </Text>
                             )}
@@ -317,7 +328,7 @@ const LoginScreen: React.FC = () => {
                   {loginMethod === "mpin" && (
                     <>
                       <View className="mb-3">
-                        <Text className="text-xs text-slate-600 mb-1">
+                        <Text className="text-xs text-slate-600 mb-1 font-inter-semibold">
                           MPIN <Text className="text-red-500">*</Text>
                         </Text>
                         <TextInput
@@ -344,12 +355,12 @@ const LoginScreen: React.FC = () => {
                               color="#fff"
                               size="small"
                             />
-                            <Text className="text-white font-semibold text-sm ml-2">
+                            <Text className="text-white font-inter-semibold text-sm ml-2">
                               Logging in...
                             </Text>
                           </View>
                         ) : (
-                          <Text className="text-white font-semibold text-sm">
+                          <Text className="text-white font-inter-semibold text-sm">
                             Login with MPIN
                           </Text>
                         )}
@@ -361,7 +372,7 @@ const LoginScreen: React.FC = () => {
                   {loginMethod === "password" && (
                     <>
                       <View className="mb-3">
-                        <Text className="text-xs text-slate-600 mb-1">
+                        <Text className="text-xs text-slate-600 mb-1 font-inter-semibold">
                           Password <Text className="text-red-500">*</Text>
                         </Text>
                         <View className="flex-row items-center border border-slate-200 rounded-xl bg-slate-50">
@@ -398,12 +409,12 @@ const LoginScreen: React.FC = () => {
                               color="#fff"
                               size="small"
                             />
-                            <Text className="text-white font-semibold text-sm ml-2">
+                            <Text className="text-white font-inter-semibold text-sm ml-2">
                               Logging in...
                             </Text>
                           </View>
                         ) : (
-                          <Text className="text-white font-semibold text-sm">
+                          <Text className="text-white font-inter-semibold text-sm">
                             Login
                           </Text>
                         )}
@@ -421,14 +432,14 @@ const LoginScreen: React.FC = () => {
                   {/* Divider */}
                   <View className="flex-row items-center mb-3">
                     <View className="flex-1 h-px bg-slate-200" />
-                    <Text className="mx-3 text-xs text-slate-400">or</Text>
+                    <Text className="mx-3 text-xs text-grey-400 font-inter-semibold">or</Text>
                     <View className="flex-1 h-px bg-slate-200" />
                   </View>
 
                   {/* Login using password button */}
                   <TouchableOpacity
                     activeOpacity={0.9}
-                    className="flex-row items-center justify-center bg-white rounded-2xl py-3 mb-3 border border-slate-200"
+                    className="flex-row items-center justify-center bg-white rounded-2xl py-3 mb-3 border border-slate-200 font-inter-semibold"
                     onPress={() => selectMethod("password")}
                   >
                     <MaterialCommunityIcons
@@ -436,7 +447,7 @@ const LoginScreen: React.FC = () => {
                       size={18}
                       color="#1F2933"
                     />
-                    <Text className="ml-2 text-sm font-medium text-slate-800">
+                    <Text className="ml-2 text-sm font-inter-semibold text-slate-800">
                       Login using password
                     </Text>
                   </TouchableOpacity>
@@ -452,7 +463,7 @@ const LoginScreen: React.FC = () => {
                       size={18}
                       color="#1F2933"
                     />
-                    <Text className="ml-2 text-sm font-medium text-slate-800">
+                    <Text className="ml-2 text-sm font-inter-semibold text-slate-800">
                       Use MPIN
                     </Text>
                   </TouchableOpacity>
@@ -464,7 +475,7 @@ const LoginScreen: React.FC = () => {
                     Don&apos;t have an account?{" "}
                   </Text>
                   <TouchableOpacity onPress={goToRegister}>
-                    <Text className="text-xs font-semibold text-[#1FAD4E]">
+                    <Text className="text-xs font-inter-semibold text-[#1FAD4E]">
                       Register here
                     </Text>
                   </TouchableOpacity>
@@ -472,11 +483,11 @@ const LoginScreen: React.FC = () => {
 
                 <View className="flex-row justify-center items-center mt-1">
                   <TouchableOpacity>
-                    <Text className="text-xs text-[#1FAD4E]">Forgot MPIN?</Text>
+                    <Text className="text-xs text-[#1FAD4E] font-inter-semibold">Forgot MPIN?</Text>
                   </TouchableOpacity>
                   <Text className="mx-2 text-slate-300">|</Text>
                   <TouchableOpacity>
-                    <Text className="text-xs text-[#1FAD4E]">
+                    <Text className="text-xs text-[#1FAD4E] font-inter-semibold">
                       Forgot Password?
                     </Text>
                   </TouchableOpacity>
