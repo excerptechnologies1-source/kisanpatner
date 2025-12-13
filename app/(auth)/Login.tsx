@@ -22,6 +22,7 @@ const LoginScreen: React.FC = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
   const role = (params.role as string) || "farmer";
+  console.log("Login role:", role);
 
   const [loginMethod, setLoginMethod] = useState<"mpin" | "password" | "otp">(
     "otp"
@@ -205,7 +206,7 @@ if (role === "farmer") {
                     Welcome back
                   </Text>
                   <Text className="text-xs text-slate-500 mt-1 font-inter-semibold">
-                    Login to Your {role === "farmer" ? "Farmer" : "Trader"} Account.
+                    Login to Your {role} Account.
                   </Text>
                 </View>
 

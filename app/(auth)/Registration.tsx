@@ -1,1134 +1,9 @@
-// import axios from 'axios';
-// import * as DocumentPicker from 'expo-document-picker';
-// import * as Location from 'expo-location';
-// import { useLocalSearchParams, useRouter } from 'expo-router';
-// import { ChevronLeft, ChevronRight, MapPin, Plus, Upload, X } from 'lucide-react-native';
-// import React, { useEffect, useState } from 'react';
-// import {
-//   ActivityIndicator,
-//   Alert,
-//   ScrollView,
-//   Text,
-//   TextInput,
-//   TouchableOpacity,
-//   View,
-// } from 'react-native';
-
-// interface Category {
-//   _id: string;
-//   categoryName: string;
-// }
-
-// interface Market {
-//   id: string;
-//   name: string;
-// }
-
-// interface FormData {
-//   personalInfo: {
-//     name: string;
-//     mobileNo: string;
-//     email: string;
-//     address: string;
-//     villageGramaPanchayat: string;
-//     pincode: string;
-//     state: string;
-//     district: string;
-//     taluk: string;
-//     post: string;
-//   };
-//   farmLocation: {
-//     latitude: string;
-//     longitude: string;
-//   };
-//   farmLand: {
-//     total: string;
-//     cultivated: string;
-//     uncultivated: string;
-//   };
-//   commodities: string[];
-//   nearestMarkets: Market[];
-//   bankDetails: {
-//     accountHolderName: string;
-//     accountNumber: string;
-//     ifscCode: string;
-//     branch: string;
-//   };
-//   documents: {
-//     panCard: any;
-//     aadharFront: any;
-//     aadharBack: any;
-//     bankPassbook: any;
-//   };
-//   security: {
-//     referralCode: string;
-//     mpin: string;
-//     confirmMpin: string;
-//     password: string;
-//     confirmPassword: string;
-//   };
-// }
-
-// const FarmerRegistration: React.FC = () => {
-//   const params = useLocalSearchParams();
-//   const router = useRouter();
-//   const role = (params.role as string) || 'farmer';
-
-//   const [currentStep, setCurrentStep] = useState(1);
-//   const totalSteps = 5;
-
-//   const [formData, setFormData] = useState<FormData>({
-//     personalInfo: {
-//       name: '',
-//       mobileNo: '',
-//       email: '',
-//       address: '',
-//       villageGramaPanchayat: '',
-//       pincode: '',
-//       state: '',
-//       district: '',
-//       taluk: '',
-//       post: '',
-//     },
-//     farmLocation: {
-//       latitude: '',
-//       longitude: '',
-//     },
-//     farmLand: {
-//       total: '',
-//       cultivated: '',
-//       uncultivated: '',
-//     },
-//     commodities: [],
-//     nearestMarkets: [],
-//     bankDetails: {
-//       accountHolderName: '',
-//       accountNumber: '',
-//       ifscCode: '',
-//       branch: '',
-//     },
-//     documents: {
-//       panCard: null,
-//       aadharFront: null,
-//       aadharBack: null,
-//       bankPassbook: null,
-//     },
-//     security: {
-//       referralCode: '',
-//       mpin: '',
-//       confirmMpin: '',
-//       password: '',
-//       confirmPassword: '',
-//     },
-//   });
-
-//   const [categories, setCategories] = useState<Category[]>([]);
-//   const [newMarket, setNewMarket] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const [pincodeLoading, setPincodeLoading] = useState(false);
-//   const [error, setError] = useState('');
-
-//   useEffect(() => {
-//     fetchCategories();
-//   }, []);
-
-//   const fetchCategories = async () => {
-//     try {
-//       const res = await fetch('https://kisan.etpl.ai/category/all');
-//       const data = await res.json();
-//       setCategories(data.data);
-//     } catch (error) {
-//       console.error('Error fetching categories:', error);
-//     }
-//   };
-
-//   const fetchPincodeData = async (pincode: string) => {
-//     if (pincode.length !== 6) return;
-//     setPincodeLoading(true);
-//     try {
-//       const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
-//       const data = await response.json();
-//       if (data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
-//         const postOffice = data[0].PostOffice[0];
-//         setFormData(prev => ({
-//           ...prev,
-//           personalInfo: {
-//             ...prev.personalInfo,
-//             state: postOffice.State,
-//             district: postOffice.District,
-//             taluk: postOffice.Block || postOffice.Division,
-//             post: postOffice.Name,
-//           },
-//         }));
-//       }
-//     } catch (error) {
-//       console.error('Error fetching pincode data:', error);
-//     } finally {
-//       setPincodeLoading(false);
-//     }
-//   };
-
-//   const handlePincodeChange = (pincode: string) => {
-//     setFormData(prev => ({
-//       ...prev,
-//       personalInfo: { ...prev.personalInfo, pincode },
-//     }));
-//     if (pincode.length === 6) fetchPincodeData(pincode);
-//   };
-
-//   const getCurrentLocation = async () => {
-//     try {
-//       const { status } = await Location.requestForegroundPermissionsAsync();
-//       if (status !== 'granted') {
-//         Alert.alert('Permission Denied', 'Location permission required.');
-//         return;
-//       }
-//       const location = await Location.getCurrentPositionAsync({});
-//       setFormData(prev => ({
-//         ...prev,
-//         farmLocation: {
-//           latitude: location.coords.latitude.toString(),
-//           longitude: location.coords.longitude.toString(),
-//         },
-//       }));
-//       Alert.alert('Success', 'Location captured!');
-//     } catch (error) {
-//       Alert.alert('Error', 'Unable to get location.');
-//     }
-//   };
-
-//   const handleCommodityToggle = (categoryId: string) => {
-//     setFormData(prev => ({
-//       ...prev,
-//       commodities: prev.commodities.includes(categoryId)
-//         ? prev.commodities.filter(id => id !== categoryId)
-//         : [...prev.commodities, categoryId],
-//     }));
-//   };
-
-//   const addMarket = () => {
-//     if (newMarket.trim()) {
-//       setFormData(prev => ({
-//         ...prev,
-//         nearestMarkets: [
-//           ...prev.nearestMarkets,
-//           { id: Date.now().toString(), name: newMarket.trim() },
-//         ],
-//       }));
-//       setNewMarket('');
-//     }
-//   };
-
-//   const removeMarket = (id: string) => {
-//     setFormData(prev => ({
-//       ...prev,
-//       nearestMarkets: prev.nearestMarkets.filter(m => m.id !== id),
-//     }));
-//   };
-
-//   const handleFileChange = async (docType: keyof FormData['documents']) => {
-//     try {
-//       const result = await DocumentPicker.getDocumentAsync({
-//         type: ['image/*', 'application/pdf'],
-//         copyToCacheDirectory: true,
-//       });
-
-//       if (result.canceled === false && result.assets && result.assets.length > 0) {
-//         setFormData(prev => ({
-//           ...prev,
-//           documents: {
-//             ...prev.documents,
-//             [docType]: result.assets[0],
-//           },
-//         }));
-//       }
-//     } catch (error) {
-//       Alert.alert('Error', 'Failed to pick document.');
-//     }
-//   };
-
-//   const validateStep1 = () => {
-//     setError('');
-//     if (!formData.personalInfo.name.trim()) {
-//       setError('Please enter your name');
-//       return false;
-//     }
-//     if (
-//       !formData.personalInfo.mobileNo.trim() ||
-//       formData.personalInfo.mobileNo.length !== 10
-//     ) {
-//       setError('Please enter valid 10-digit mobile number');
-//       return false;
-//     }
-//     if (
-//       !formData.personalInfo.pincode.trim() ||
-//       formData.personalInfo.pincode.length !== 6
-//     ) {
-//       setError('Please enter valid 6-digit pincode');
-//       return false;
-//     }
-//     if (!formData.personalInfo.state || !formData.personalInfo.district) {
-//       setError('Please wait for location details from pincode');
-//       return false;
-//     }
-//     return true;
-//   };
-
-//   const validateStep2 = () => {
-//     setError('');
-//     if (role === 'farmer' && !formData.farmLocation.latitude) {
-//       setError('Please pin your farm location');
-//       return false;
-//     }
-//     return true;
-//   };
-
-//   const validateStep3 = () => {
-//     setError('');
-//     if (formData.commodities.length === 0) {
-//       setError('Please select at least one commodity');
-//       return false;
-//     }
-//     return true;
-//   };
-
-//   const validateStep5 = () => {
-//     setError('');
-//     if (!formData.security.mpin || formData.security.mpin.length !== 4) {
-//       setError('Please enter 4-digit MPIN');
-//       return false;
-//     }
-//     if (formData.security.mpin !== formData.security.confirmMpin) {
-//       setError('MPIN and Confirm MPIN do not match');
-//       return false;
-//     }
-//     if (!formData.security.password || formData.security.password.length < 6) {
-//       setError('Password must be at least 6 characters');
-//       return false;
-//     }
-//     if (formData.security.password !== formData.security.confirmPassword) {
-//       setError('Passwords do not match');
-//       return false;
-//     }
-//     return true;
-//   };
-
-//   const handleNext = () => {
-//     let isValid = false;
-//     if (currentStep === 1) isValid = validateStep1();
-//     else if (currentStep === 2) isValid = validateStep2();
-//     else if (currentStep === 3) isValid = validateStep3();
-//     else isValid = true;
-
-//     if (isValid && currentStep < totalSteps) {
-//       setCurrentStep(currentStep + 1);
-//       setError('');
-//     }
-//   };
-
-//   const handlePrevious = () => {
-//     if (currentStep > 1) {
-//       setCurrentStep(currentStep - 1);
-//       setError('');
-//     }
-//   };
-
-//   const handleSubmit = async () => {
-//     if (!validateStep5()) return;
-//     setLoading(true);
-
-//     const submitFormData = new FormData();
-//     submitFormData.append('personalInfo', JSON.stringify(formData.personalInfo));
-//     submitFormData.append('farmLocation', JSON.stringify(formData.farmLocation));
-//     submitFormData.append('farmLand', JSON.stringify(formData.farmLand));
-//     submitFormData.append('commodities', JSON.stringify(formData.commodities));
-//     submitFormData.append('nearestMarkets', JSON.stringify(formData.nearestMarkets));
-//     submitFormData.append('bankDetails', JSON.stringify(formData.bankDetails));
-//     submitFormData.append('role', role);
-//     submitFormData.append(
-//       'security',
-//       JSON.stringify({
-//         referralCode: formData.security.referralCode,
-//         mpin: formData.security.mpin,
-//         password: formData.security.password,
-//       })
-//     );
-
-//     if (formData.documents.panCard) {
-//       submitFormData.append('panCard', {
-//         uri: formData.documents.panCard.uri,
-//         type: formData.documents.panCard.mimeType,
-//         name: formData.documents.panCard.name,
-//       } as any);
-//     }
-//     if (formData.documents.aadharFront) {
-//       submitFormData.append('aadharFront', {
-//         uri: formData.documents.aadharFront.uri,
-//         type: formData.documents.aadharFront.mimeType,
-//         name: formData.documents.aadharFront.name,
-//       } as any);
-//     }
-//     if (formData.documents.aadharBack) {
-//       submitFormData.append('aadharBack', {
-//         uri: formData.documents.aadharBack.uri,
-//         type: formData.documents.aadharBack.mimeType,
-//         name: formData.documents.aadharBack.name,
-//       } as any);
-//     }
-//     if (formData.documents.bankPassbook) {
-//       submitFormData.append('bankPassbook', {
-//         uri: formData.documents.bankPassbook.uri,
-//         type: formData.documents.bankPassbook.mimeType,
-//         name: formData.documents.bankPassbook.name,
-//       } as any);
-//     }
-
-//     try {
-//       const response = await axios.post(
-//         'https://kisan.etpl.ai/farmer/register',
-//         submitFormData,
-//         { headers: { 'Content-Type': 'multipart/form-data' } }
-//       );
-//       if (response.status === 200 || response.status === 201) {
-//         Alert.alert('Success', 'Registration Successful!', [
-//           { text: 'OK', onPress: () => router.push('/(auth)/Login') },
-//         ]);
-//       }
-//     } catch (error: any) {
-//       setError(error?.response?.data?.message || 'Registration failed.');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const renderProgressBar = () => (
-//     <View className="mt-2 mb-6">
-//       <View className="flex-row items-center justify-between">
-//         {Array.from({ length: totalSteps }, (_, index) => {
-//           const step = index + 1;
-//           const isCompleted = currentStep > step;
-//           const isCurrent = currentStep === step;
-//           const isActive = currentStep >= step;
-
-//           return (
-//             <View
-//               key={step}
-//               className="flex-row items-center flex-1"
-//             >
-//               {/* Circle */}
-//               <View
-//                 className={[
-//                   'w-8 h-8 rounded-full border-2 items-center justify-center',
-//                   'bg-white',
-//                   isCurrent
-//                     ? 'border-[#1FAD4E] bg-[#1FAD4E]'
-//                     : isActive
-//                     ? 'border-[#1FAD4E]'
-//                     : 'border-gray-300',
-//                 ].join(' ')}
-//               >
-//                 <Text
-//                   className={[
-//                     'text-sm font-inter-semibold',
-//                     isCurrent
-//                       ? 'text-green-500'
-//                       : isActive
-//                       ? 'text-[#1FAD4E]'
-//                       : 'text-gray-500',
-//                   ].join(' ')}
-//                 >
-//                   {step}
-//                 </Text>
-//               </View>
-
-//               {/* Connecting line */}
-//               {index < totalSteps - 1 && (
-//                 <View
-//                   className={[
-//                     'h-0.5 mx-1 flex-1',
-//                     isCompleted ? 'bg-[#1FAD4E]' : 'bg-gray-300',
-//                   ].join(' ')}
-//                 />
-//               )}
-//             </View>
-//           );
-//         })}
-//       </View>
-//     </View>
-//   );
-
-//   const renderStep1 = () => (
-//     <View className="mb-5">
-//       <Text className="text-sm font-inter-semibold text-[#1FAD4E] mb-4">
-//         Personal & Location
-//       </Text>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Name <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="Full name"
-//           value={formData.personalInfo.name}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               personalInfo: { ...p.personalInfo, name: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Mobile <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="10-digit number"
-//           keyboardType="phone-pad"
-//           maxLength={10}
-//           value={formData.personalInfo.mobileNo}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               personalInfo: { ...p.personalInfo, mobileNo: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Email (Optional)
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="email@example.com"
-//           keyboardType="email-address"
-//           autoCapitalize="none"
-//           value={formData.personalInfo.email}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               personalInfo: { ...p.personalInfo, email: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Address</Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white h-20 text-top"
-//           placeholder="Full address"
-//           multiline
-//           numberOfLines={3}
-//           value={formData.personalInfo.address}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               personalInfo: { ...p.personalInfo, address: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Village / Grama Panchayat
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="Village name"
-//           value={formData.personalInfo.villageGramaPanchayat}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               personalInfo: {
-//                 ...p.personalInfo,
-//                 villageGramaPanchayat: text,
-//               },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Pincode <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="6-digit pincode"
-//           keyboardType="number-pad"
-//           maxLength={6}
-//           value={formData.personalInfo.pincode}
-//           onChangeText={handlePincodeChange}
-//         />
-//         {pincodeLoading && (
-//           <Text className="text-xs text-gray-500 mt-1">Fetching location...</Text>
-//         )}
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           State <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-gray-100"
-//           value={formData.personalInfo.state}
-//           editable={false}
-//           placeholder="Auto-filled"
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           District <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-gray-100"
-//           value={formData.personalInfo.district}
-//           editable={false}
-//           placeholder="Auto-filled"
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Taluk</Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-gray-100"
-//           value={formData.personalInfo.taluk}
-//           editable={false}
-//           placeholder="Auto-filled"
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Post</Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-gray-100"
-//           value={formData.personalInfo.post}
-//           editable={false}
-//           placeholder="Auto-filled"
-//         />
-//       </View>
-//     </View>
-//   );
-
-//   const renderStep2 = () => (
-//     <View className="mb-5">
-//       <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-//         {role === 'farmer' ? 'Farm Details' : 'Business Location'}
-//       </Text>
-
-//       {role === 'farmer' && (
-//         <>
-//           <View className="mb-3">
-//             <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//               Farm Location <Text className="text-red-500">*</Text>
-//             </Text>
-//             <View className="flex flex-row items-center gap-3">
-//               <TouchableOpacity
-//                 className="bg-[#1FAD4E] w-10 h-10 rounded-full flex items-center justify-center"
-//                 onPress={getCurrentLocation}
-//               >
-//                 <MapPin size={18} color="#fff" />
-//               </TouchableOpacity>
-
-//               {formData.farmLocation.latitude && (
-//                 <Text className="text-xs text-gray-600">
-//                   Location:{' '}
-//                   {parseFloat(formData.farmLocation.latitude).toFixed(6)},{' '}
-//                   {parseFloat(formData.farmLocation.longitude).toFixed(6)}
-//                 </Text>
-//               )}
-//             </View>
-//           </View>
-
-//           <Text className="text-base font-inter-semibold text-gray-800 mt-3 mb-3">
-//             Farm Land (Acres)
-//           </Text>
-
-//           <View className="mb-3">
-//             <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//               Total
-//             </Text>
-//             <TextInput
-//               className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//               placeholder="Total acres"
-//               keyboardType="decimal-pad"
-//               value={formData.farmLand.total}
-//               onChangeText={text =>
-//                 setFormData(p => ({
-//                   ...p,
-//                   farmLand: { ...p.farmLand, total: text },
-//                 }))
-//               }
-//             />
-//           </View>
-
-//           <View className="mb-3">
-//             <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//               Cultivated
-//             </Text>
-//             <TextInput
-//               className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//               placeholder="Cultivated acres"
-//               keyboardType="decimal-pad"
-//               value={formData.farmLand.cultivated}
-//               onChangeText={text =>
-//                 setFormData(p => ({
-//                   ...p,
-//                   farmLand: { ...p.farmLand, cultivated: text },
-//                 }))
-//               }
-//             />
-//           </View>
-
-//           <View className="mb-3">
-//             <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//               Uncultivated
-//             </Text>
-//             <TextInput
-//               className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//               placeholder="Uncultivated acres"
-//               keyboardType="decimal-pad"
-//               value={formData.farmLand.uncultivated}
-//               onChangeText={text =>
-//                 setFormData(p => ({
-//                   ...p,
-//                   farmLand: { ...p.farmLand, uncultivated: text },
-//                 }))
-//               }
-//             />
-//           </View>
-//         </>
-//       )}
-
-//       <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
-//         Nearest Markets
-//       </Text>
-
-//       <View className="mb-3">
-//         {formData.nearestMarkets.map(market => (
-//           <View
-//             key={market.id}
-//             className="flex-row items-center justify-between bg-gray-50 px-3 py-2.5 rounded-lg mb-2"
-//           >
-//             <Text className="flex-1 text-sm text-gray-800">
-//               {market.name}
-//             </Text>
-//             <TouchableOpacity onPress={() => removeMarket(market.id)}>
-//               <X size={18} color="#EF4444" />
-//             </TouchableOpacity>
-//           </View>
-//         ))}
-//       </View>
-
-//       <View className="flex-row items-center">
-//         <TextInput
-//           className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white"
-//           placeholder="Market name"
-//           value={newMarket}
-//           onChangeText={setNewMarket}
-//         />
-//         <TouchableOpacity
-//           className="bg-[#1FAD4E] px-4 py-2.5 rounded-lg items-center justify-center ml-3 mr-4"
-//           onPress={addMarket}
-//         >
-//           <Plus size={18} color="#fff" />
-//         </TouchableOpacity>
-//       </View>
-//     </View>
-//   );
-
-//   const renderStep3 = () => (
-//     <View className="mb-5">
-//       <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-//         Commodities & Bank
-//       </Text>
-
-//       <Text className="text-base font-inter-semibold text-gray-800 mb-3">
-//         Commodities <Text className="text-red-500">*</Text>
-//       </Text>
-
-//       {categories.map(cat => (
-//         <TouchableOpacity
-//           key={cat._id}
-//           className="flex-row items-center mb-3"
-//           onPress={() => handleCommodityToggle(cat._id)}
-//         >
-//           <View
-//             className={`w-5 h-5 rounded-md border-2 mr-3 items-center justify-center ${
-//               formData.commodities.includes(cat._id)
-//                 ? 'bg-[#1FAD4E] border-[#1FAD4E]'
-//                 : 'border-gray-300'
-//             }`}
-//           >
-//             {formData.commodities.includes(cat._id) && (
-//               <Text className="text-xs font-bold text-white">✓</Text>
-//             )}
-//           </View>
-//           <Text className="text-sm text-gray-800">{cat.categoryName}</Text>
-//         </TouchableOpacity>
-//       ))}
-
-//       <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
-//         Bank Details (Optional)
-//       </Text>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Account Holder
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="Name"
-//           value={formData.bankDetails.accountHolderName}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               bankDetails: { ...p.bankDetails, accountHolderName: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Account Number
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="Number"
-//           keyboardType="number-pad"
-//           value={formData.bankDetails.accountNumber}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               bankDetails: { ...p.bankDetails, accountNumber: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           IFSC Code
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="IFSC"
-//           autoCapitalize="characters"
-//           value={formData.bankDetails.ifscCode}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               bankDetails: { ...p.bankDetails, ifscCode: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Branch
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="Branch name"
-//           value={formData.bankDetails.branch}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               bankDetails: { ...p.bankDetails, branch: text },
-//             }))
-//           }
-//         />
-//       </View>
-//     </View>
-//   );
-
-//   const renderStep4 = () => (
-//     <View className="mb-5">
-//       <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-//         Documents (Optional)
-//       </Text>
-
-//       {[
-//         { key: 'panCard', label: 'Upload PAN Card / ID' },
-//         { key: 'aadharFront', label: 'Upload Aadhaar Front' },
-//         { key: 'aadharBack', label: 'Upload Aadhaar Back' },
-//         { key: 'bankPassbook', label: 'Upload Bank Passbook' },
-//       ].map(doc => {
-//         const docKey = doc.key as keyof FormData['documents'];
-//         const fileObj = formData.documents[docKey];
-
-//         return (
-//           <View
-//             key={doc.key}
-//             className="border border-dashed border-gray-300 rounded-xl p-4 mb-4 bg-white"
-//           >
-//             <View className="flex-row items-center justify-between">
-//               {/* LEFT ICON + TEXT */}
-//               <View className="flex-row items-start flex-1">
-//                 <View className="w-10 h-10 rounded-full bg-green-100 items-center justify-center mr-3">
-//                   <Upload size={18} color="#1FAD4E" />
-//                 </View>
-
-//                 <View className="flex-1">
-//                   <Text className="text-sm font-inter-semibold text-gray-900">
-//                     {doc.label}
-//                   </Text>
-//                   <Text className="text-xs text-gray-500 mt-0.5">
-//                     Securely verify your identity to access all features
-//                   </Text>
-
-//                   {/* FILE NAME */}
-//                   {fileObj?.name && (
-//                     <Text className="text-[11px] text-[#1FAD4E] mt-1">
-//                       ✅ {fileObj.name}
-//                     </Text>
-//                   )}
-//                 </View>
-//               </View>
-
-//               {/* RIGHT UPLOAD BUTTON */}
-//               <TouchableOpacity
-//                 onPress={() => handleFileChange(docKey)}
-//                 className="border border-[#1FAD4E] px-4 py-2 rounded-lg"
-//               >
-//                 <Text className="text-[#1FAD4E] text-xs font-inter-semibold">
-//                   Upload
-//                 </Text>
-//               </TouchableOpacity>
-//             </View>
-//           </View>
-//         );
-//       })}
-//     </View>
-//   );
-
-//   const renderStep5 = () => (
-//     <View className="mb-5">
-//       <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-//         Security
-//       </Text>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Referral Code (Optional)
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           placeholder="Referral code"
-//           value={formData.security.referralCode}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               security: { ...p.security, referralCode: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           4-Digit MPIN <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           keyboardType="number-pad"
-//           maxLength={4}
-//           secureTextEntry
-//           placeholder="****"
-//           value={formData.security.mpin}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               security: { ...p.security, mpin: text },
-//             }))
-//           }
-//         />
-//         <Text className="text-xs text-gray-500 mt-1">
-//           Quick login PIN
-//         </Text>
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Confirm MPIN <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           keyboardType="number-pad"
-//           maxLength={4}
-//           secureTextEntry
-//           placeholder="****"
-//           value={formData.security.confirmMpin}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               security: { ...p.security, confirmMpin: text },
-//             }))
-//           }
-//         />
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Password <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           secureTextEntry
-//           maxLength={20}
-//           placeholder="Password"
-//           value={formData.security.password}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               security: { ...p.security, password: text },
-//             }))
-//           }
-//         />
-//         <Text className="text-xs text-gray-500 mt-1">
-//           Min 6 characters
-//         </Text>
-//       </View>
-
-//       <View className="mb-3">
-//         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-//           Confirm Password <Text className="text-red-500">*</Text>
-//         </Text>
-//         <TextInput
-//           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-//           secureTextEntry
-//           maxLength={20}
-//           placeholder="Confirm"
-//           value={formData.security.confirmPassword}
-//           onChangeText={text =>
-//             setFormData(p => ({
-//               ...p,
-//               security: { ...p.security, confirmPassword: text },
-//             }))
-//           }
-//         />
-//       </View>
-//     </View>
-//   );
-
-//   return (
-//     <View className="flex-1 bg-white py-10">
-//        <View className="absolute -top-24 -left-40 w-72 h-72 rounded-full bg-[#E8FDEB]" />
-//       <ScrollView
-//         contentContainerStyle={{ flexGrow: 1 }}
-//         keyboardShouldPersistTaps="handled"
-//         className="px-4 py-4"
-//       >
-//         <View className="p-5">
-//           <View className="items-center mb-5">
-//             <Text className="text-2xl text-[#1FAD4E] font-inter-semibold">
-//               Create {role === 'farmer' ? 'Farmer' : 'Trader'} Account
-//             </Text>
-//             <Text className="text-xs text-gray-500 mt-1">
-//               Step {currentStep} of {totalSteps}
-//             </Text>
-//           </View>
-
-//           {renderProgressBar()}
-
-//           {currentStep === 1 && renderStep1()}
-//           {currentStep === 2 && renderStep2()}
-//           {currentStep === 3 && renderStep3()}
-//           {currentStep === 4 && renderStep4()}
-//           {currentStep === 5 && renderStep5()}
-
-//           {error ? (
-//             <View className="bg-red-100 px-3 py-2.5 rounded-lg mt-2">
-//               <Text className="text-sm text-red-700 text-center">
-//                 {error}
-//               </Text>
-//             </View>
-//           ) : null}
-
-//           <View className="flex-row justify-between mt-5 gap-3">
-//             {currentStep > 1 && (
-//               <TouchableOpacity
-//                 onPress={handlePrevious}
-//                 className="flex-row items-center px-4 py-3 rounded-lg border border-[#1FAD4E] bg-white flex-1 justify-center"
-//               >
-//                 <ChevronLeft size={20} color="#1FAD4E" />
-//                 <Text className="text-[#1FAD4E] text-base font-inter-semibold ml-2">
-//                   Previous
-//                 </Text>
-//               </TouchableOpacity>
-//             )}
-
-//             {currentStep < totalSteps ? (
-//               <TouchableOpacity
-//                 onPress={handleNext}
-//                 className={`flex-row items-center px-4 py-3 rounded-lg flex-1 justify-center ${
-//                   currentStep > 1 ? '' : 'ml-0'
-//                 } bg-[#1FAD4E]`}
-//               >
-//                 <Text className="text-white text-base font-inter-semibold mr-2">
-//                   Save & Next
-//                 </Text>
-//                 <ChevronRight size={20} color="#fff" />
-//               </TouchableOpacity>
-//             ) : (
-//               <TouchableOpacity
-//                 onPress={handleSubmit}
-//                 disabled={loading}
-//                 className={`flex-row items-center px-4 py-3 rounded-lg flex-1 justify-center ${
-//                   loading ? 'opacity-70' : ''
-//                 } bg-[#1FAD4E]`}
-//               >
-//                 {loading ? (
-//                   <View className="flex-row items-center">
-//                     <ActivityIndicator color="#fff" size="small" />
-//                     <Text className="text-white text-base font-inter-semibold ml-2">
-//                       Registering...
-//                     </Text>
-//                   </View>
-//                 ) : (
-//                   <Text className="text-white text-base font-inter-semibold">
-//                     Register
-//                   </Text>
-//                 )}
-//               </TouchableOpacity>
-//             )}
-//           </View>
-
-//           <View className="flex-row justify-center mt-6">
-//             <Text className="text-sm text-gray-500">
-//               Already registered?{' '}
-//             </Text>
-//             <TouchableOpacity onPress={() => router.push('/(auth)/Login')}>
-//               <Text className="text-sm text-[#1FAD4E] font-inter-semibold">
-//                 Login here
-//               </Text>
-//             </TouchableOpacity>
-//           </View>
-//         </View>
-//       </ScrollView>
-//     </View>
-//   );
-// };
-
-// export default FarmerRegistration;
-
-
 import axios from 'axios';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Location from 'expo-location';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ChevronLeft, ChevronRight, MapPin, Plus, Truck, Upload, X } from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight, MapPin, Plus, Upload, X } from 'lucide-react-native';
+import React, { useEffect, useState,useCallback } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -1137,7 +12,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Linking,
 } from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface Category {
   _id: string;
@@ -1147,14 +25,6 @@ interface Category {
 interface Market {
   id: string;
   name: string;
-}
-
-interface Vehicle {
-  id: string;
-  vehicleType: string;
-  vehicleNumber: string;
-  capacity: string;
-  model: string;
 }
 
 interface FormData {
@@ -1179,14 +49,6 @@ interface FormData {
     cultivated: string;
     uncultivated: string;
   };
-  businessInfo: {
-    companyName: string;
-    gstNumber: string;
-    panNumber: string;
-    yearsInBusiness: string;
-  };
-  vehicles: Vehicle[];
-  serviceAreas: string[];
   commodities: string[];
   nearestMarkets: Market[];
   bankDetails: {
@@ -1200,10 +62,6 @@ interface FormData {
     aadharFront: any;
     aadharBack: any;
     bankPassbook: any;
-    drivingLicense: any;
-    rcBook: any;
-    insurance: any;
-    gstCertificate: any;
   };
   security: {
     referralCode: string;
@@ -1214,7 +72,9 @@ interface FormData {
   };
 }
 
-const UnifiedRegistration: React.FC = () => {
+
+
+const FarmerRegistration: React.FC = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
   const role = (params.role as string) || 'farmer';
@@ -1244,14 +104,6 @@ const UnifiedRegistration: React.FC = () => {
       cultivated: '',
       uncultivated: '',
     },
-    businessInfo: {
-      companyName: '',
-      gstNumber: '',
-      panNumber: '',
-      yearsInBusiness: '',
-    },
-    vehicles: [],
-    serviceAreas: [],
     commodities: [],
     nearestMarkets: [],
     bankDetails: {
@@ -1265,10 +117,6 @@ const UnifiedRegistration: React.FC = () => {
       aadharFront: null,
       aadharBack: null,
       bankPassbook: null,
-      drivingLicense: null,
-      rcBook: null,
-      insurance: null,
-      gstCertificate: null,
     },
     security: {
       referralCode: '',
@@ -1281,33 +129,13 @@ const UnifiedRegistration: React.FC = () => {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [newMarket, setNewMarket] = useState('');
-  const [newVehicle, setNewVehicle] = useState({
-    vehicleType: '',
-    vehicleNumber: '',
-    capacity: '',
-    model: '',
-  });
-  const [newServiceArea, setNewServiceArea] = useState('');
   const [loading, setLoading] = useState(false);
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const vehicleTypes = [
-    'Mini Truck (1-2 Ton)',
-    'Light Truck (3-5 Ton)',
-    'Medium Truck (6-10 Ton)',
-    'Heavy Truck (10+ Ton)',
-    'Refrigerated Truck',
-    'Container Truck',
-    'Open Body Truck',
-    'Closed Body Truck',
-  ];
-
   useEffect(() => {
-    if (role === 'farmer' || role === 'trader') {
-      fetchCategories();
-    }
-  }, [role]);
+    fetchCategories();
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -1403,45 +231,6 @@ const UnifiedRegistration: React.FC = () => {
     }));
   };
 
-  const addVehicle = () => {
-    if (!newVehicle.vehicleType || !newVehicle.vehicleNumber) {
-      Alert.alert('Error', 'Please fill vehicle type and number');
-      return;
-    }
-    setFormData(prev => ({
-      ...prev,
-      vehicles: [
-        ...prev.vehicles,
-        { ...newVehicle, id: Date.now().toString() },
-      ],
-    }));
-    setNewVehicle({ vehicleType: '', vehicleNumber: '', capacity: '', model: '' });
-  };
-
-  const removeVehicle = (id: string) => {
-    setFormData(prev => ({
-      ...prev,
-      vehicles: prev.vehicles.filter(v => v.id !== id),
-    }));
-  };
-
-  const addServiceArea = () => {
-    if (newServiceArea.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        serviceAreas: [...prev.serviceAreas, newServiceArea.trim()],
-      }));
-      setNewServiceArea('');
-    }
-  };
-
-  const removeServiceArea = (area: string) => {
-    setFormData(prev => ({
-      ...prev,
-      serviceAreas: prev.serviceAreas.filter(a => a !== area),
-    }));
-  };
-
   const handleFileChange = async (docType: keyof FormData['documents']) => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
@@ -1492,43 +281,19 @@ const UnifiedRegistration: React.FC = () => {
 
   const validateStep2 = () => {
     setError('');
-    
-    // Farmer-specific validation
     if (role === 'farmer' && !formData.farmLocation.latitude) {
       setError('Please pin your farm location');
       return false;
     }
-    
-    // Transport-specific validation
-    if (role === 'transport') {
-      if (!formData.businessInfo.companyName.trim()) {
-        setError('Please enter company/business name');
-        return false;
-      }
-      if (formData.vehicles.length === 0) {
-        setError('Please add at least one vehicle');
-        return false;
-      }
-    }
-    
     return true;
   };
 
   const validateStep3 = () => {
     setError('');
-    
-    // Farmer/Trader validation
-    if ((role === 'farmer' || role === 'trader') && formData.commodities.length === 0) {
+    if (formData.commodities.length === 0) {
       setError('Please select at least one commodity');
       return false;
     }
-    
-    // Transport validation
-    if (role === 'transport' && formData.serviceAreas.length === 0) {
-      setError('Please add at least one service area');
-      return false;
-    }
-    
     return true;
   };
 
@@ -1577,103 +342,62 @@ const UnifiedRegistration: React.FC = () => {
     if (!validateStep5()) return;
     setLoading(true);
 
+    const submitFormData = new FormData();
+    submitFormData.append('personalInfo', JSON.stringify(formData.personalInfo));
+    submitFormData.append('farmLocation', JSON.stringify(formData.farmLocation));
+    submitFormData.append('farmLand', JSON.stringify(formData.farmLand));
+    submitFormData.append('commodities', JSON.stringify(formData.commodities));
+    submitFormData.append('nearestMarkets', JSON.stringify(formData.nearestMarkets));
+    submitFormData.append('bankDetails', JSON.stringify(formData.bankDetails));
+    submitFormData.append('role', role);
+    submitFormData.append(
+      'security',
+      JSON.stringify({
+        referralCode: formData.security.referralCode,
+        mpin: formData.security.mpin,
+        password: formData.security.password,
+      })
+    );
+
+    if (formData.documents.panCard) {
+      submitFormData.append('panCard', {
+        uri: formData.documents.panCard.uri,
+        type: formData.documents.panCard.mimeType,
+        name: formData.documents.panCard.name,
+      } as any);
+    }
+    if (formData.documents.aadharFront) {
+      submitFormData.append('aadharFront', {
+        uri: formData.documents.aadharFront.uri,
+        type: formData.documents.aadharFront.mimeType,
+        name: formData.documents.aadharFront.name,
+      } as any);
+    }
+    if (formData.documents.aadharBack) {
+      submitFormData.append('aadharBack', {
+        uri: formData.documents.aadharBack.uri,
+        type: formData.documents.aadharBack.mimeType,
+        name: formData.documents.aadharBack.name,
+      } as any);
+    }
+    if (formData.documents.bankPassbook) {
+      submitFormData.append('bankPassbook', {
+        uri: formData.documents.bankPassbook.uri,
+        type: formData.documents.bankPassbook.mimeType,
+        name: formData.documents.bankPassbook.name,
+      } as any);
+    }
+
     try {
-      let endpoint = '';
-      if (role === 'farmer') {
-        endpoint = 'https://kisan.etpl.ai/farmer/register';
-      } else if (role === 'trader') {
-        endpoint = 'https://kisan.etpl.ai/trader/register';
-      } else if (role === 'transport') {
-        endpoint = 'https://kisan.etpl.ai/transport/register';
-      }
-
-      if (role === 'transport') {
-        // Transport uses JSON submission
-        const submitData = {
-          personalInfo: formData.personalInfo,
-          businessInfo: formData.businessInfo,
-          vehicles: formData.vehicles,
-          serviceAreas: formData.serviceAreas,
-          bankDetails: formData.bankDetails,
-          role: role,
-          security: {
-            referralCode: formData.security.referralCode,
-            mpin: formData.security.mpin,
-            password: formData.security.password,
-          },
-        };
-
-        const response = await fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(submitData),
-        });
-
-        if (response.ok) {
-          Alert.alert('Success', 'Registration Successful!', [
-            { text: 'OK', onPress: () => router.push('/(auth)/Login') },
-          ]);
-        } else {
-          const errorData = await response.json();
-          setError(errorData.message || 'Registration failed');
-        }
-      } else {
-        // Farmer/Trader uses FormData with file uploads
-        const submitFormData = new FormData();
-        submitFormData.append('personalInfo', JSON.stringify(formData.personalInfo));
-        submitFormData.append('farmLocation', JSON.stringify(formData.farmLocation));
-        submitFormData.append('farmLand', JSON.stringify(formData.farmLand));
-        submitFormData.append('commodities', JSON.stringify(formData.commodities));
-        submitFormData.append('nearestMarkets', JSON.stringify(formData.nearestMarkets));
-        submitFormData.append('bankDetails', JSON.stringify(formData.bankDetails));
-        submitFormData.append('role', role);
-        submitFormData.append(
-          'security',
-          JSON.stringify({
-            referralCode: formData.security.referralCode,
-            mpin: formData.security.mpin,
-            password: formData.security.password,
-          })
-        );
-
-        if (formData.documents.panCard) {
-          submitFormData.append('panCard', {
-            uri: formData.documents.panCard.uri,
-            type: formData.documents.panCard.mimeType,
-            name: formData.documents.panCard.name,
-          } as any);
-        }
-        if (formData.documents.aadharFront) {
-          submitFormData.append('aadharFront', {
-            uri: formData.documents.aadharFront.uri,
-            type: formData.documents.aadharFront.mimeType,
-            name: formData.documents.aadharFront.name,
-          } as any);
-        }
-        if (formData.documents.aadharBack) {
-          submitFormData.append('aadharBack', {
-            uri: formData.documents.aadharBack.uri,
-            type: formData.documents.aadharBack.mimeType,
-            name: formData.documents.aadharBack.name,
-          } as any);
-        }
-        if (formData.documents.bankPassbook) {
-          submitFormData.append('bankPassbook', {
-            uri: formData.documents.bankPassbook.uri,
-            type: formData.documents.bankPassbook.mimeType,
-            name: formData.documents.bankPassbook.name,
-          } as any);
-        }
-
-        const response = await axios.post(endpoint, submitFormData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-
-        if (response.status === 200 || response.status === 201) {
-          Alert.alert('Success', 'Registration Successful!', [
-            { text: 'OK', onPress: () => router.push('/(auth)/Login') },
-          ]);
-        }
+      const response = await axios.post(
+        'https://kisan.etpl.ai/farmer/register',
+        submitFormData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      if (response.status === 200 || response.status === 201) {
+        Alert.alert('Success', 'Registration Successful!', [
+          { text: 'OK', onPress: () => router.push('/(auth)/Login') },
+        ]);
       }
     } catch (error: any) {
       setError(error?.response?.data?.message || 'Registration failed.');
@@ -1692,7 +416,11 @@ const UnifiedRegistration: React.FC = () => {
           const isActive = currentStep >= step;
 
           return (
-            <View key={step} className="flex-row items-center flex-1">
+            <View
+              key={step}
+              className="flex-row items-center flex-1"
+            >
+              {/* Circle */}
               <View
                 className={[
                   'w-8 h-8 rounded-full border-2 items-center justify-center',
@@ -1718,6 +446,7 @@ const UnifiedRegistration: React.FC = () => {
                 </Text>
               </View>
 
+              {/* Connecting line */}
               {index < totalSteps - 1 && (
                 <View
                   className={[
@@ -1811,27 +540,25 @@ const UnifiedRegistration: React.FC = () => {
         />
       </View>
 
-      {(role === 'farmer' || role === 'trader') && (
-        <View className="mb-3">
-          <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-            Village / Grama Panchayat
-          </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-            placeholder="Village name"
-            value={formData.personalInfo.villageGramaPanchayat}
-            onChangeText={text =>
-              setFormData(p => ({
-                ...p,
-                personalInfo: {
-                  ...p.personalInfo,
-                  villageGramaPanchayat: text,
-                },
-              }))
-            }
-          />
-        </View>
-      )}
+      <View className="mb-3">
+        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+          Village / Grama Panchayat
+        </Text>
+        <TextInput
+          className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+          placeholder="Village name"
+          value={formData.personalInfo.villageGramaPanchayat}
+          onChangeText={text =>
+            setFormData(p => ({
+              ...p,
+              personalInfo: {
+                ...p.personalInfo,
+                villageGramaPanchayat: text,
+              },
+            }))
+          }
+        />
+      </View>
 
       <View className="mb-3">
         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
@@ -1896,614 +623,305 @@ const UnifiedRegistration: React.FC = () => {
     </View>
   );
 
-  const renderStep2 = () => {
-    if (role === 'transport') {
-      return (
-        <View className="mb-5">
-          <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-            Business & Vehicle Details
-          </Text>
+  const renderStep2 = () => (
+    <View className="mb-5">
+      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+        {role === 'farmer' ? 'Farm Details' : 'Business Location'}
+      </Text>
 
-          <Text className="text-base font-inter-semibold text-gray-800 mb-3">
-            Business Information
-          </Text>
-
+      {role === 'farmer' && (
+        <>
           <View className="mb-3">
             <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Company/Business Name <Text className="text-red-500">*</Text>
+              Farm Location <Text className="text-red-500">*</Text>
             </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="Your company name"
-              value={formData.businessInfo.companyName}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  businessInfo: { ...p.businessInfo, companyName: text },
-                }))
-              }
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              GST Number (Optional)
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="GST Number"
-              autoCapitalize="characters"
-              value={formData.businessInfo.gstNumber}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  businessInfo: { ...p.businessInfo, gstNumber: text },
-                }))
-              }
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              PAN Number (Optional)
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="PAN Number"
-              autoCapitalize="characters"
-              maxLength={10}
-              value={formData.businessInfo.panNumber}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  businessInfo: { ...p.businessInfo, panNumber: text },
-                }))
-              }
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Years in Business
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="e.g., 5"
-              keyboardType="number-pad"
-              value={formData.businessInfo.yearsInBusiness}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  businessInfo: { ...p.businessInfo, yearsInBusiness: text },
-                }))
-              }
-            />
-          </View>
-
-          <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
-            Vehicle Information <Text className="text-red-500">*</Text>
-          </Text>
-
-          <View className="mb-3">
-            {formData.vehicles.map(vehicle => (
-              <View
-                key={vehicle.id}
-                className="bg-gray-50 rounded-lg p-3 mb-3 border border-gray-200"
+            <View className="flex flex-row items-center gap-3">
+              <TouchableOpacity
+                className="bg-[#1FAD4E] w-10 h-10 rounded-full flex items-center justify-center"
+                onPress={getCurrentLocation}
               >
-                <View className="flex-row items-center mb-2">
-                  <Truck size={20} color="#1FAD4E" />
-                  <Text className="text-sm font-inter-semibold text-gray-800 ml-2 flex-1">
-                    {vehicle.vehicleType}
-                  </Text>
-                  <TouchableOpacity onPress={() => removeVehicle(vehicle.id)}>
-                    <X size={18} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
-                <Text className="text-xs text-gray-600">Number: {vehicle.vehicleNumber}</Text>
-                <Text className="text-xs text-gray-600">
-                  Capacity: {vehicle.capacity || 'N/A'}
-                </Text>
-                <Text className="text-xs text-gray-600">Model: {vehicle.model || 'N/A'}</Text>
-              </View>
-            ))}
-          </View>
-
-          <Text className="text-sm font-inter-semibold text-gray-800 mb-3">Add New Vehicle</Text>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Vehicle Type
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-2">
-              {vehicleTypes.map(type => (
-                <TouchableOpacity
-                  key={type}
-                  className={`px-4 py-2 rounded-lg mr-2 ${
-                    newVehicle.vehicleType === type
-                      ? 'bg-[#1FAD4E]'
-                      : 'bg-gray-100 border border-gray-300'
-                  }`}
-                  onPress={() => setNewVehicle({ ...newVehicle, vehicleType: type })}
-                >
-                  <Text
-                    className={`text-xs ${
-                      newVehicle.vehicleType === type ? 'text-white' : 'text-gray-700'
-                    }`}
-                  >
-                    {type}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Vehicle Number
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="e.g., KA01AB1234"
-              autoCapitalize="characters"
-              value={newVehicle.vehicleNumber}
-              onChangeText={text => setNewVehicle({ ...newVehicle, vehicleNumber: text })}
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Capacity (Tons)
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="e.g., 5"
-              keyboardType="decimal-pad"
-              value={newVehicle.capacity}
-              onChangeText={text => setNewVehicle({ ...newVehicle, capacity: text })}
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Model/Year</Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="e.g., 2020"
-              value={newVehicle.model}
-              onChangeText={text => setNewVehicle({ ...newVehicle, model: text })}
-            />
-          </View>
-
-          <TouchableOpacity
-            className="bg-[#1FAD4E] px-4 py-3 rounded-lg flex-row items-center justify-center"
-            onPress={addVehicle}
-          >
-            <Plus size={20} color="#fff" />
-            <Text className="text-white text-base font-inter-semibold ml-2">Add Vehicle</Text>
-          </TouchableOpacity>
-        </View>
-      );
-    }
-
-    // Farmer/Trader Step 2
-    return (
-      <View className="mb-5">
-        <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-          {role === 'farmer' ? 'Farm Details' : 'Business Location'}
-        </Text>
-
-        {role === 'farmer' && (
-          <>
-            <View className="mb-3">
-              <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-                Farm Location <Text className="text-red-500">*</Text>
-              </Text>
-              <View className="flex flex-row items-center gap-3">
-                <TouchableOpacity
-                  className="bg-[#1FAD4E] w-10 h-10 rounded-full flex items-center justify-center"
-                  onPress={getCurrentLocation}
-                >
-                  <MapPin size={18} color="#fff" />
-                </TouchableOpacity>
-
-                {formData.farmLocation.latitude && (
-                  <Text className="text-xs text-gray-600">
-                    Location:{' '}
-                    {parseFloat(formData.farmLocation.latitude).toFixed(6)},{' '}
-                    {parseFloat(formData.farmLocation.longitude).toFixed(6)}
-                  </Text>
-                )}
-              </View>
-            </View>
-
-            <Text className="text-base font-inter-semibold text-gray-800 mt-3 mb-3">
-              Farm Land (Acres)
-            </Text>
-
-            <View className="mb-3">
-              <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Total</Text>
-              <TextInput
-                className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-                placeholder="Total acres"
-                keyboardType="decimal-pad"
-                value={formData.farmLand.total}
-                onChangeText={text =>
-                  setFormData(p => ({
-                    ...p,
-                    farmLand: { ...p.farmLand, total: text },
-                  }))
-                }
-              />
-            </View>
-
-            <View className="mb-3">
-              <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-                Cultivated
-              </Text>
-              <TextInput
-                className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-                placeholder="Cultivated acres"
-                keyboardType="decimal-pad"
-                value={formData.farmLand.cultivated}
-                onChangeText={text =>
-                  setFormData(p => ({
-                    ...p,
-                    farmLand: { ...p.farmLand, cultivated: text },
-                  }))
-                }
-              />
-            </View>
-
-            <View className="mb-3">
-              <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-                Uncultivated
-              </Text>
-              <TextInput
-                className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-                placeholder="Uncultivated acres"
-                keyboardType="decimal-pad"
-                value={formData.farmLand.uncultivated}
-                onChangeText={text =>
-                  setFormData(p => ({
-                    ...p,
-                    farmLand: { ...p.farmLand, uncultivated: text },
-                  }))
-                }
-              />
-            </View>
-          </>
-        )}
-
-        <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
-          Nearest Markets
-        </Text>
-
-        <View className="mb-3">
-          {formData.nearestMarkets.map(market => (
-            <View
-              key={market.id}
-              className="flex-row items-center justify-between bg-gray-50 px-3 py-2.5 rounded-lg mb-2"
-            >
-              <Text className="flex-1 text-sm text-gray-800">{market.name}</Text>
-              <TouchableOpacity onPress={() => removeMarket(market.id)}>
-                <X size={18} color="#EF4444" />
+                <MapPin size={18} color="#fff" />
               </TouchableOpacity>
-            </View>
-          ))}
-        </View>
 
-        <View className="flex-row items-center">
-          <TextInput
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white"
-            placeholder="Market name"
-            value={newMarket}
-            onChangeText={setNewMarket}
-          />
-          <TouchableOpacity
-            className="bg-[#1FAD4E] px-4 py-2.5 rounded-lg items-center justify-center ml-3 mr-4"
-            onPress={addMarket}
-          >
-            <Plus size={18} color="#fff" />
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const renderStep3 = () => {
-    if (role === 'transport') {
-      return (
-        <View className="mb-5">
-          <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-            Service Areas & Bank Details
-          </Text>
-
-          <Text className="text-base font-inter-semibold text-gray-800 mb-3">
-            Service Areas <Text className="text-red-500">*</Text>
-          </Text>
-          <Text className="text-xs text-gray-500 mb-3">
-            Add cities/districts where you provide service
-          </Text>
-
-          <View className="mb-3">
-            {formData.serviceAreas.map((area, index) => (
-              <View
-                key={index}
-                className="flex-row items-center justify-between bg-gray-50 px-3 py-2.5 rounded-lg mb-2"
-              >
-                <Text className="flex-1 text-sm text-gray-800">{area}</Text>
-                <TouchableOpacity onPress={() => removeServiceArea(area)}>
-                  <X size={16} color="#EF4444" />
-                </TouchableOpacity>
-              </View>
-            ))}
-          </View>
-
-          <View className="flex-row items-center mb-4">
-            <TextInput
-              className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white"
-              placeholder="Enter city/district name"
-              value={newServiceArea}
-              onChangeText={setNewServiceArea}
-            />
-            <TouchableOpacity
-              className="bg-[#1FAD4E] px-4 py-2.5 rounded-lg items-center justify-center ml-3"
-              onPress={addServiceArea}
-            >
-              <Plus size={18} color="#fff" />
-            </TouchableOpacity>
-          </View>
-
-          <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
-            Bank Details (Optional)
-          </Text>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Account Holder Name
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="Name as per bank"
-              value={formData.bankDetails.accountHolderName}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  bankDetails: { ...p.bankDetails, accountHolderName: text },
-                }))
-              }
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Account Number
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="Account number"
-              keyboardType="number-pad"
-              value={formData.bankDetails.accountNumber}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  bankDetails: { ...p.bankDetails, accountNumber: text },
-                }))
-              }
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">IFSC Code</Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="IFSC Code"
-              autoCapitalize="characters"
-              value={formData.bankDetails.ifscCode}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  bankDetails: { ...p.bankDetails, ifscCode: text },
-                }))
-              }
-            />
-          </View>
-
-          <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-              Branch Name
-            </Text>
-            <TextInput
-              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-              placeholder="Branch name"
-              value={formData.bankDetails.branch}
-              onChangeText={text =>
-                setFormData(p => ({
-                  ...p,
-                  bankDetails: { ...p.bankDetails, branch: text },
-                }))
-              }
-            />
-          </View>
-        </View>
-      );
-    }
-
-    // Farmer/Trader Step 3
-    return (
-      <View className="mb-5">
-        <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-          Commodities & Bank
-        </Text>
-
-        <Text className="text-base font-inter-semibold text-gray-800 mb-3">
-          Commodities <Text className="text-red-500">*</Text>
-        </Text>
-
-        {categories.map(cat => (
-          <TouchableOpacity
-            key={cat._id}
-            className="flex-row items-center mb-3"
-            onPress={() => handleCommodityToggle(cat._id)}
-          >
-            <View
-              className={`w-5 h-5 rounded-md border-2 mr-3 items-center justify-center ${
-                formData.commodities.includes(cat._id)
-                  ? 'bg-[#1FAD4E] border-[#1FAD4E]'
-                  : 'border-gray-300'
-              }`}
-            >
-              {formData.commodities.includes(cat._id) && (
-                <Text className="text-xs font-bold text-white">✓</Text>
+              {formData.farmLocation.latitude && (
+                <Text className="text-xs text-gray-600">
+                  Location:{' '}
+                  {parseFloat(formData.farmLocation.latitude).toFixed(6)},{' '}
+                  {parseFloat(formData.farmLocation.longitude).toFixed(6)}
+                </Text>
               )}
             </View>
-            <Text className="text-sm text-gray-800">{cat.categoryName}</Text>
-          </TouchableOpacity>
+          </View>
+
+          <Text className="text-base font-inter-semibold text-gray-800 mt-3 mb-3">
+            Farm Land (Acres)
+          </Text>
+
+          <View className="mb-3">
+            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+              Total
+            </Text>
+            <TextInput
+              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+              placeholder="Total acres"
+              keyboardType="decimal-pad"
+              value={formData.farmLand.total}
+              onChangeText={text =>
+                setFormData(p => ({
+                  ...p,
+                  farmLand: { ...p.farmLand, total: text },
+                }))
+              }
+            />
+          </View>
+
+          <View className="mb-3">
+            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+              Cultivated
+            </Text>
+            <TextInput
+              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+              placeholder="Cultivated acres"
+              keyboardType="decimal-pad"
+              value={formData.farmLand.cultivated}
+              onChangeText={text =>
+                setFormData(p => ({
+                  ...p,
+                  farmLand: { ...p.farmLand, cultivated: text },
+                }))
+              }
+            />
+          </View>
+
+          <View className="mb-3">
+            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+              Uncultivated
+            </Text>
+            <TextInput
+              className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+              placeholder="Uncultivated acres"
+              keyboardType="decimal-pad"
+              value={formData.farmLand.uncultivated}
+              onChangeText={text =>
+                setFormData(p => ({
+                  ...p,
+                  farmLand: { ...p.farmLand, uncultivated: text },
+                }))
+              }
+            />
+          </View>
+        </>
+      )}
+
+      <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
+        Nearest Markets
+      </Text>
+
+      <View className="mb-3">
+        {formData.nearestMarkets.map(market => (
+          <View
+            key={market.id}
+            className="flex-row items-center justify-between bg-gray-50 px-3 py-2.5 rounded-lg mb-2"
+          >
+            <Text className="flex-1 text-sm text-gray-800">
+              {market.name}
+            </Text>
+            <TouchableOpacity onPress={() => removeMarket(market.id)}>
+              <X size={18} color="#EF4444" />
+            </TouchableOpacity>
+          </View>
         ))}
-
-        <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
-          Bank Details (Optional)
-        </Text>
-
-        <View className="mb-3">
-          <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-            Account Holder
-          </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-            placeholder="Name"
-            value={formData.bankDetails.accountHolderName}
-            onChangeText={text =>
-              setFormData(p => ({
-                ...p,
-                bankDetails: { ...p.bankDetails, accountHolderName: text },
-              }))
-            }
-          />
-        </View>
-
-        <View className="mb-3">
-          <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
-            Account Number
-          </Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-            placeholder="Number"
-            keyboardType="number-pad"
-            value={formData.bankDetails.accountNumber}
-            onChangeText={text =>
-              setFormData(p => ({
-                ...p,
-                bankDetails: { ...p.bankDetails, accountNumber: text },
-              }))
-            }
-          />
-        </View>
-
-        <View className="mb-3">
-          <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">IFSC Code</Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-            placeholder="IFSC"
-            autoCapitalize="characters"
-            value={formData.bankDetails.ifscCode}
-            onChangeText={text =>
-              setFormData(p => ({
-                ...p,
-                bankDetails: { ...p.bankDetails, ifscCode: text },
-              }))
-            }
-          />
-        </View>
-
-        <View className="mb-3">
-          <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Branch</Text>
-          <TextInput
-            className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
-            placeholder="Branch name"
-            value={formData.bankDetails.branch}
-            onChangeText={text =>
-              setFormData(p => ({
-                ...p,
-                bankDetails: { ...p.bankDetails, branch: text },
-              }))
-            }
-          />
-        </View>
       </View>
-    );
-  };
 
-  const renderStep4 = () => {
-    const documentTypes =
-      role === 'transport'
-        ? [
-            { key: 'drivingLicense', label: 'Upload Driving License' },
-            { key: 'rcBook', label: 'Upload RC Book (Registration Certificate)' },
-            { key: 'insurance', label: 'Upload Vehicle Insurance' },
-            { key: 'panCard', label: 'Upload PAN Card' },
-            { key: 'gstCertificate', label: 'Upload GST Certificate' },
-          ]
-        : [
-            { key: 'panCard', label: 'Upload PAN Card / ID' },
-            { key: 'aadharFront', label: 'Upload Aadhaar Front' },
-            { key: 'aadharBack', label: 'Upload Aadhaar Back' },
-            { key: 'bankPassbook', label: 'Upload Bank Passbook' },
-          ];
+      <View className="flex-row items-center">
+        <TextInput
+          className="flex-1 border border-gray-300 rounded-lg px-3 py-2.5 text-sm bg-white"
+          placeholder="Market name"
+          value={newMarket}
+          onChangeText={setNewMarket}
+        />
+        <TouchableOpacity
+          className="bg-[#1FAD4E] px-4 py-2.5 rounded-lg items-center justify-center ml-3 mr-4"
+          onPress={addMarket}
+        >
+          <Plus size={18} color="#fff" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
-    return (
-      <View className="mb-5">
-        <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
-          Documents (Optional)
+  const renderStep3 = () => (
+    <View className="mb-5">
+      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+        Commodities & Bank
+      </Text>
+
+      <Text className="text-base font-inter-semibold text-gray-800 mb-3">
+        Commodities <Text className="text-red-500">*</Text>
+      </Text>
+
+      {categories.map(cat => (
+        <TouchableOpacity
+          key={cat._id}
+          className="flex-row items-center mb-3"
+          onPress={() => handleCommodityToggle(cat._id)}
+        >
+          <View
+            className={`w-5 h-5 rounded-md border-2 mr-3 items-center justify-center ${
+              formData.commodities.includes(cat._id)
+                ? 'bg-[#1FAD4E] border-[#1FAD4E]'
+                : 'border-gray-300'
+            }`}
+          >
+            {formData.commodities.includes(cat._id) && (
+              <Text className="text-xs font-bold text-white">✓</Text>
+            )}
+          </View>
+          <Text className="text-sm text-gray-800">{cat.categoryName}</Text>
+        </TouchableOpacity>
+      ))}
+
+      <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
+        Bank Details (Optional)
+      </Text>
+
+      <View className="mb-3">
+        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+          Account Holder
         </Text>
+        <TextInput
+          className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+          placeholder="Name"
+          value={formData.bankDetails.accountHolderName}
+          onChangeText={text =>
+            setFormData(p => ({
+              ...p,
+              bankDetails: { ...p.bankDetails, accountHolderName: text },
+            }))
+          }
+        />
+      </View>
 
-        {documentTypes.map(doc => {
-          const docKey = doc.key as keyof FormData['documents'];
-          const fileObj = formData.documents[docKey];
+      <View className="mb-3">
+        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+          Account Number
+        </Text>
+        <TextInput
+          className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+          placeholder="Number"
+          keyboardType="number-pad"
+          value={formData.bankDetails.accountNumber}
+          onChangeText={text =>
+            setFormData(p => ({
+              ...p,
+              bankDetails: { ...p.bankDetails, accountNumber: text },
+            }))
+          }
+        />
+      </View>
 
-          return (
-            <View
-              key={doc.key}
-              className="border border-dashed border-gray-300 rounded-xl p-4 mb-4 bg-white"
-            >
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-start flex-1">
-                  <View className="w-10 h-10 rounded-full bg-green-100 items-center justify-center mr-3">
-                    <Upload size={18} color="#1FAD4E" />
-                  </View>
+      <View className="mb-3">
+        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+          IFSC Code
+        </Text>
+        <TextInput
+          className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+          placeholder="IFSC"
+          autoCapitalize="characters"
+          value={formData.bankDetails.ifscCode}
+          onChangeText={text =>
+            setFormData(p => ({
+              ...p,
+              bankDetails: { ...p.bankDetails, ifscCode: text },
+            }))
+          }
+        />
+      </View>
 
-                  <View className="flex-1">
-                    <Text className="text-sm font-inter-semibold text-gray-900">
-                      {doc.label}
-                    </Text>
-                    <Text className="text-xs text-gray-500 mt-0.5">
-                      Securely verify your identity to access all features
-                    </Text>
+      <View className="mb-3">
+        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+          Branch
+        </Text>
+        <TextInput
+          className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white"
+          placeholder="Branch name"
+          value={formData.bankDetails.branch}
+          onChangeText={text =>
+            setFormData(p => ({
+              ...p,
+              bankDetails: { ...p.bankDetails, branch: text },
+            }))
+          }
+        />
+      </View>
+    </View>
+  );
 
-                    {fileObj?.name && (
-                      <Text className="text-[11px] text-[#1FAD4E] mt-1">
-                        ✅ {fileObj.name}
-                      </Text>
-                    )}
-                  </View>
+  const renderStep4 = () => (
+    <View className="mb-5">
+      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+        Documents (Optional)
+      </Text>
+
+      {[
+        { key: 'panCard', label: 'Upload PAN Card / ID' },
+        { key: 'aadharFront', label: 'Upload Aadhaar Front' },
+        { key: 'aadharBack', label: 'Upload Aadhaar Back' },
+        { key: 'bankPassbook', label: 'Upload Bank Passbook' },
+      ].map(doc => {
+        const docKey = doc.key as keyof FormData['documents'];
+        const fileObj = formData.documents[docKey];
+
+        return (
+          <View
+            key={doc.key}
+            className="border border-dashed border-gray-300 rounded-xl p-4 mb-4 bg-white"
+          >
+            <View className="flex-row items-center justify-between">
+              {/* LEFT ICON + TEXT */}
+              <View className="flex-row items-start flex-1">
+                <View className="w-10 h-10 rounded-full bg-green-100 items-center justify-center mr-3">
+                  <Upload size={18} color="#1FAD4E" />
                 </View>
 
-                <TouchableOpacity
-                  onPress={() => handleFileChange(docKey)}
-                  className="border border-[#1FAD4E] px-4 py-2 rounded-lg"
-                >
-                  <Text className="text-[#1FAD4E] text-xs font-inter-semibold">Upload</Text>
-                </TouchableOpacity>
+                <View className="flex-1">
+                  <Text className="text-sm font-inter-semibold text-gray-900">
+                    {doc.label}
+                  </Text>
+                  <Text className="text-xs text-gray-500 mt-0.5">
+                    Securely verify your identity to access all features
+                  </Text>
+
+                  {/* FILE NAME */}
+                  {fileObj?.name && (
+                    <Text className="text-[11px] text-[#1FAD4E] mt-1">
+                      ✅ {fileObj.name}
+                    </Text>
+                  )}
+                </View>
               </View>
+
+              {/* RIGHT UPLOAD BUTTON */}
+              <TouchableOpacity
+                onPress={() => handleFileChange(docKey)}
+                className="border border-[#1FAD4E] px-4 py-2 rounded-lg"
+              >
+                <Text className="text-[#1FAD4E] text-xs font-inter-semibold">
+                  Upload
+                </Text>
+              </TouchableOpacity>
             </View>
-          );
-        })}
-      </View>
-    );
-  };
+          </View>
+        );
+      })}
+    </View>
+  );
 
   const renderStep5 = () => (
     <View className="mb-5">
-      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">Security</Text>
+      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+        Security
+      </Text>
 
       <View className="mb-3">
         <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
@@ -2540,7 +958,9 @@ const UnifiedRegistration: React.FC = () => {
             }))
           }
         />
-        <Text className="text-xs text-gray-500 mt-1">Quick login PIN</Text>
+        <Text className="text-xs text-gray-500 mt-1">
+          Quick login PIN
+        </Text>
       </View>
 
       <View className="mb-3">
@@ -2580,7 +1000,9 @@ const UnifiedRegistration: React.FC = () => {
             }))
           }
         />
-        <Text className="text-xs text-gray-500 mt-1">Min 6 characters</Text>
+        <Text className="text-xs text-gray-500 mt-1">
+          Min 6 characters
+        </Text>
       </View>
 
       <View className="mb-3">
@@ -2606,7 +1028,7 @@ const UnifiedRegistration: React.FC = () => {
 
   return (
     <View className="flex-1 bg-white py-10">
-      <View className="absolute -top-24 -left-40 w-72 h-72 rounded-full bg-[#E8FDEB]" />
+       <View className="absolute -top-24 -left-40 w-72 h-72 rounded-full bg-[#E8FDEB]" />
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
@@ -2615,8 +1037,7 @@ const UnifiedRegistration: React.FC = () => {
         <View className="p-5">
           <View className="items-center mb-5">
             <Text className="text-2xl text-[#1FAD4E] font-inter-semibold">
-              Create{' '}
-              {role === 'farmer' ? 'Farmer' : role === 'trader' ? 'Trader' : 'Transport'} Account
+              Create {role === 'farmer' ? 'Farmer' : 'Trader'} Account
             </Text>
             <Text className="text-xs text-gray-500 mt-1">
               Step {currentStep} of {totalSteps}
@@ -2633,7 +1054,9 @@ const UnifiedRegistration: React.FC = () => {
 
           {error ? (
             <View className="bg-red-100 px-3 py-2.5 rounded-lg mt-2">
-              <Text className="text-sm text-red-700 text-center">{error}</Text>
+              <Text className="text-sm text-red-700 text-center">
+                {error}
+              </Text>
             </View>
           ) : null}
 
@@ -2678,16 +1101,22 @@ const UnifiedRegistration: React.FC = () => {
                     </Text>
                   </View>
                 ) : (
-                  <Text className="text-white text-base font-inter-semibold">Register</Text>
+                  <Text className="text-white text-base font-inter-semibold">
+                    Register
+                  </Text>
                 )}
               </TouchableOpacity>
             )}
           </View>
 
           <View className="flex-row justify-center mt-6">
-            <Text className="text-sm text-gray-500">Already registered? </Text>
+            <Text className="text-sm text-gray-500">
+              Already registered?{' '}
+            </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/Login')}>
-              <Text className="text-sm text-[#1FAD4E] font-inter-semibold">Login here</Text>
+              <Text className="text-sm text-[#1FAD4E] font-inter-semibold">
+                Login here
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -2696,4 +1125,4 @@ const UnifiedRegistration: React.FC = () => {
   );
 };
 
-export default UnifiedRegistration;
+export default FarmerRegistration;
