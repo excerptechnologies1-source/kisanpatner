@@ -33,10 +33,10 @@ const SelectRoleScreen: React.FC = () => {
             <MaterialCommunityIcons name="tractor" size={22} color="#16a34a" />
           </View>
           <View>
-            <Text className="text-lg font-inter-semibold text-slate-900 ">
+            <Text className="text-lg font-heading text-slate-900 ">
               Today Crops
             </Text>
-            <Text className="text-xs text-slate-500 font-inter-semibold">
+            <Text className="text-xs text-slate-500 font-subheading">
               Farmer · Trader · Partner · Employee · Transport
             </Text>
           </View>
@@ -59,12 +59,12 @@ const SelectRoleScreen: React.FC = () => {
                   color="#ffffff"
                 />
               </View>
-              <Text className="text-base font-inter-semibold text-emerald-900 ">
+              <Text className="text-base text-emerald-900 font-heading">
                 Farmer
               </Text>
             </View>
-            <Text className="text-[11px] text-emerald-800 font-inter-semibold">Grow · Sell</Text>
-            <Text className="text-[11px] text-emerald-800 font-inter-semibold">Manage</Text>
+            <Text className="text-[11px] text-emerald-800 font-subheading">Grow · Sell</Text>
+            <Text className="text-[11px] text-emerald-800 font-subheading">Manage</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -80,12 +80,12 @@ const SelectRoleScreen: React.FC = () => {
                   color="#ffffff"
                 />
               </View>
-              <Text className="text-base font-inter-semibold text-orange-900 ">
+              <Text className="text-base font-heading text-orange-900 ">
                 Trader
               </Text>
             </View>
-            <Text className="text-[11px] text-orange-800 font-inter-semibold">Buy · Bid</Text>
-            <Text className="text-[11px] text-orange-800 font-inter-semibold">Settle</Text>
+            <Text className="text-[11px] text-orange-800 font-subheading">Buy · Bid</Text>
+            <Text className="text-[11px] text-orange-800 font-subheading">Settle</Text>
           </TouchableOpacity>
         </View>
 
@@ -103,12 +103,12 @@ const SelectRoleScreen: React.FC = () => {
                 color="#ffffff"
               />
             </View>
-            <Text className="text-base font-inter-semibold text-blue-900 ">
+            <Text className="text-base font-heading text-blue-900 ">
               Employee
             </Text>
           </View>
-          <Text className="text-[11px] text-blue-800 font-inter-semibold">Work · Track</Text>
-          <Text className="text-[11px] text-blue-800 font-inter-semibold">Assist</Text>
+          <Text className="text-[11px] text-blue-800 font-subheading">Work · Track</Text>
+          <Text className="text-[11px] text-blue-800 font-subheading">Assist</Text>
         </TouchableOpacity>
 
         {/* Row 3: Partner + Transport */}
@@ -126,11 +126,11 @@ const SelectRoleScreen: React.FC = () => {
                   color="#ffffff"
                 />
               </View>
-              <Text className="text-base font-inter-semibold text-amber-900">
+              <Text className="text-base font-heading text-amber-900">
                 Partner
               </Text>
             </View>
-            <Text className="text-[11px] text-amber-800 font-inter-semibold">
+            <Text className="text-[11px] text-amber-800 font-subheading">
               Network &amp; Grow
             </Text>
           </TouchableOpacity>
@@ -148,11 +148,11 @@ const SelectRoleScreen: React.FC = () => {
                   color="#ffffff"
                 />
               </View>
-              <Text className="text-base font-inter-semibold text-teal-900">
+              <Text className="text-base font-heading text-teal-900">
                 Transport
               </Text>
             </View>
-            <Text className="text-[11px] text-teal-800 font-inter-semibold">
+            <Text className="text-[11px] text-teal-800 font-subheading">
               Fleet · Loads · POD
             </Text>
           </TouchableOpacity>

@@ -57,7 +57,7 @@ const CategoryRow: React.FC<{
       </View>
 
       <View className="flex-1">
-        <Text className="text-base text-gray-800 font-inter-semibold">
+        <Text className="text-base text-gray-800 font-medium">
           {item.label}
         </Text>
       </View>
@@ -102,7 +102,7 @@ const CategoriesScreen: React.FC = () => {
           <ChevronLeft size={20} color="#064E3B" />
         </TouchableOpacity>
 
-        <Text className="text-lg font-semibold text-gray-900 ml-2">
+        <Text className="text-lg font-subheading text-gray-900 ml-2">
           Categories
         </Text>
       </View>

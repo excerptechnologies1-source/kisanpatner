@@ -1,30 +1,24 @@
-
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
   useFonts,
-} from "@expo-google-fonts/inter";
+} from "@expo-google-fonts/poppins";
 import { Stack } from 'expo-router';
 import { ActivityIndicator, View } from "react-native";
 import 'react-native-reanimated';
 import '../global.css';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
-
 export default function RootLayout() {
-const [fontsLoaded] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
+ const [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
   });
 
   if (!fontsLoaded) {
-    // Simple loader while fonts load
     return (
       <View
         style={{
@@ -38,14 +32,16 @@ const [fontsLoaded] = useFonts({
     );
   }
 
-   
   return (
-   
-      <Stack  screenOptions={{headerShown:false}}>
-        <Stack.Screen name="(auth)/onboading" />
-        <Stack.Screen name="(farmer)/_layout" />
-        <Stack.Screen name="(trader)/_layout" />
-      </Stack>
-    
+     <View className="flex-1 bg-white font-body">
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="(auth)" />
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="(farmer)" />
+      <Stack.Screen name="(trader)" />
+      <Stack.Screen name="(transporter)" />
+    </Stack>
+    </View>
   );
 }
