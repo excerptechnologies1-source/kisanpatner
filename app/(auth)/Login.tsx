@@ -1,11 +1,9 @@
-
-
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Eye, EyeOff } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -19,6 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import CustomAlert from "../../components/CustomAlert";
 
 const LoginScreen: React.FC = () => {
   const params = useLocalSearchParams();
@@ -38,6 +37,7 @@ const LoginScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
   const [error, setError] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
 
   // ----------------------------
   // ROLE-BASED ENDPOINTS
@@ -184,8 +184,8 @@ const LoginScreen: React.FC = () => {
       // FARMER + TRADER
       await AsyncStorage.setItem("isLoggedIn", "true");
       await AsyncStorage.setItem("role", role);
-
-      Alert.alert("Success", "Login successful!");
+      
+      setShowAlert(true);
 
       if (role === "farmer") router.push("/(farmer)/home");
       else if (role === "trader") router.push("/(trader)/home");
@@ -197,10 +197,32 @@ const LoginScreen: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+  if (showAlert) {
+    const timer = setTimeout(() => {
+      setShowAlert(false);
+
+      if (role === "farmer") router.replace("/(farmer)/home");
+      else if (role === "trader") router.replace("/(trader)/home");
+    }, 1200);
+
+    return () => clearTimeout(timer);
+  }
+}, [showAlert]);
+
+
   // ----------------------------
   // UI
   // ----------------------------
   return (
+   <>
+<CustomAlert
+      visible={showAlert}
+      title="Success"
+      message="Login successful!"
+      onClose={() => setShowAlert(false)}
+    />
+
     <View className="flex-1 bg-white py-10">
       <StatusBar barStyle="dark-content" />
 
@@ -418,6 +440,9 @@ const LoginScreen: React.FC = () => {
         </View>
       </ImageBackground>
     </View>
+
+
+  </>
   );
 };
 

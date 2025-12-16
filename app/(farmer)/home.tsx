@@ -23,6 +23,7 @@ import {
   View,
 } from "react-native";
 
+import MapView, { Marker } from "react-native-maps";
 
 const { width } = Dimensions.get("window");
 
@@ -31,25 +32,27 @@ const banners = [
     id: "1",
     title: "Premium Quality",
     subtitle: "Get more profit here",
-    image: "https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg",
+    image:
+      "https://images.pexels.com/photos/9856/pexels-photo-9856.jpeg?_gl=1*16z3ufb*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ3MzIkajYwJGwwJGgw",
   },
   {
     id: "2",
     title: "Fresh Vegetables",
     subtitle: "Direct from farm to market",
     image:
-      "https://images.pexels.com/photos/327098/pexels-photo-327098.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "https://images.pexels.com/photos/35164363/pexels-photo-35164363.jpeg?_gl=1*ge8l72*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ3OTckajU5JGwwJGgw",
   },
   {
     id: "3",
     title: "Fresh Vegetables",
     subtitle: "Direct from farm to market",
     image:
-      "https://images.pexels.com/photos/1087894/pexels-photo-1087894.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "https://images.pexels.com/photos/27643476/pexels-photo-27643476.jpeg?_gl=1*jt8wc5*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ4NTAkajYkbDAkaDA.",
   },
 ];
 
 const categories = [
+  { id: "0", label: "Post Crop", icon: Plus },
   { id: "1", label: "My Crop", icon: Leaf },
   { id: "2", label: "Market", icon: Store },
   { id: "3", label: "Loan", icon: Banknote },
@@ -60,7 +63,6 @@ const categories = [
   { id: "8", label: "Notifications", icon: Bell },
 ];
 
-
 const recentCrops = [
   {
     id: "1",
@@ -68,7 +70,7 @@ const recentCrops = [
     price: 99,
     rating: 4.3,
     image:
-      "https://images.pexels.com/photos/547263/pexels-photo-547263.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+      "https://images.pexels.com/photos/164504/pexels-photo-164504.jpeg?_gl=1*1n8z0un*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1ODIkajYkbDAkaDA.",
   },
   {
     id: "2",
@@ -76,7 +78,7 @@ const recentCrops = [
     price: 89,
     rating: 4.5,
     image:
-      "https://images.pexels.com/photos/6227174/pexels-photo-6227174.jpeg?auto=compress&cs=tinysrgb&w=1200&loading=lazy",
+      "https://images.pexels.com/photos/298696/pexels-photo-298696.jpeg?_gl=1*dnzk42*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1NzAkajE4JGwwJGgw",
   },
   {
     id: "3",
@@ -84,7 +86,7 @@ const recentCrops = [
     price: 99,
     rating: 4.1,
     image:
-      "https://images.pexels.com/photos/15143967/pexels-photo-15143967/free-photo-of-closeup-of-one-tomato-on-the-vine.jpeg?auto=compress&cs=tinysrgb&w=1200&loading=lazy",
+      "https://images.pexels.com/photos/129574/pexels-photo-129574.jpeg?_gl=1*yjiqct*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1NTQkajM0JGwwJGgw",
   },
   {
     id: "4",
@@ -92,7 +94,7 @@ const recentCrops = [
     price: 99,
     rating: 4.1,
     image:
-      "https://images.pexels.com/photos/5202194/pexels-photo-5202194.jpeg?auto=compress&cs=tinysrgb&w=1200&loading=lazy",
+      "https://images.pexels.com/photos/326082/pexels-photo-326082.jpeg?_gl=1*c2ybxq*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1MzckajUxJGwwJGgw",
   },
   {
     id: "5",
@@ -103,6 +105,8 @@ const recentCrops = [
       "https://images.pexels.com/photos/1087894/pexels-photo-1087894.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
 ];
+
+const showBadgeFor = ["1", "4"]; // My Crop (1), My Orders (4)
 
 const FarmerHomeScreen: React.FC = () => {
   const [activeBanner, setActiveBanner] = useState(0);
@@ -117,39 +121,35 @@ const FarmerHomeScreen: React.FC = () => {
   return (
     <View className="flex-1 bg-white py-2">
       {/* TOP BAR */}
-      <View className="flex-row items-center justify-between px-4 pt-5 pb-3 py-5 mt-5">
-        {/* Logo */}
+      <View className="flex-row items-center justify-between px-4 pt-5 pb-3 mt-5 mb-3 bg-white">
+        {/* Left: Logo + App name */}
         <View className="flex-row items-center">
-          <View className="items-center justify-center mr-2">
-            <Image
-              source={require("../../assets/images/logo.png")}
-              className="w-12 h-12"
-              resizeMode="contain"
-            />
-          </View>
-          <Text className="text-base font-heading text-gray-800">
+          <Image
+            source={require("../../assets/images/logo.png")}
+            className="w-11 h-11 mr-2"
+            resizeMode="contain"
+          />
+          <Text className="text-lg font-heading text-gray-900">
             Kisan Partner
           </Text>
         </View>
-
-        {/* Icons right */}
-        <View className="flex-row items-center space-x-3">
-          <TouchableOpacity className="w-8 h-8 rounded-full bg-gray-100 items-center justify-center relative">
-            <Bell size={18} color="#4B5563" />
-            <View className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-green-500 border border-white" />
+        <View className="flex-row items-center me-2">
+          {/* Center: Search */}
+          <TouchableOpacity
+            className="w-9 h-9 rounded-full items-center justify-center me-2"
+            activeOpacity={0.7}
+          >
+            <Search size={18} color="#6B7280" />
           </TouchableOpacity>
-        </View>
-      </View>
 
-      {/* SEARCH BAR */}
-      <View className="px-4 mb-3">
-        <View className="flex-row items-center bg-gray-50 rounded-lg px-3 border border-gray-200 font-semibold">
-          <Search size={18} color="#9CA3AF" />
-          <TextInput
-            placeholder="Search"
-            placeholderTextColor="#9CA3AF"
-            className="flex-1 ml-2 text-sm text-gray-800 "
-          />
+          {/* Right: Notification */}
+          <TouchableOpacity
+            className="w-9 h-9 rounded-full items-center justify-center relative"
+            activeOpacity={0.7}
+          >
+            <Bell size={18} color="#374151" />
+            <View className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#1FAD4E] border border-white" />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -207,38 +207,48 @@ const FarmerHomeScreen: React.FC = () => {
         </View>
 
         {/* CATEGORY TABS */}
-        <View className="px-4 mb-4">
-  <View className="flex-row flex-wrap">
-    {categories.map((cat) => {
-      const Icon = cat.icon;
-      return (
-        <TouchableOpacity
-          key={cat.id}
-          className="w-1/4 mb-4 items-center"
-        >
-          <View className="w-16 h-16 rounded-lg bg-green-50 border border-[#1FAD4E]/30 items-center justify-center mb-1">
-            <Icon size={22} color="#1FAD4E" />
-          </View>
-          <Text className="text-xs text-gray-700 font-subheading text-center">
-            {cat.label}
-          </Text>
-        </TouchableOpacity>
-      );
-    })}
-  </View>
-</View>
+        <View className="mb-4 px-3">
+          <View className="flex-row flex-wrap">
+            {categories.map((cat) => {
+              const Icon = cat.icon;
+              const showBadge = showBadgeFor.includes(cat.id);
 
-        
+              return (
+                <TouchableOpacity
+                  key={cat.id}
+                  activeOpacity={0.85}
+                  className="w-1/3 px-2 mb-3"
+                >
+                  {/* Card */}
+                  <View className="relative bg-[#ECFDF3] border border-[#A7F3D0] rounded-lg items-center py-4">
+                    {/* 🔴 Red Dot Badge */}
+                    {showBadge && (
+                      <View className="absolute -top-1.0 -right-1.5 w-3.5 h-3.5 rounded-full bg-red-500 border-2 border-white" />
+                    )}
+
+                    {/* Icon circle */}
+                    <View className="w-10 h-10 rounded-full bg-[#D1FAE5] items-center justify-center mb-2">
+                      <Icon size={18} color="#15803D" />
+                    </View>
+
+                    {/* Label */}
+                    <Text className="text-xs font-medium text-[#065F46] text-center">
+                      {cat.label}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
 
         {/* RECENT CROP TITLE */}
-        <View className="px-4 mb-2 flex-row items-center justify-between">
+        <View className="px-5 mb-2 flex-row items-center justify-between">
           <Text className="text-sm font-heading text-gray-800">
             Recent Crop
           </Text>
           <TouchableOpacity>
-            <Text className="text-xs text-[#1FAD4E] font-medium">
-              View all
-            </Text>
+            <Text className="text-xs text-[#1FAD4E] font-medium">View all</Text>
           </TouchableOpacity>
         </View>
 
@@ -277,91 +287,45 @@ const FarmerHomeScreen: React.FC = () => {
               </View>
             ))}
           </ScrollView>
-
-           <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="px-4 mt-3"
-          >
-            {recentCrops.map((item) => (
-              <View
-                key={item.id}
-                className="w-32 mr-3 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden"
-              >
-                <Image
-                  source={{ uri: item.image }}
-                  className="w-full h-20"
-                  resizeMode="cover"
-                />
-                <View className="p-2">
-                  <Text
-                    className="text-[11px] text-gray-800 font-subheading"
-                    numberOfLines={1}
-                  >
-                    {item.title}
-                  </Text>
-
-                  {/* price */}
-                  <View className="flex-row items-center justify-between mt-1">
-                    <Text className="text-xs font-medium text-gray-900">
-                      ${item.price}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
         </View>
 
         {/* MAP CARD */}
-        <View className="px-4 mt-2">
-  <View className="rounded-lg bg-[#EAF8EE] h-44 relative overflow-hidden border border-gray-200">
+        <View className="px-5 mt-2">
+          <View className="rounded-lg bg-[#EAF8EE] h-44 relative overflow-hidden border border-gray-200">
+            {/* Background gradient */}
+            <View className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-100 opacity-60" />
 
-    {/* Background gradient */}
-    <View className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-100 opacity-60" />
+            {/* FAKE MAP LINES */}
+            <MapView
+              style={{ width: "100%", height: 250 }}
+              initialRegion={{
+                latitude: 12.9995192,
+                longitude: 77.6961841,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+            >
+              <Marker
+                coordinate={{
+                  latitude: 12.9995192,
+                  longitude: 77.6961841,
+                }}
+                title="Excerpt Technologies"
+              />
+            </MapView>
 
-    {/* FAKE MAP LINES */}
-    <View className="absolute inset-0">
-      {/* horizontal major roads */}
-      <View className="absolute top-8 left-5 right-5 h-[3px] bg-gray-300 rounded-full" />
-      <View className="absolute top-16 left-7 right-7 h-[2px] bg-gray-200 rounded-full" />
-      <View className="absolute bottom-14 left-10 right-6 h-[2px] bg-gray-200 rounded-full" />
+            {/* CENTER MAIN PIN */}
+            <View className="flex-1 items-center justify-center">
+              <View className="w-11 h-11 rounded-full bg-[#1FAD4E] items-center justify-center shadow-lg">
+                <MapPin size={22} color="#fff" />
+              </View>
 
-      {/* vertical major roads */}
-      <View className="absolute left-10 top-5 bottom-10 w-[3px] bg-gray-300 rounded-full" />
-      <View className="absolute right-14 top-10 bottom-5 w-[2px] bg-gray-200 rounded-full" />
-
-      {/* small blocks / farms */}
-      <View className="absolute left-16 top-6 w-12 h-10 bg-white rounded-lg border border-gray-300 opacity-90" />
-      <View className="absolute right-10 top-20 w-14 h-10 bg-white rounded-lg border border-gray-300 opacity-90" />
-      <View className="absolute left-10 bottom-12 w-14 h-12 bg-white rounded-lg border border-gray-300 opacity-90" />
-      <View className="absolute right-16 bottom-6 w-12 h-9 bg-white rounded-lg border border-gray-300 opacity-90" />
-
-      {/* fake market pins */}
-      <View className="absolute left-24 top-12 w-5 h-5 rounded-full bg-orange-500 items-center justify-center">
-        <View className="w-2 h-2 rounded-full bg-white" />
-      </View>
-      <View className="absolute right-16 top-24 w-5 h-5 rounded-full bg-orange-400 items-center justify-center">
-        <View className="w-2 h-2 rounded-full bg-white" />
-      </View>
-      <View className="absolute left-12 bottom-16 w-5 h-5 rounded-full bg-orange-400 items-center justify-center">
-        <View className="w-2 h-2 rounded-full bg-white" />
-      </View>
-    </View>
-
-    {/* CENTER MAIN PIN */}
-    <View className="flex-1 items-center justify-center">
-      <View className="w-11 h-11 rounded-full bg-[#1FAD4E] items-center justify-center shadow-lg">
-        <MapPin size={22} color="#fff" />
-      </View>
-
-      <Text className="text-[11px] text-gray-700 mt-2 font-medium">
-        Your farm & nearby markets
-      </Text>
-    </View>
-  </View>
-</View>
-
+              <Text className="text-[11px] text-gray-700 mt-2 font-medium">
+                Your farm & nearby markets
+              </Text>
+            </View>
+          </View>
+        </View>
       </ScrollView>
 
       {/* FLOATING ACTION BUTTON */}

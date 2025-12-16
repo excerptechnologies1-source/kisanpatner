@@ -1925,7 +1925,9 @@ const SellProductForm: React.FC = () => {
         </View>
       </Modal>
 
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1"
+      
+      >
         {renderProgressBar()}
         
         <View className="p-4">
