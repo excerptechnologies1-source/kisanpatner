@@ -110,7 +110,7 @@ const ProfileScreen: React.FC = () => {
     <View className="flex-1 bg-gray-50">
       {/* TOP HEADER */}
       <View className="bg-white border-b border-gray-200 px-5 pt-5 pb-5">
-        <Text className="text-xl font-inter-semibold text-gray-900">
+        <Text className="text-xl font-medium text-gray-900">
           My Profile
         </Text>
       </View>
@@ -127,10 +127,10 @@ const ProfileScreen: React.FC = () => {
               className="w-14 h-14 rounded-full mr-3"
             />
             <View className="flex-1">
-              <Text className="text-base font-inter-semibold text-gray-800">
+              <Text className="text-base font-medium text-gray-800">
                 {user.name}
               </Text>
-              <Text className="text-xs text-gray-500 mt-0.5 font-inter-semibold">
+              <Text className="text-xs text-gray-500 mt-0.5 font-medium">
                 {user.location}
               </Text>
             </View>
@@ -149,20 +149,20 @@ const ProfileScreen: React.FC = () => {
           <View className="mt-4 bg-emerald-50 rounded-lg p-3">
             <View className="flex-row items-center justify-between">
               <View>
-                <Text className="text-xs text-gray-600 font-inter-semibold">
+                <Text className="text-xs text-gray-600 font-medium">
                   Wallet Balance
                 </Text>
-                <Text className="text-2xl text-emerald-700 mt-1 font-inter-semibold">
+                <Text className="text-2xl text-emerald-700 mt-1 font-medium">
                   ₹ {user.wallet}
                 </Text>
               </View>
               <TouchableOpacity
-                className="bg-emerald-700 px-3 py-2 rounded-md font-inter-semibold"
+                className="bg-emerald-700 px-3 py-2 rounded-md font-medium"
                 onPress={() => {
                   /* view transactions */
                 }}
               >
-                <Text className="text-white text-sm font-inter-semibold">
+                <Text className="text-white text-sm font-medium">
                   View Transactions
                 </Text>
               </TouchableOpacity>
@@ -174,7 +174,7 @@ const ProfileScreen: React.FC = () => {
                 onPress={() => {}}
               >
                 <Plus size={18} color="#10B981" />
-                <Text className="text-xs text-gray-700 mt-1 font-inter-semibold">
+                <Text className="text-xs text-gray-700 mt-1 font-medium">
                   New Listing
                 </Text>
               </TouchableOpacity>
@@ -184,7 +184,7 @@ const ProfileScreen: React.FC = () => {
                 onPress={() => {}}
               >
                 <FileText size={18} color="#10B981" />
-                <Text className="text-xs text-gray-700 mt-1 font-inter-semibold">
+                <Text className="text-xs text-gray-700 mt-1 font-medium">
                   Post Crop
                 </Text>
               </TouchableOpacity>
@@ -197,12 +197,12 @@ const ProfileScreen: React.FC = () => {
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <Bell size={18} color="#111827" />
-              <Text className="ml-2 text-sm font-inter-semibold text-gray-800">
+              <Text className="ml-2 text-sm font-medium text-gray-800">
                 Notifications
               </Text>
             </View>
             <TouchableOpacity>
-              <Text className="text-xs text-emerald-600 font-inter-semibold">
+              <Text className="text-xs text-emerald-600 font-medium">
                 View All Notifications
               </Text>
             </TouchableOpacity>
@@ -217,10 +217,10 @@ const ProfileScreen: React.FC = () => {
                 <Inbox size={16} color="#10B981" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-800 font-medium font-inter-semibold">
+                <Text className="text-sm text-gray-800 font-medium font-medium">
                   {n.title}
                 </Text>
-                <Text className="text-xs text-gray-500 mt-0.5 font-inter-semibold">
+                <Text className="text-xs text-gray-500 mt-0.5 font-medium">
                   {n.subtitle}
                 </Text>
               </View>
@@ -232,11 +232,11 @@ const ProfileScreen: React.FC = () => {
         {/* Pending Actions */}
         <View className="mt-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
           <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800">
+            <Text className="text-sm font-medium text-gray-800">
               Pending Actions
             </Text>
             <TouchableOpacity>
-              <Text className="text-xs text-emerald-600 font-inter-semibold">
+              <Text className="text-xs text-emerald-600 font-medium">
                 View All Pending
               </Text>
             </TouchableOpacity>
@@ -251,14 +251,14 @@ const ProfileScreen: React.FC = () => {
                 <CreditCard size={16} color="#F97316" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-800 font-inter-semibold">
+                <Text className="text-sm text-gray-800 font-medium">
                   {p.title}
                 </Text>
-                <Text className="text-xs text-gray-500 mt-0.5 font-inter-semibold">
+                <Text className="text-xs text-gray-500 mt-0.5 font-medium">
                   {p.subtitle}
                 </Text>
               </View>
-              <Text className="text-xs text-gray-400 ml-2 font-inter-semibold">
+              <Text className="text-xs text-gray-400 ml-2 font-medium">
                 {p.time}
               </Text>
             </View>
@@ -270,12 +270,12 @@ const ProfileScreen: React.FC = () => {
           <View className="flex-row items-center justify-between mb-3">
             <View className="flex-row items-center">
               <MessageSquare size={18} color="#111827" />
-              <Text className="ml-2 text-sm font-inter-semibold text-gray-800">
+              <Text className="ml-2 text-sm font-medium text-gray-800">
                 Recent Messages
               </Text>
             </View>
             <TouchableOpacity>
-              <Text className="text-xs text-emerald-600 font-inter-semibold">
+              <Text className="text-xs text-emerald-600 font-medium">
                 View All Messages
               </Text>
             </TouchableOpacity>
@@ -290,14 +290,14 @@ const ProfileScreen: React.FC = () => {
                 <User size={16} color="#3B82F6" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-800 font-medium font-inter-semibold">
+                <Text className="text-sm text-gray-800 font-medium font-medium">
                   {m.title}
                 </Text>
-                <Text className="text-xs text-gray-500 mt-0.5 font-inter-semibold">
+                <Text className="text-xs text-gray-500 mt-0.5 font-medium">
                   {m.subtitle}
                 </Text>
               </View>
-              <Text className="text-xs text-gray-400 ml-2 font-inter-semibold">
+              <Text className="text-xs text-gray-400 ml-2 font-medium">
                 {m.time}
               </Text>
             </View>
@@ -306,18 +306,18 @@ const ProfileScreen: React.FC = () => {
 
         {/* Settings */}
         <View className="mt-4 bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
-          <Text className="text-sm font-inter-semibold text-gray-800 mb-3">
+          <Text className="text-sm font-medium text-gray-800 mb-3">
             Settings & More
           </Text>
 
           <TouchableOpacity className="flex-row items-center justify-between py-3 border-t border-gray-100">
             <View className="flex-row items-center">
               <Globe size={18} color="#374151" />
-              <Text className="ml-3 text-sm text-gray-800 font-inter-semibold">
+              <Text className="ml-3 text-sm text-gray-800 font-medium">
                 Language Settings
               </Text>
             </View>
-            <Text className="text-xs text-gray-400 font-inter-semibold">
+            <Text className="text-xs text-gray-400 font-medium">
               EN
             </Text>
           </TouchableOpacity>
@@ -325,7 +325,7 @@ const ProfileScreen: React.FC = () => {
           <TouchableOpacity className="flex-row items-center justify-between py-3 border-t border-gray-100">
             <View className="flex-row items-center">
               <Lock size={18} color="#374151" />
-              <Text className="ml-3 text-sm text-gray-800 font-inter-semibold">
+              <Text className="ml-3 text-sm text-gray-800 font-medium">
                 Manage PIN & Security
               </Text>
             </View>
@@ -335,7 +335,7 @@ const ProfileScreen: React.FC = () => {
           <TouchableOpacity className="flex-row items-center justify-between py-3 border-t border-gray-100">
             <View className="flex-row items-center">
               <FileText size={18} color="#374151" />
-              <Text className="ml-3 text-sm text-gray-800 font-inter-semibold">
+              <Text className="ml-3 text-sm text-gray-800 font-medium">
                 Offline Drafts
               </Text>
             </View>
@@ -352,7 +352,7 @@ const ProfileScreen: React.FC = () => {
               {loading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white font-inter-semibold">Logout</Text>
+                <Text className="text-white font-medium">Logout</Text>
               )}
             </TouchableOpacity>
           </View>

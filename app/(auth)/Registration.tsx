@@ -434,7 +434,7 @@ const FarmerRegistration: React.FC = () => {
               >
                 <Text
                   className={[
-                    'text-sm font-inter-semibold',
+                    'text-sm font-medium',
                     isCurrent
                       ? 'text-green-500'
                       : isActive
@@ -464,12 +464,12 @@ const FarmerRegistration: React.FC = () => {
 
   const renderStep1 = () => (
     <View className="mb-5">
-      <Text className="text-sm font-inter-semibold text-[#1FAD4E] mb-4">
+      <Text className="text-sm font-heading text-[#1FAD4E] mb-4">
         Personal & Location
       </Text>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Name <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -486,7 +486,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Mobile <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -505,7 +505,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Email (Optional)
         </Text>
         <TextInput
@@ -524,7 +524,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Address</Text>
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">Address</Text>
         <TextInput
           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-white h-20 text-top"
           placeholder="Full address"
@@ -541,7 +541,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Village / Grama Panchayat
         </Text>
         <TextInput
@@ -561,7 +561,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Pincode <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -578,7 +578,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           State <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -590,7 +590,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           District <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -602,7 +602,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Taluk</Text>
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">Taluk</Text>
         <TextInput
           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-gray-100"
           value={formData.personalInfo.taluk}
@@ -612,7 +612,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">Post</Text>
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">Post</Text>
         <TextInput
           className="border border-gray-300 rounded-lg px-3 py-2.5 text-base bg-gray-100"
           value={formData.personalInfo.post}
@@ -625,14 +625,14 @@ const FarmerRegistration: React.FC = () => {
 
   const renderStep2 = () => (
     <View className="mb-5">
-      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+      <Text className="text-lg font-heading text-[#1FAD4E] mb-4">
         {role === 'farmer' ? 'Farm Details' : 'Business Location'}
       </Text>
 
       {role === 'farmer' && (
         <>
           <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+            <Text className="text-sm font-subheading text-gray-800 mb-1.5">
               Farm Location <Text className="text-red-500">*</Text>
             </Text>
             <View className="flex flex-row items-center gap-3">
@@ -653,12 +653,12 @@ const FarmerRegistration: React.FC = () => {
             </View>
           </View>
 
-          <Text className="text-base font-inter-semibold text-gray-800 mt-3 mb-3">
+          <Text className="text-base font-medium text-gray-800 mt-3 mb-3">
             Farm Land (Acres)
           </Text>
 
           <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+            <Text className="text-sm font-subheading text-gray-800 mb-1.5">
               Total
             </Text>
             <TextInput
@@ -676,7 +676,7 @@ const FarmerRegistration: React.FC = () => {
           </View>
 
           <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+            <Text className="text-sm font-subheading text-gray-800 mb-1.5">
               Cultivated
             </Text>
             <TextInput
@@ -694,7 +694,7 @@ const FarmerRegistration: React.FC = () => {
           </View>
 
           <View className="mb-3">
-            <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+            <Text className="text-sm font-subheading text-gray-800 mb-1.5">
               Uncultivated
             </Text>
             <TextInput
@@ -713,7 +713,7 @@ const FarmerRegistration: React.FC = () => {
         </>
       )}
 
-      <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
+      <Text className="text-base font-medium text-gray-800 mt-4 mb-3">
         Nearest Markets
       </Text>
 
@@ -752,11 +752,11 @@ const FarmerRegistration: React.FC = () => {
 
   const renderStep3 = () => (
     <View className="mb-5">
-      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+      <Text className="text-lg font-heading text-[#1FAD4E] mb-4">
         Commodities & Bank
       </Text>
 
-      <Text className="text-base font-inter-semibold text-gray-800 mb-3">
+      <Text className="text-base font-heading text-gray-800 mb-3">
         Commodities <Text className="text-red-500">*</Text>
       </Text>
 
@@ -781,12 +781,12 @@ const FarmerRegistration: React.FC = () => {
         </TouchableOpacity>
       ))}
 
-      <Text className="text-base font-inter-semibold text-gray-800 mt-4 mb-3">
+      <Text className="text-base font-medium text-gray-800 mt-4 mb-3">
         Bank Details (Optional)
       </Text>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Account Holder
         </Text>
         <TextInput
@@ -803,7 +803,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Account Number
         </Text>
         <TextInput
@@ -821,7 +821,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           IFSC Code
         </Text>
         <TextInput
@@ -839,7 +839,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Branch
         </Text>
         <TextInput
@@ -859,7 +859,7 @@ const FarmerRegistration: React.FC = () => {
 
   const renderStep4 = () => (
     <View className="mb-5">
-      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+      <Text className="text-lg font-heading text-[#1FAD4E] mb-4">
         Documents (Optional)
       </Text>
 
@@ -885,7 +885,7 @@ const FarmerRegistration: React.FC = () => {
                 </View>
 
                 <View className="flex-1">
-                  <Text className="text-sm font-inter-semibold text-gray-900">
+                  <Text className="text-sm font-medium text-gray-900">
                     {doc.label}
                   </Text>
                   <Text className="text-xs text-gray-500 mt-0.5">
@@ -906,7 +906,7 @@ const FarmerRegistration: React.FC = () => {
                 onPress={() => handleFileChange(docKey)}
                 className="border border-[#1FAD4E] px-4 py-2 rounded-lg"
               >
-                <Text className="text-[#1FAD4E] text-xs font-inter-semibold">
+                <Text className="text-[#1FAD4E] text-xs font-medium">
                   Upload
                 </Text>
               </TouchableOpacity>
@@ -919,12 +919,12 @@ const FarmerRegistration: React.FC = () => {
 
   const renderStep5 = () => (
     <View className="mb-5">
-      <Text className="text-lg font-inter-semibold text-[#1FAD4E] mb-4">
+      <Text className="text-lg font-heading text-[#1FAD4E] mb-4">
         Security
       </Text>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Referral Code (Optional)
         </Text>
         <TextInput
@@ -941,7 +941,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           4-Digit MPIN <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -964,7 +964,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Confirm MPIN <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -984,7 +984,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Password <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -1006,7 +1006,7 @@ const FarmerRegistration: React.FC = () => {
       </View>
 
       <View className="mb-3">
-        <Text className="text-sm font-inter-semibold text-gray-800 mb-1.5">
+        <Text className="text-sm font-subheading text-gray-800 mb-1.5">
           Confirm Password <Text className="text-red-500">*</Text>
         </Text>
         <TextInput
@@ -1036,7 +1036,7 @@ const FarmerRegistration: React.FC = () => {
       >
         <View className="p-5">
           <View className="items-center mb-5">
-            <Text className="text-2xl text-[#1FAD4E] font-inter-semibold">
+            <Text className="text-2xl text-[#1FAD4E] font-medium">
               Create {role === 'farmer' ? 'Farmer' : 'Trader'} Account
             </Text>
             <Text className="text-xs text-gray-500 mt-1">
@@ -1067,7 +1067,7 @@ const FarmerRegistration: React.FC = () => {
                 className="flex-row items-center px-4 py-3 rounded-lg border border-[#1FAD4E] bg-white flex-1 justify-center"
               >
                 <ChevronLeft size={20} color="#1FAD4E" />
-                <Text className="text-[#1FAD4E] text-base font-inter-semibold ml-2">
+                <Text className="text-[#1FAD4E] text-base font-medium ml-2">
                   Previous
                 </Text>
               </TouchableOpacity>
@@ -1080,7 +1080,7 @@ const FarmerRegistration: React.FC = () => {
                   currentStep > 1 ? '' : 'ml-0'
                 } bg-[#1FAD4E]`}
               >
-                <Text className="text-white text-base font-inter-semibold mr-2">
+                <Text className="text-white text-base font-medium mr-2">
                   Save & Next
                 </Text>
                 <ChevronRight size={20} color="#fff" />
@@ -1096,12 +1096,12 @@ const FarmerRegistration: React.FC = () => {
                 {loading ? (
                   <View className="flex-row items-center">
                     <ActivityIndicator color="#fff" size="small" />
-                    <Text className="text-white text-base font-inter-semibold ml-2">
+                    <Text className="text-white text-base font-medium ml-2">
                       Registering...
                     </Text>
                   </View>
                 ) : (
-                  <Text className="text-white text-base font-inter-semibold">
+                  <Text className="text-white text-base font-medium">
                     Register
                   </Text>
                 )}
@@ -1114,7 +1114,7 @@ const FarmerRegistration: React.FC = () => {
               Already registered?{' '}
             </Text>
             <TouchableOpacity onPress={() => router.push('/(auth)/Login')}>
-              <Text className="text-sm text-[#1FAD4E] font-inter-semibold">
+              <Text className="text-sm text-[#1FAD4E] font-medium">
                 Login here
               </Text>
             </TouchableOpacity>

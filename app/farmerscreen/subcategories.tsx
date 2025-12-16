@@ -43,7 +43,7 @@ const Row: React.FC<{
 
       {/* Text */}
       <View className="flex-1">
-        <Text className="text-base text-gray-800 font-inter-semibold">
+        <Text className="text-base text-gray-800 font-medium">
           {item.label}
         </Text>
         <Text className="text-xs text-gray-500 mt-1">Avg. Price: {item.avgPrice}</Text>
@@ -55,7 +55,7 @@ const Row: React.FC<{
           onPress={() => onPost(item)}
           className="px-3 py-1.5 bg-green-600 rounded-lg"
         >
-          <Text className="text-xs text-white font-inter-semibold">Post now</Text>
+          <Text className="text-xs text-white font-medium">Post now</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -83,7 +83,7 @@ const SubCategoryList: React.FC = () => {
         <TouchableOpacity className="p-2 rounded-full" onPress={() => router.back()}>
           <ChevronLeft size={20} color="#064E3B" />
         </TouchableOpacity>
-        <Text className="text-lg font-inter-semibold text-gray-900 ml-2">
+        <Text className="text-lg font-subheading text-gray-900 ml-2">
           {category ? String(category) : "Sub Categories"}
         </Text>
       </View>

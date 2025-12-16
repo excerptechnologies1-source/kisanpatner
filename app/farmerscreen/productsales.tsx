@@ -1754,11 +1754,11 @@ const SellProductForm: React.FC = () => {
     return (
       <View className="relative">
         {/* Progress line container */}
-        <View className="absolute top-4 left-0 right-0 h-0.5 bg-gray-200 mx-10" />
+        <View className="absolute top-7 left-0 right-0 h-0.5 bg-gray-200 mx-10" />
         
         {/* Completed progress line */}
         <View 
-          className="absolute top-4 left-0 h-0.5 bg-[#16a34a] mx-10" 
+          className="absolute top-56 left-0 h-0.5 bg-[#16a34a] mx-10" 
           style={{ width: `${progress}%` }}
         />
         
@@ -1774,7 +1774,7 @@ const SellProductForm: React.FC = () => {
                 }`}
               >
                 <Text
-                  className={`font-bold ${
+                  className={`font-medium ${
                     step >= stepNum ? "text-white" : "text-gray-400"
                   }`}
                 >
@@ -1810,7 +1810,7 @@ const SellProductForm: React.FC = () => {
           <ChevronLeft size={20} color="#064E3B" />
         </TouchableOpacity>
 
-        <Text className="text-lg font-semibold text-gray-900 ml-2">
+        <Text className="text-lg font-subheading text-gray-900 ml-2">
           {getStepTitle()}
         </Text>
       </View>
@@ -1835,7 +1835,7 @@ const SellProductForm: React.FC = () => {
             ) : null}
             {gpsText ? (
               <View className="absolute bottom-10 left-5 right-5">
-                <Text className="text-white bg-black/70 p-3 text-base rounded-lg font-bold">
+                <Text className="text-white bg-black/70 p-3 text-base rounded-lg font-medium">
                   {gpsText}
                 </Text>
               </View>
@@ -1849,13 +1849,13 @@ const SellProductForm: React.FC = () => {
                 setGpsText("");
               }}
             >
-              <Text className="text-white text-center font-bold">Retake</Text>
+              <Text className="text-white text-center font-medium">Retake</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className="flex-1 bg-green-500 py-3 rounded-lg mx-2"
               onPress={saveWithWatermark}
             >
-              <Text className="text-white text-center font-bold">Save Photo</Text>
+              <Text className="text-white text-center font-medium">Save Photo</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -1865,9 +1865,9 @@ const SellProductForm: React.FC = () => {
       <Modal visible={showLocationPicker} animationType="slide" transparent={true}>
         <View className="flex-1 bg-black/50 justify-center items-center">
           <View className="bg-white rounded-xl p-6 w-5/6 max-h-[70%]">
-            <Text className="text-xl font-bold mb-5 text-center">Enter Farm Location</Text>
+            <Text className="text-xl font-medium mb-5 text-center">Enter Farm Location</Text>
 
-            <Text className="font-bold mb-2">Latitude</Text>
+            <Text className="font-medium mb-2">Latitude</Text>
             <TextInput
               className="bg-white border border-gray-300 rounded-lg p-3 mb-4"
               placeholder="e.g., 12.9716"
@@ -1881,7 +1881,7 @@ const SellProductForm: React.FC = () => {
               keyboardType="numeric"
             />
 
-            <Text className="font-bold mb-2">Longitude</Text>
+            <Text className="font-medium mb-2">Longitude</Text>
             <TextInput
               className="bg-white border border-gray-300 rounded-lg p-3 mb-4"
               placeholder="e.g., 77.5946"
@@ -1903,7 +1903,7 @@ const SellProductForm: React.FC = () => {
               {isGettingLocation ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text className="text-white text-center font-bold">📍 Use Current Location</Text>
+                <Text className="text-white text-center font-medium">📍 Use Current Location</Text>
               )}
             </TouchableOpacity>
 
@@ -1912,13 +1912,13 @@ const SellProductForm: React.FC = () => {
                 className="flex-1 bg-gray-500 py-3 rounded-lg mx-2"
                 onPress={() => setShowLocationPicker(false)}
               >
-                <Text className="text-white text-center font-bold">Cancel</Text>
+                <Text className="text-white text-center font-medium">Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 className="flex-1 bg-[#16a34a] py-3 rounded-lg mx-2"
                 onPress={saveManualLocation}
               >
-                <Text className="text-white text-center font-bold">Save Location</Text>
+                <Text className="text-white text-center font-medium">Save Location</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -1932,14 +1932,9 @@ const SellProductForm: React.FC = () => {
           {/* Step 1: Category Selection */}
           {step === 1 && (
             <View className="space-y-4">
-              <View className="bg-gray-100 p-4 rounded-lg mb-4">
-                <Text className="text-lg font-bold text-gray-800 mb-2">Data Margines</Text>
-                <Text className="text-gray-600">Listing Title</Text>
-                <Text className="text-gray-800 font-medium">Pitch Deal Margines (Sweet & Jolly)</Text>
-                <Text className="text-gray-500 text-sm mt-1">Auto-generated from category, on the official.</Text>
-              </View>
+             
 
-              <Text className="text-base font-bold mb-2">Select Category</Text>
+              <Text className="text-base font-medium mb-2">Select Category</Text>
               <View className="bg-white border border-gray-300 rounded-lg mb-4">
                 <Picker
                   selectedValue={selectedCategory}
@@ -1953,7 +1948,7 @@ const SellProductForm: React.FC = () => {
                 </Picker>
               </View>
 
-              <Text className="text-base font-bold mb-2">Select Sub Category</Text>
+              <Text className="text-base font-medium mb-2">Select Sub Category</Text>
               <View className="bg-white border border-gray-300 rounded-lg mb-4">
                 <Picker
                   selectedValue={selectedSubCategory}
@@ -1972,40 +1967,8 @@ const SellProductForm: React.FC = () => {
                 </Picker>
               </View>
 
-              <View className="bg-gray-100 p-4 rounded-lg mb-4">
-                <Text className="text-base font-bold mb-2">Ugland Photos</Text>
-                <Text className="text-gray-600 mb-3">Add up to better abstract / your title.</Text>
-                <TouchableOpacity className="border-2 border-dashed border-gray-400 py-8 rounded-lg items-center">
-                  <Text className="text-gray-500">[ ] Add Photo</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View className="bg-gray-100 p-4 rounded-lg mb-4">
-                <Text className="text-base font-bold mb-2">Quantity</Text>
-                <View className="flex-row items-center justify-between mb-2">
-                  <Text className="text-gray-800">1.00</Text>
-                  <Text className="text-gray-800">No</Text>
-                </View>
-                <Text className="text-gray-600 mb-2">Please get Unit</Text>
-                <Text className="text-gray-500">[ ] No</Text>
-              </View>
-
-              <View className="bg-gray-100 p-4 rounded-lg mb-4">
-                <Text className="text-base font-bold mb-2">Condition</Text>
-                <View className="flex-row space-x-4">
-                  <View className="flex-row items-center">
-                    <View className="w-5 h-5 border border-gray-400 mr-2" />
-                    <Text>Touch</Text>
-                  </View>
-                  <View className="flex-row items-center">
-                    <View className="w-5 h-5 border border-gray-400 mr-2" />
-                    <Text>Saved</Text>
-                  </View>
-                </View>
-              </View>
-
-              <View className="bg-gray-100 p-4 rounded-lg mb-6">
-                <Text className="text-base font-bold mb-2">Crop Brief Details</Text>
+              <View className="rounded-lg mb-6">
+                <Text className="text-base font-medium mb-2">Crop Brief Details</Text>
                 <TextInput
                   className="bg-white border border-gray-300 rounded-lg p-3 min-h-[100px] textAlignVertical-top"
                   placeholder="Enter brief description (farming type, seeds type, organic/regular)"
@@ -2017,7 +1980,7 @@ const SellProductForm: React.FC = () => {
               </View>
 
               <TouchableOpacity className="bg-[#16a34a] py-3 rounded-lg" onPress={nextStep}>
-                <Text className="text-white text-center font-bold">Next Step →</Text>
+                <Text className="text-white text-center font-medium">Next Step →</Text>
               </TouchableOpacity>
             </View>
           )}
@@ -2025,10 +1988,10 @@ const SellProductForm: React.FC = () => {
           {/* Step 2: Farming & Packaging Details */}
           {step === 2 && (
             <View className="space-y-4">
-              <Text className="text-lg font-bold text-gray-800 mb-2">Farming & Packaging Details</Text>
+              <Text className="text-lg font-medium text-gray-800 mb-2">Farming & Packaging Details</Text>
 
               <View className="bg-gray-100 p-4 rounded-lg">
-                <Text className="text-base font-bold mb-2">Farming Type</Text>
+                <Text className="text-base font-medium mb-2">Farming Type</Text>
                 <View className="bg-white border border-gray-300 rounded-lg mb-4">
                   <Picker
                     selectedValue={farmingType}
@@ -2042,7 +2005,7 @@ const SellProductForm: React.FC = () => {
                   </Picker>
                 </View>
 
-                <Text className="text-base font-bold mb-2">Type of Seeds</Text>
+                <Text className="text-base font-medium mb-2">Type of Seeds</Text>
                 <TextInput
                   className="bg-white border border-gray-300 rounded-lg p-3 mb-4"
                   placeholder="e.g., Naati, Hybrid"
@@ -2050,7 +2013,7 @@ const SellProductForm: React.FC = () => {
                   onChangeText={setTypeOfSeeds}
                 />
 
-                <Text className="text-base font-bold mb-2">Packaging Type</Text>
+                <Text className="text-base font-medium mb-2">Packaging Type</Text>
                 <View className="bg-white border border-gray-300 rounded-lg mb-4">
                   <Picker
                     selectedValue={packagingType}
@@ -2071,7 +2034,7 @@ const SellProductForm: React.FC = () => {
 
                 {packagingType === "KGs" && (
                   <>
-                    <Text className="text-base font-bold mb-2">Number of KGs</Text>
+                    <Text className="text-base font-medium mb-2">Number of KGs</Text>
                     <View className="bg-white border border-gray-300 rounded-lg mb-4">
                       <Picker
                         selectedValue={packageMeasurement}
@@ -2091,7 +2054,7 @@ const SellProductForm: React.FC = () => {
 
                 {(packagingType === "box" || packagingType === "crate") && (
                   <>
-                    <Text className="text-base font-bold mb-2">Measurement</Text>
+                    <Text className="text-base font-medium mb-2">Measurement</Text>
                     <View className="bg-white border border-gray-300 rounded-lg mb-4">
                       <Picker
                         selectedValue={packageMeasurement}
@@ -2112,7 +2075,7 @@ const SellProductForm: React.FC = () => {
 
                 {packagingType === "bag" && (
                   <>
-                    <Text className="text-base font-bold mb-2">Bag Measurement</Text>
+                    <Text className="text-base font-medium mb-2">Bag Measurement</Text>
                     <View className="bg-white border border-gray-300 rounded-lg mb-4">
                       <Picker
                         selectedValue={packageMeasurement}
@@ -2131,7 +2094,7 @@ const SellProductForm: React.FC = () => {
 
                 {packagingType === "bunches" && (
                   <>
-                    <Text className="text-base font-bold mb-2">Bunch Size</Text>
+                    <Text className="text-base font-medium mb-2">Bunch Size</Text>
                     <View className="bg-white border border-gray-300 rounded-lg mb-4">
                       <Picker
                         selectedValue={packageMeasurement}
@@ -2147,7 +2110,7 @@ const SellProductForm: React.FC = () => {
                   </>
                 )}
 
-                <Text className="text-base font-bold mb-2">Unit Measurement (as per package type)</Text>
+                <Text className="text-base font-medium mb-2">Unit Measurement (as per package type)</Text>
                 <TextInput
                   className="bg-white border border-gray-300 rounded-lg p-3 mb-4"
                   placeholder="e.g., kg per box, bag, etc."
@@ -2161,13 +2124,13 @@ const SellProductForm: React.FC = () => {
                   className="flex-1 bg-gray-500 py-3 rounded-lg"
                   onPress={prevStep}
                 >
-                  <Text className="text-white text-center font-bold">← Previous</Text>
+                  <Text className="text-white text-center font-medium">← Previous</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="flex-1 bg-[#16a34a] py-3 rounded-lg"
                   onPress={nextStep}
                 >
-                  <Text className="text-white text-center font-bold">Next Step →</Text>
+                  <Text className="text-white text-center font-medium">Next Step →</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -2176,10 +2139,10 @@ const SellProductForm: React.FC = () => {
           {/* Step 3: Pricing & Details */}
           {step === 3 && (
             <View className="space-y-4">
-              <Text className="text-lg font-bold text-gray-800 mb-2">Add Pricing & Details</Text>
+              <Text className="text-lg font-medium text-gray-800 mb-2">Add Pricing & Details</Text>
 
               <View className="bg-gray-100 p-4 rounded-lg">
-                <Text className="text-base font-bold mb-4">Select Grades & Add Pricing</Text>
+                <Text className="text-base font-medium mb-4">Select Grades & Add Pricing</Text>
 
                 {gradePrices.map((gp, index) => (
                   <View
@@ -2198,10 +2161,10 @@ const SellProductForm: React.FC = () => {
                         }`}
                       >
                         {selectedGrades.includes(gp.grade) && (
-                          <Text className="text-white font-bold">✓</Text>
+                          <Text className="text-white font-medium">✓</Text>
                         )}
                       </View>
-                      <Text className="text-base font-bold">{gp.grade}</Text>
+                      <Text className="text-base font-medium">{gp.grade}</Text>
                     </TouchableOpacity>
 
                     {selectedGrades.includes(gp.grade) && (
@@ -2241,13 +2204,13 @@ const SellProductForm: React.FC = () => {
                   className="flex-1 bg-gray-500 py-3 rounded-lg"
                   onPress={prevStep}
                 >
-                  <Text className="text-white text-center font-bold">← Previous</Text>
+                  <Text className="text-white text-center font-medium">← Previous</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="flex-1 bg-[#16a34a] py-3 rounded-lg"
                   onPress={nextStep}
                 >
-                  <Text className="text-white text-center font-bold">Next Step →</Text>
+                  <Text className="text-white text-center font-medium">Next Step →</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -2256,10 +2219,10 @@ const SellProductForm: React.FC = () => {
           {/* Step 4: Final Details */}
           {step === 4 && (
             <View className="space-y-4">
-              <Text className="text-lg font-bold text-gray-800 mb-2">Final Details</Text>
+              <Text className="text-lg font-medium text-gray-800 mb-2">Final Details</Text>
 
               <View className="bg-gray-100 p-4 rounded-lg">
-                <Text className="text-base font-bold mb-2">Form Location</Text>
+                <Text className="text-base font-medium mb-2">Form Location</Text>
                 <View className="flex-row items-center mb-3">
                   <View className="w-5 h-5 border border-gray-400 mr-2" />
                   <Text className="text-gray-700">Started Nogue, Jellyor, Rajasthan</Text>
@@ -2267,12 +2230,12 @@ const SellProductForm: React.FC = () => {
                 <Text className="text-gray-600 text-sm">The key part registered from address:</Text>
                 
                 <View className="mt-4">
-                  <Text className="text-base font-bold mb-2">Farm Location</Text>
+                  <Text className="text-base font-medium mb-2">Farm Location</Text>
                   <TouchableOpacity className="bg-[#FF9800] py-3 rounded-lg mb-3" onPress={getCurrentLocation} disabled={isGettingLocation}>
                     {isGettingLocation ? (
                       <ActivityIndicator color="#fff" />
                     ) : (
-                      <Text className="text-white text-center font-bold">📍 Get Current Location</Text>
+                      <Text className="text-white text-center font-medium">📍 Get Current Location</Text>
                     )}
                   </TouchableOpacity>
 
@@ -2280,7 +2243,7 @@ const SellProductForm: React.FC = () => {
                     className="bg-[#9C27B0] py-3 rounded-lg mb-4"
                     onPress={openLocationPicker}
                   >
-                    <Text className="text-white text-center font-bold">✏️ Enter Location Manually</Text>
+                    <Text className="text-white text-center font-medium">✏️ Enter Location Manually</Text>
                   </TouchableOpacity>
 
                   <View className="bg-white border border-gray-300 rounded-lg p-3">
@@ -2294,19 +2257,19 @@ const SellProductForm: React.FC = () => {
                 </View>
 
                 <View className="mt-4">
-                  <Text className="text-base font-bold mb-2">Preferred Image Date</Text>
+                  <Text className="text-base font-medium mb-2">Preferred Image Date</Text>
                   <View className="flex-row items-center mb-3">
                     <View className="w-5 h-5 border border-gray-400 mr-2" />
                     <Text className="text-gray-700">December 11th, 2025</Text>
                   </View>
                   
-                  <Text className="text-base font-bold mb-2">Delivery Date</Text>
+                  <Text className="text-base font-medium mb-2">Delivery Date</Text>
                   <TouchableOpacity className="bg-white border border-gray-300 rounded-lg p-3 mb-3" onPress={() => setShowDatePicker(true)}>
                     <Text className="text-gray-800">📅 {formatDate(deliveryDate)}</Text>
                   </TouchableOpacity>
                   {showDatePicker && <DateTimePicker value={deliveryDate} mode="date" display="default" onChange={onDateChange} minimumDate={new Date()} />}
                   
-                  <Text className="text-base font-bold mb-2">Delivery Time</Text>
+                  <Text className="text-base font-medium mb-2">Delivery Time</Text>
                   <TouchableOpacity className="bg-white border border-gray-300 rounded-lg p-3 mb-3" onPress={() => setShowTimePicker(true)}>
                     <Text className="text-gray-800">🕐 {formatTime(deliveryTime)}</Text>
                   </TouchableOpacity>
@@ -2314,14 +2277,14 @@ const SellProductForm: React.FC = () => {
                 </View>
 
                 <View className="mt-4">
-                  <Text className="text-base font-bold mb-2">Upload Crop Photos</Text>
+                  <Text className="text-base font-medium mb-2">Upload Crop Photos</Text>
                   <Text className="text-gray-600 text-sm mb-3">Maximum 3 photos (compressed automatically)</Text>
                   <TouchableOpacity
                     className="bg-[#2196F3] py-3 rounded-lg mb-4"
                     onPress={openCamera}
                     disabled={cropPhotos.length >= 3}
                   >
-                    <Text className="text-white text-center font-bold">
+                    <Text className="text-white text-center font-medium">
                       📷 Open Camera {cropPhotos.length >= 3 ? "(Limit Reached)" : `(${cropPhotos.length}/3)`}
                     </Text>
                   </TouchableOpacity>
@@ -2339,7 +2302,7 @@ const SellProductForm: React.FC = () => {
                               className="absolute top-1 right-1 bg-red-500 w-6 h-6 rounded-full items-center justify-center"
                               onPress={() => removePhoto(index)}
                             >
-                              <Text className="text-white font-bold">✕</Text>
+                              <Text className="text-white font-medium">✕</Text>
                             </TouchableOpacity>
                           </View>
                         </View>
@@ -2349,7 +2312,7 @@ const SellProductForm: React.FC = () => {
                 </View>
 
                 <View className="mt-4">
-                  <Text className="text-base font-bold mb-2">Nearest Market</Text>
+                  <Text className="text-base font-medium mb-2">Nearest Market</Text>
                   <TextInput
                     className="bg-white border border-gray-300 rounded-lg p-3 mb-3"
                     placeholder="Enter nearest market"
@@ -2359,12 +2322,12 @@ const SellProductForm: React.FC = () => {
                 </View>
 
                 <View className="mt-4">
-                  <Text className="text-base font-bold mb-2">Optional Archive/IPU/gland</Text>
+                  <Text className="text-base font-medium mb-2">Optional Archive/IPU/gland</Text>
                   <Text className="text-gray-600 text-sm">Upload to buyer and broker (optional).</Text>
                 </View>
 
                 <View className="mt-4">
-                  <Text className="text-base font-bold mb-2">Notice for Buyers</Text>
+                  <Text className="text-base font-medium mb-2">Notice for Buyers</Text>
                   <View className="flex-row items-center">
                     <View className="w-5 h-5 border border-gray-400 mr-2" />
                     <Text className="text-gray-700">These buyers incorporate as hand-packed forms of family form. Perfect for descents or fresh cutting.</Text>
@@ -2377,13 +2340,13 @@ const SellProductForm: React.FC = () => {
                   className="flex-1 bg-gray-500 py-3 rounded-lg"
                   onPress={prevStep}
                 >
-                  <Text className="text-white text-center font-bold">← Previous</Text>
+                  <Text className="text-white text-center font-medium">← Previous</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="flex-1 bg-[#16a34a] py-3 rounded-lg"
                   onPress={handleSubmit}
                 >
-                  <Text className="text-white text-center font-bold">Submit Post</Text>
+                  <Text className="text-white text-center font-medium">Submit Post</Text>
                 </TouchableOpacity>
               </View>
             </View>

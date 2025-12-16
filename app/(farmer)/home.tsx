@@ -2,14 +2,16 @@ import {
   Banknote,
   Bell,
   ClipboardList,
-  MapPin,
-  Plus,
-  Search,
+  Leaf,
   ShoppingBag,
+  MapPin,
+  Search,
+  Plus,
   Star,
   Store,
-  Users
+  Users,
 } from "lucide-react-native";
+
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -45,29 +47,19 @@ const banners = [
     image:
       "https://images.pexels.com/photos/1087894/pexels-photo-1087894.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
-  {
-    id: "4",
-    title: "Fresh Vegetables",
-    subtitle: "Direct from farm to market",
-    image:
-      "https://images.pexels.com/photos/12098988/pexels-photo-12098988.jpeg?auto=compress&cs=tinysrgb&w=1200&loading=lazy",
-  },
-  {
-    id: "5",
-    title: "Fresh Vegetables",
-    subtitle: "Direct from farm to market",
-    image:
-      "https://images.pexels.com/photos/1087894/pexels-photo-1087894.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-  },
 ];
 
 const categories = [
-  { id: "1", label: "My Crop", icon: ShoppingBag },
+  { id: "1", label: "My Crop", icon: Leaf },
   { id: "2", label: "Market", icon: Store },
   { id: "3", label: "Loan", icon: Banknote },
   { id: "4", label: "My Orders", icon: ClipboardList },
-  { id: "5", label: "Labour", icon: Users },
+  { id: "5", label: "Crop Care", icon: Users },
+  { id: "6", label: "Shopping", icon: ShoppingBag },
+  { id: "7", label: "Gov. Scheme", icon: Star },
+  { id: "8", label: "Notifications", icon: Bell },
 ];
+
 
 const recentCrops = [
   {
@@ -135,7 +127,7 @@ const FarmerHomeScreen: React.FC = () => {
               resizeMode="contain"
             />
           </View>
-          <Text className="text-base font-inter-semibold text-gray-800">
+          <Text className="text-base font-heading text-gray-800">
             Kisan Partner
           </Text>
         </View>
@@ -189,10 +181,10 @@ const FarmerHomeScreen: React.FC = () => {
 
                   {/* TEXT */}
                   <View className="absolute inset-0 justify-center px-5">
-                    <Text className="text-xl text-white text-center mb-1 font-inter-semibold">
+                    <Text className="text-xl text-white text-center mb-1 font-heading">
                       {banner.title}
                     </Text>
-                    <Text className="text-xs text-center text-gray-100 font-inter-semibold">
+                    <Text className="text-xs text-center text-gray-100 font-subheading">
                       {banner.subtitle}
                     </Text>
                   </View>
@@ -202,7 +194,7 @@ const FarmerHomeScreen: React.FC = () => {
                     {banners.map((_, i) => (
                       <View
                         key={i}
-                        className={`w-5 h-2 rounded-2xl mx-1 ${
+                        className={`w-2 h-2 rounded-2xl mx-1 ${
                           i === activeBanner ? "bg-[#1FAD4E]" : "bg-white/40"
                         }`}
                       />
@@ -216,33 +208,35 @@ const FarmerHomeScreen: React.FC = () => {
 
         {/* CATEGORY TABS */}
         <View className="px-4 mb-4">
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {categories.map((cat) => {
-              const Icon = cat.icon;
-              return (
-                <TouchableOpacity
-                  key={cat.id}
-                  className="mr-3 items-center font-semibold"
-                >
-                  <View className="w-16 h-16  rounded-lg bg-green-50 border-[#1FAD4E]/30 items-center justify-center mb-1">
-                    <Icon size={22} color="#1FAD4E" />
-                  </View>
-                  <Text className="text-xs text-gray-700 font-inter-semibold">
-                    {cat.label}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
+  <View className="flex-row flex-wrap">
+    {categories.map((cat) => {
+      const Icon = cat.icon;
+      return (
+        <TouchableOpacity
+          key={cat.id}
+          className="w-1/4 mb-4 items-center"
+        >
+          <View className="w-16 h-16 rounded-lg bg-green-50 border border-[#1FAD4E]/30 items-center justify-center mb-1">
+            <Icon size={22} color="#1FAD4E" />
+          </View>
+          <Text className="text-xs text-gray-700 font-subheading text-center">
+            {cat.label}
+          </Text>
+        </TouchableOpacity>
+      );
+    })}
+  </View>
+</View>
+
+        
 
         {/* RECENT CROP TITLE */}
         <View className="px-4 mb-2 flex-row items-center justify-between">
-          <Text className="text-sm font-inter-semibold text-gray-800">
+          <Text className="text-sm font-heading text-gray-800">
             Recent Crop
           </Text>
           <TouchableOpacity>
-            <Text className="text-xs text-[#1FAD4E] font-inter-semibold">
+            <Text className="text-xs text-[#1FAD4E] font-medium">
               View all
             </Text>
           </TouchableOpacity>
@@ -267,23 +261,49 @@ const FarmerHomeScreen: React.FC = () => {
                 />
                 <View className="p-2">
                   <Text
-                    className="text-[11px] font-medium text-gray-800 font-inter-semibold"
+                    className="text-[11px] text-gray-800 font-subheading"
                     numberOfLines={1}
                   >
                     {item.title}
                   </Text>
 
-                  {/* rating */}
-                  <View className="flex-row items-center mt-1">
-                    <Star size={10} color="#FACC15" fill="#FACC15" />
-                    <Text className="text-[10px] text-gray-600 ml-1 font-inter-semibold">
-                      {item.rating}
+                  {/* price */}
+                  <View className="flex-row items-center justify-between mt-1">
+                    <Text className="text-xs font-medium text-gray-900">
+                      ${item.price}
                     </Text>
                   </View>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+
+           <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="px-4 mt-3"
+          >
+            {recentCrops.map((item) => (
+              <View
+                key={item.id}
+                className="w-32 mr-3 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden"
+              >
+                <Image
+                  source={{ uri: item.image }}
+                  className="w-full h-20"
+                  resizeMode="cover"
+                />
+                <View className="p-2">
+                  <Text
+                    className="text-[11px] text-gray-800 font-subheading"
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </Text>
 
                   {/* price */}
                   <View className="flex-row items-center justify-between mt-1">
-                    <Text className="text-xs font-inter-semibold text-gray-900 font-inter-semibold">
+                    <Text className="text-xs font-medium text-gray-900">
                       ${item.price}
                     </Text>
                   </View>

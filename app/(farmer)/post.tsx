@@ -18,7 +18,7 @@ const PostCropScreen: React.FC = () => {
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
       <View className="bg-white border-b border-gray-200 px-5 pt-5 pb-5">
-        <Text className="text-xl font-inter-semibold text-gray-900">
+        <Text className="text-xl font-medium text-gray-900">
           Post Crop
         </Text>
       </View>
@@ -26,10 +26,10 @@ const PostCropScreen: React.FC = () => {
       <View className="px-5 flex-1 justify-center items-center gap-10">
         {/* Title */}
         <View className="items-center">
-          <Text className="text-2xl text-[#0F5132] font-inter-semibold">
+          <Text className="text-2xl text-[#0F5132] font-heading">
             Welcome, Farmer!
           </Text>
-          <Text className="text-sm text-gray-500 mt-2">
+          <Text className="text-sm text-gray-500 mt-2 font-subheading">
             What would you like to do today?
           </Text>
         </View>
@@ -43,7 +43,7 @@ const PostCropScreen: React.FC = () => {
             className="h-14 rounded-lg bg-yellow-400 items-center justify-center shadow-lg"
           >
             <View className="w-full px-4 flex-row items-center justify-center">
-              <Text className="text-base text-[#0F1724] font-inter-semibold">
+              <Text className="text-base text-[#0F1724] font-medium">
                 SELL YOUR PRODUCE
               </Text>
               <View className="absolute right-4">
@@ -59,7 +59,7 @@ const PostCropScreen: React.FC = () => {
             className="h-14 rounded-lg bg-green-600 items-center justify-center shadow-lg"
           >
             <View className="w-full px-4 flex-row items-center justify-center">
-              <Text className="text-base text-white font-inter-semibold">
+              <Text className="text-base text-white font-medium">
                 ADD NEW CROP
               </Text>
               <View className="absolute right-4">
