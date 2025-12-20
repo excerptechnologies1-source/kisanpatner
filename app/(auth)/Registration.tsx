@@ -78,6 +78,7 @@ const FarmerRegistration: React.FC = () => {
   const params = useLocalSearchParams();
   const router = useRouter();
   const role = (params.role as string) || 'farmer';
+  console.log('Role:', role);
 
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
@@ -1037,7 +1038,7 @@ const FarmerRegistration: React.FC = () => {
         <View className="p-5">
           <View className="items-center mb-5">
             <Text className="text-2xl text-[#1FAD4E] font-medium">
-              Create {role === 'farmer' ? 'Farmer' : 'Trader'} Account
+              Create {role} Account
             </Text>
             <Text className="text-xs text-gray-500 mt-1">
               Step {currentStep} of {totalSteps}
@@ -1126,3 +1127,5 @@ const FarmerRegistration: React.FC = () => {
 };
 
 export default FarmerRegistration;
+
+

@@ -27,7 +27,7 @@ export default function TabLayout() {
 
       {/* FARMER / TRADER AREA */}
       <Tabs.Screen
-        name="post"
+        name="PostRequirement"
         options={{
           title: "post",
           tabBarIcon: ({ color, size }) => (

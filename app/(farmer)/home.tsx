@@ -67,40 +67,35 @@ const recentCrops = [
   {
     id: "1",
     title: "Red Capsicum",
-    price: 99,
-    rating: 4.3,
+    
     image:
       "https://images.pexels.com/photos/164504/pexels-photo-164504.jpeg?_gl=1*1n8z0un*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1ODIkajYkbDAkaDA.",
   },
   {
     id: "2",
     title: "Fresh Tomato",
-    price: 89,
-    rating: 4.5,
+   
     image:
       "https://images.pexels.com/photos/298696/pexels-photo-298696.jpeg?_gl=1*dnzk42*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1NzAkajE4JGwwJGgw",
   },
   {
     id: "3",
     title: "Yellow Pepper",
-    price: 99,
-    rating: 4.1,
+    
     image:
       "https://images.pexels.com/photos/129574/pexels-photo-129574.jpeg?_gl=1*yjiqct*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1NTQkajM0JGwwJGgw",
   },
   {
     id: "4",
     title: "Yellow Pepper",
-    price: 99,
-    rating: 4.1,
+    
     image:
       "https://images.pexels.com/photos/326082/pexels-photo-326082.jpeg?_gl=1*c2ybxq*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1MzckajUxJGwwJGgw",
   },
   {
     id: "5",
     title: "Yellow Pepper",
-    price: 99,
-    rating: 4.1,
+    
     image:
       "https://images.pexels.com/photos/1087894/pexels-photo-1087894.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
@@ -262,11 +257,11 @@ const FarmerHomeScreen: React.FC = () => {
             {recentCrops.map((item) => (
               <View
                 key={item.id}
-                className="w-32 mr-3 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden"
+                className="w-32 mr-3 p-1 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden"
               >
                 <Image
                   source={{ uri: item.image }}
-                  className="w-full h-20"
+                  className="w-full h-20 rounded-lg"
                   resizeMode="cover"
                 />
                 <View className="p-2">
@@ -276,13 +271,6 @@ const FarmerHomeScreen: React.FC = () => {
                   >
                     {item.title}
                   </Text>
-
-                  {/* price */}
-                  <View className="flex-row items-center justify-between mt-1">
-                    <Text className="text-xs font-medium text-gray-900">
-                      ${item.price}
-                    </Text>
-                  </View>
                 </View>
               </View>
             ))}
