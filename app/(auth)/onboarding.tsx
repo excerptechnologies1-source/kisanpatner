@@ -12,6 +12,11 @@ const SelectRoleScreen: React.FC = () => {
       pathname: "/(auth)/Login",
       params: { role },
     });
+
+    if (role == "employee"){
+      router.replace("/(labour)/LabourListScreen")
+      return;
+    }
   };
 
   return (

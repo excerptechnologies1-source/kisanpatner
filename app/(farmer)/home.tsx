@@ -1,3 +1,6 @@
+
+
+
 import {
   Banknote,
   Bell,
@@ -11,7 +14,8 @@ import {
   Store,
   Users,
 } from "lucide-react-native";
-
+// import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
   Dimensions,
@@ -23,7 +27,7 @@ import {
   View,
 } from "react-native";
 
-import MapView, { Marker } from "react-native-maps";
+import  { Marker } from "react-native-maps";
 
 const { width } = Dimensions.get("window");
 
@@ -52,50 +56,53 @@ const banners = [
 ];
 
 const categories = [
-  { id: "0", label: "Post Crop", icon: Plus },
-  { id: "1", label: "My Crop", icon: Leaf },
-  { id: "2", label: "Market", icon: Store },
-  { id: "3", label: "Loan", icon: Banknote },
-  { id: "4", label: "My Orders", icon: ClipboardList },
-  { id: "5", label: "Crop Care", icon: Users },
-  { id: "6", label: "Shopping", icon: ShoppingBag },
-  { id: "7", label: "Gov. Scheme", icon: Star },
-  { id: "8", label: "Notifications", icon: Bell },
+  { id: "1", label: "My Crop", icon: Leaf, route: "/(farmerscreen)/AllCrops" },
+  { id: "2", label: "Market", icon: Store, route: "/(trader)/home" },
+  { id: "3", label: "Loan", icon: Banknote, route: "/(trader)/home" },
+  {
+    id: "4",
+    label: "My Orders",
+    icon: ClipboardList,
+    route: "/(farmerscreen)/FarmerOrder",
+  },
+  { id: "5", label: "Crop Care", icon: Users, route: "/(farmerscreen)/cropcare" },
+  { id: "6", label: "Shopping", icon: ShoppingBag, route: "/(trader)/home" },
+  { id: "7", label: "Gov. Scheme", icon: Star, route: "/(trader)/home" },
+  { id: "8", label: "Notifications", icon: Bell, route: "/(trader)/home" },
 ];
-
 const recentCrops = [
   {
     id: "1",
     title: "Red Capsicum",
-    
+
     image:
       "https://images.pexels.com/photos/164504/pexels-photo-164504.jpeg?_gl=1*1n8z0un*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1ODIkajYkbDAkaDA.",
   },
   {
     id: "2",
     title: "Fresh Tomato",
-   
+
     image:
       "https://images.pexels.com/photos/298696/pexels-photo-298696.jpeg?_gl=1*dnzk42*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1NzAkajE4JGwwJGgw",
   },
   {
     id: "3",
     title: "Yellow Pepper",
-    
+
     image:
       "https://images.pexels.com/photos/129574/pexels-photo-129574.jpeg?_gl=1*yjiqct*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1NTQkajM0JGwwJGgw",
   },
   {
     id: "4",
     title: "Yellow Pepper",
-    
+
     image:
       "https://images.pexels.com/photos/326082/pexels-photo-326082.jpeg?_gl=1*c2ybxq*_ga*MTQzMjM5ODk3Mi4xNzY1NTEzNzQy*_ga_8JE65Q40S6*czE3NjU4ODQzODEkbzQkZzEkdDE3NjU4ODQ1MzckajUxJGwwJGgw",
   },
   {
     id: "5",
     title: "Yellow Pepper",
-    
+
     image:
       "https://images.pexels.com/photos/1087894/pexels-photo-1087894.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
   },
@@ -105,6 +112,7 @@ const showBadgeFor = ["1", "4"]; // My Crop (1), My Orders (4)
 
 const FarmerHomeScreen: React.FC = () => {
   const [activeBanner, setActiveBanner] = useState(0);
+  const router = useRouter();
 
   const handleBannerScroll = (event: any) => {
     const slide = Math.round(event.nativeEvent.contentOffset.x / width);
@@ -112,11 +120,14 @@ const FarmerHomeScreen: React.FC = () => {
       setActiveBanner(slide);
     }
   };
+  const handleCategoryPress = (route: string) => {
+    router.push(route as any);
+  };
 
   return (
     <View className="flex-1 bg-white py-2">
       {/* TOP BAR */}
-      <View className="flex-row items-center justify-between px-4 pt-5 pb-3 mt-5 mb-3 bg-white">
+      <View className="flex-row items-center justify-between px-4 pt-5 pb-3 mt-6 mb-3 bg-white">
         {/* Left: Logo + App name */}
         <View className="flex-row items-center">
           <Image
@@ -128,18 +139,22 @@ const FarmerHomeScreen: React.FC = () => {
             Kisan Partner
           </Text>
         </View>
-        <View className="flex-row items-center me-2">
-          {/* Center: Search */}
+
+        <View className="flex-row items-center">
+          {/* Language Button with grey border and rounded */}
           <TouchableOpacity
-            className="w-9 h-9 rounded-full items-center justify-center me-2"
+            className="w-9 h-9 rounded-full items-center justify-center me-2 border border-gray-300"
             activeOpacity={0.7}
+            onPress={() => {
+              /* Add your language toggle logic */
+            }}
           >
-            <Search size={18} color="#6B7280" />
+            <Text className="text-sm font-medium text-gray-700">EN</Text>
           </TouchableOpacity>
 
-          {/* Right: Notification */}
+          {/* Notification */}
           <TouchableOpacity
-            className="w-9 h-9 rounded-full items-center justify-center relative"
+            className="w-9 h-9 rounded-full items-center justify-center relative border border-gray-300"
             activeOpacity={0.7}
           >
             <Bell size={18} color="#374151" />
@@ -213,6 +228,7 @@ const FarmerHomeScreen: React.FC = () => {
                   key={cat.id}
                   activeOpacity={0.85}
                   className="w-1/3 px-2 mb-3"
+                  onPress={() => handleCategoryPress(cat.route)}
                 >
                   {/* Card */}
                   <View className="relative bg-[#ECFDF3] border border-[#A7F3D0] rounded-lg items-center py-4">
@@ -284,7 +300,7 @@ const FarmerHomeScreen: React.FC = () => {
             <View className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-100 opacity-60" />
 
             {/* FAKE MAP LINES */}
-            <MapView
+            {/* <MapView
               style={{ width: "100%", height: 250 }}
               initialRegion={{
                 latitude: 12.9995192,
@@ -300,7 +316,7 @@ const FarmerHomeScreen: React.FC = () => {
                 }}
                 title="Excerpt Technologies"
               />
-            </MapView>
+            </MapView> */}
 
             {/* CENTER MAIN PIN */}
             <View className="flex-1 items-center justify-center">

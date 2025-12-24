@@ -7,17 +7,17 @@ const PostCropScreen: React.FC = () => {
   const router = useRouter();
 
   const handleSell = () => {
-    router.push("/farmerscreen/productsales");
+    router.push("/(farmerscreen)/productsales");
   };
 
   const handleAddCrop = () => {
-    router.push("/farmerscreen/categories");
+    router.push("/(farmerscreen)/AddNewCrop");
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
       {/* Header */}
-      <View className="bg-white border-b border-gray-200 px-5 pt-5 pb-5">
+      <View className="bg-white border-b border-gray-200 px-5 pt-5 pb-5 mt-6">
         <Text className="text-xl font-medium text-gray-900">
           Post Crop
         </Text>
@@ -60,13 +60,14 @@ const PostCropScreen: React.FC = () => {
           >
             <View className="w-full px-4 flex-row items-center justify-center">
               <Text className="text-base text-white font-medium">
-                ADD NEW CROP
+                CROP
               </Text>
               <View className="absolute right-4">
                 <ArrowRight size={18} color="#fff" />
               </View>
             </View>
           </TouchableOpacity>
+          
         </View>
       </View>
     </SafeAreaView>

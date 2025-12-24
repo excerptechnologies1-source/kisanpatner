@@ -68,7 +68,7 @@ const KisanHeader: React.FC = () => {
 
             {/* Title */}
             <View className="items-center">
-              <Text className="text-white text-xl font-bold">Kisan Partner</Text>
+              <Text className="text-white text-xl font-medium">Kisan Partner</Text>
               <Text className="text-white/80 text-xs">
                 Connecting Farmers & Buyers
               </Text>
@@ -78,7 +78,7 @@ const KisanHeader: React.FC = () => {
             <TouchableOpacity className="p-2 relative">
               <Ionicons name="notifications-outline" size={28} color="white" />
               <View className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border border-white items-center justify-center">
-                <Text className="text-white text-[10px] font-bold">3</Text>
+                <Text className="text-white text-[10px] font-medium">3</Text>
               </View>
             </TouchableOpacity>
 
@@ -111,7 +111,7 @@ const KisanHeader: React.FC = () => {
                 <View className="w-20 h-20 bg-white rounded-full items-center justify-center mb-2">
                   <Ionicons name="person" size={40} color="#68D75D" />
                 </View>
-                <Text className="text-white text-lg font-bold">John Farmer</Text>
+                <Text className="text-white text-lg font-medium">John Farmer</Text>
                 <Text className="text-white/80 text-sm">john@example.com</Text>
               </View>
             </View>
