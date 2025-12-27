@@ -11,7 +11,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#8e8e8e",
         tabBarStyle: {
           backgroundColor: "#ffffff",
-          height: 60,
+          
           paddingBottom: 8,
         },
       }}
@@ -27,7 +27,7 @@ export default function TabLayout() {
 
       {/* FARMER / TRADER AREA */}
       <Tabs.Screen
-        name="post"
+        name="PostRequirement"
         options={{
           title: "post",
           tabBarIcon: ({ color, size }) => (

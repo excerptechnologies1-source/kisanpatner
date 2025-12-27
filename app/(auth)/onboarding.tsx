@@ -12,6 +12,11 @@ const SelectRoleScreen: React.FC = () => {
       pathname: "/(auth)/Login",
       params: { role },
     });
+
+    if (role == "employee"){
+      router.replace("/labourscreen/AddLabourScreen")
+      return;
+    }
   };
 
   return (
@@ -158,6 +163,7 @@ const SelectRoleScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </View>
+     
     </View>
   );
 };

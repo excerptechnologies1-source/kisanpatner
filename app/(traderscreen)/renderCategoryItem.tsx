@@ -16,7 +16,7 @@ const renderCategoryItem = ({ item }: any) => {
          />
    
          <View className="p-3">
-           <Text className="font-semibold text-gray-700">{item.title}</Text>
+           <Text className="font-medium text-gray-700">{item.title}</Text>
          </View>
        </View>
      </TouchableOpacity>

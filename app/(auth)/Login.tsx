@@ -1,218 +1,213 @@
-
-
-import { MaterialCommunityIcons } from "@expo/vector-icons";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from "axios";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { Eye, EyeOff } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  ImageBackground,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StatusBar,
+  View,
   Text,
   TextInput,
   TouchableOpacity,
-  View,
-} from "react-native";
+  ScrollView,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  StatusBar,
+  ImageBackground,
+} from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import {
+  ChevronLeft,
+} from 'lucide-react-native';
 
-const LoginScreen: React.FC = () => {
-  const params = useLocalSearchParams();
-  const router = useRouter();
-
-  const roleParam = Array.isArray(params.role) ? params.role[0] : params.role;
-  const role = (roleParam as string) || "farmer";
-
-  const [loginMethod, setLoginMethod] = useState<"mpin" | "password" | "otp">(
-    "otp"
-  );
-  const [mobileNo, setMobileNo] = useState("");
-  const [mpin, setMpin] = useState("");
-  const [password, setPassword] = useState("");
-  const [otp, setOtp] = useState("");
+const LoginPage = () => {
+  const [loginMethod, setLoginMethod] = useState('otp'); // 'otp', 'mpin', 'password'
+  const [otpSent, setOtpSent] = useState(false);
+  const [mobileNo, setMobileNo] = useState('');
+  const [otp, setOtp] = useState('');
+  const [mpin, setMpin] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
-  // ----------------------------
-  // ROLE-BASED ENDPOINTS
-  // ----------------------------
-  const getEndpoint = (type: string) => {
-    if (role === "transport") {
-      if (type === "sendOtp") return "https://kisan.etpl.ai/transport/send-otp";
-      if (type === "verifyOtp")
-        return "https://kisan.etpl.ai/transport/verify-otp-login";
-      if (type === "mpin")
-        return "https://kisan.etpl.ai/transport/login-with-mpin";
-      if (type === "password")
-        return "https://kisan.etpl.ai/transport/login-with-password";
-    }
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const role = params.role || 'farmer';
 
-    // Farmer + Trader
-    if (type === "sendOtp") return "https://kisan.etpl.ai/farmer/send-otp";
-    if (type === "verifyOtp")
-      return "https://kisan.etpl.ai/farmer/verify-otp-login";
-    if (type === "mpin") return "https://kisan.etpl.ai/farmer/login-mpin";
-    if (type === "password")
-      return "https://kisan.etpl.ai/farmer/login-password";
-  };
+  const API_URL = 'https://kisan.etpl.ai/farmer';
 
   const goToRegister = () => {
     router.push({
-      pathname: "/(auth)/Registration",
+      pathname: '/(auth)/Registration',
       params: { role },
     });
   };
 
-  // RESET VALUES WHEN METHOD CHANGES
-  const selectMethod = (method: "mpin" | "password" | "otp") => {
-    setLoginMethod(method);
-    setError("");
-    setOtpSent(false);
-    setOtp("");
-    setMpin("");
-    setPassword("");
+  const redirectByRole = (userRole: string) => {
+    if (userRole === 'trader') {
+      router.replace('/(trader)/home');
+    } else if (userRole === 'farmer') {
+      router.replace('/(farmer)/home');
+    }if (userRole === 'transport') {
+      router.replace('/(transporter)/home');
+    } else {
+      router.replace('/(auth)/Login');
+    }
   };
 
-  // ----------------------------
-  // SEND OTP
-  // ----------------------------
-  const handleSendOtp = async () => {
-    setError("");
+  const saveUserToAsyncStorage = async (userData: any) => {
+    try {
+      const setIf = async (key: string, value: any) => {
+        if (value === null || value === undefined) return;
+        await AsyncStorage.setItem(key, String(value));
+      };
 
+      await setIf('userData', JSON.stringify(userData ?? {}));
+
+      // Some APIs may return slightly different field names; guard and stringify safely
+      await setIf('userId', userData?.id ?? userData?._id);
+      await setIf('userName', userData?.name ?? userData?.username);
+      await setIf('userMobile', userData?.mobileNo ?? userData?.mobile);
+      await setIf('userRole', userData?.role);
+
+      const role = userData?.role;
+      if (role === 'farmer') {
+        const farmerId = userData?.farmerId ?? userData?.farmer_id ?? userData?.farmerIdString;
+        if (farmerId !== undefined && farmerId !== null) {
+          await setIf('farmerId', farmerId);
+          console.log('Farmer ID saved:', farmerId);
+        }
+      } else if (role === 'trader') {
+        const traderId = userData?.traderId ?? userData?.trader_id;
+        if (traderId !== undefined && traderId !== null) {
+          await setIf('traderId', traderId);
+          console.log('Trader ID saved:', traderId);
+        }
+      }
+
+      console.log('User data saved to AsyncStorage:', userData);
+    } catch (error) {
+      console.error('Error saving user data:', error);
+    }
+  };
+
+  const selectMethod = (method: string) => {
+    setLoginMethod(method);
+    setError('');
+    setOtpSent(false);
+  };
+
+  const handleSendOtp = async () => {
     if (!mobileNo || mobileNo.length !== 10) {
-      setError("Please enter a valid 10-digit mobile number");
+      setError('Please enter a valid 10-digit mobile number');
       return;
     }
 
-    try {
-      setLoading(true);
+    setLoading(true);
+    setError('');
 
-      const response = await axios.post(getEndpoint("sendOtp")!, {
-        mobileNo,
-        role,
+    try {
+      const response = await fetch(`${API_URL}/send-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobileNo, role }),
       });
 
-      if (response.data.success) {
+      const data = await response.json();
+
+      if (data.success) {
         setOtpSent(true);
-        Alert.alert("Success", "OTP sent successfully!");
+        if (data.otp) console.log('OTP:', data.otp);
+      } else {
+        setError(data.message || 'Failed to send OTP');
       }
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to send OTP");
+    } catch (err) {
+      setError('Failed to send OTP. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ----------------------------
-  // LOGIN
-  // ----------------------------
   const handleLogin = async () => {
-    setError("");
-
-    if (!mobileNo || mobileNo.length !== 10) {
-      setError("Please enter a valid 10-digit mobile number");
-      return;
-    }
+    setLoading(true);
+    setError('');
 
     try {
-      setLoading(true);
-      let response;
+      let endpoint = '';
+      let body: any = { mobileNo, role };
 
-      // OTP LOGIN
-      if (loginMethod === "otp") {
-        if (!otp.trim()) return setError("OTP is required");
-        if (otp.length !== 6) return setError("OTP must be 6 digits");
-
-        response = await axios.post(getEndpoint("verifyOtp")!, {
-          mobileNo,
-          otp,
-          role,
-        });
-      }
-
-      // MPIN LOGIN
-      else if (loginMethod === "mpin") {
-        if (!mpin.trim()) return setError("MPIN is required");
-        if (mpin.length !== 4) return setError("MPIN must be 4 digits");
-
-        response = await axios.post(getEndpoint("mpin")!, {
-          mobileNo,
-          mpin,
-          role,
-        });
-      }
-
-      // PASSWORD LOGIN
-      else {
-        if (!password.trim()) return setError("Password is required");
-        if (password.length < 4)
-          return setError("Password must be at least 4 characters");
-
-        response = await axios.post(getEndpoint("password")!, {
-          mobileNo,
-          password,
-          role,
-        });
-      }
-
-      if (!response.data.success) {
-        return setError(response.data.message || "Login failed");
-      }
-
-      // SAVE WHEN ROLE = TRANSPORT
-      if (role === "transport") {
-        const user = response.data.data;
-
-        await AsyncStorage.setItem("mobile", mobileNo);
-        await AsyncStorage.setItem("userId", user.id);
-        await AsyncStorage.setItem("transporter_data", JSON.stringify(user));
-
-        if (response.data.token) {
-          await AsyncStorage.setItem("transporter_token", response.data.token);
+      if (loginMethod === 'otp') {
+        if (!otp || otp.length !== 6) {
+          setError('Please enter a valid 6-digit OTP');
+          setLoading(false);
+          return;
         }
-
-        router.replace("/(transporter)/home");
-        return;
+        endpoint = '/verify-otp-login';
+        body.otp = otp;
+      } else if (loginMethod === 'mpin') {
+        if (!mpin || mpin.length !== 4) {
+          setError('Please enter a valid 4-digit MPIN');
+          setLoading(false);
+          return;
+        }
+        endpoint = '/login-mpin';
+        body.mpin = mpin;
+      } else if (loginMethod === 'password') {
+        if (!password) {
+          setError('Please enter your password');
+          setLoading(false);
+          return;
+        }
+        endpoint = '/login-password';
+        body.password = password;
       }
 
-      // FARMER + TRADER
-      await AsyncStorage.setItem("isLoggedIn", "true");
-      await AsyncStorage.setItem("role", role);
+      const response = await fetch(`${API_URL}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
 
-      Alert.alert("Success", "Login successful!");
+      const data = await response.json();
 
-      if (role === "farmer") router.push("/(farmer)/home");
-      else if (role === "trader") router.push("/(trader)/home");
-      else router.push("/");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Login failed");
+      if (data.success) {
+        await saveUserToAsyncStorage(data.data);
+        setTimeout(() => {
+          redirectByRole(data.data.role);
+        }, 500);
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ----------------------------
-  // UI
-  // ----------------------------
   return (
     <View className="flex-1 bg-white py-10">
+         <View className="flex-row items-center px-4 py-4 ">
+            <TouchableOpacity
+              onPress={() => router.push('/(auth)/onboarding')}
+              className="p-2"
+            >
+              <ChevronLeft size={24} color="#374151" />
+             
+            </TouchableOpacity>
+           
+          </View>
+
       <StatusBar barStyle="dark-content" />
 
       <ImageBackground
-        source={require("../../assets/images/green-bg.jpg")}
+        source={require('../../assets/images/green-bg.jpg')}
         resizeMode="contain"
         className="flex-1 bg-position-bottom"
       >
         <View className="flex-1 bg-white/60">
           <KeyboardAvoidingView
             className="flex-1"
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           >
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
               <View className="flex-1 px-6 pt-12 pb-8">
@@ -222,7 +217,7 @@ const LoginScreen: React.FC = () => {
                   <Text className="text-2xl font-heading text-slate-900">
                     Welcome back
                   </Text>
-                  <Text className="text-xs text-slate-500 mt-1 font-subheading">
+                  <Text className="text-xs font-medium text-slate-500 mt-1">
                     Login to Your {role} Account.
                   </Text>
                 </View>
@@ -230,7 +225,7 @@ const LoginScreen: React.FC = () => {
                 {/* Card */}
                 <View className="px-5 pt-4 pb-6">
                   {/* PHONE NUMBER */}
-                  <Text className="text-xs text-slate-600 mb-1 font-subheading">
+                  <Text className="text-xs font-medium text-slate-600 mb-1">
                     Phone Number
                   </Text>
 
@@ -255,12 +250,13 @@ const LoginScreen: React.FC = () => {
                   </View>
 
                   {/* OTP FLOW */}
-                  {loginMethod === "otp" && (
+                  {loginMethod === 'otp' && (
                     <>
                       {!otpSent ? (
                         <TouchableOpacity
                           onPress={handleSendOtp}
                           className="bg-[#1FAD4E] rounded-lg py-3 items-center"
+                          disabled={loading}
                         >
                           {loading ? (
                             <ActivityIndicator color="#fff" />
@@ -291,7 +287,7 @@ const LoginScreen: React.FC = () => {
                   )}
 
                   {/* MPIN FLOW */}
-                  {loginMethod === "mpin" && (
+                  {loginMethod === 'mpin' && (
                     <TextInput
                       className="border border-slate-200 rounded-lg px-3 py-2 mt-3 bg-slate-50 font-medium"
                       placeholder="Enter 4-digit MPIN"
@@ -304,10 +300,10 @@ const LoginScreen: React.FC = () => {
                   )}
 
                   {/* PASSWORD FLOW */}
-                  {loginMethod === "password" && (
-                    <View className="flex-row items-center border border-slate-200 rounded-lg bg-slate-50 px-3 mt-3 font-medium" >
+                  {loginMethod === 'password' && (
+                    <View className="flex-row items-center border border-slate-200 rounded-lg bg-slate-50 px-3 mt-3">
                       <TextInput
-                        className="flex-1 py-2 "
+                        className="flex-1 py-2 font-medium"
                         placeholder="Enter your password"
                         secureTextEntry={!showPassword}
                         value={password}
@@ -316,27 +312,28 @@ const LoginScreen: React.FC = () => {
                       <TouchableOpacity
                         onPress={() => setShowPassword(!showPassword)}
                       >
-                        {showPassword ? (
-                          <EyeOff size={20} />
-                        ) : (
-                          <Eye size={20} />
-                        )}
+                        <Ionicons
+                          name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                          size={20}
+                          color="#64748B"
+                        />
                       </TouchableOpacity>
                     </View>
                   )}
 
                   {/* ERROR */}
-                  {error !== "" && (
+                  {error !== '' && (
                     <View className="bg-red-100 border border-red-300 py-2 px-3 rounded-xl mt-3">
                       <Text className="text-xs text-red-700">{error}</Text>
                     </View>
                   )}
 
                   {/* LOGIN BUTTON */}
-                  {(loginMethod !== "otp" || otpSent) && (
+                  {(loginMethod !== 'otp' || otpSent) && (
                     <TouchableOpacity
                       onPress={handleLogin}
-                      className="bg-[#1FAD4E] rounded-lg py-3 items-center mt-4 font-medium"
+                      className="bg-[#1FAD4E] rounded-lg py-3 items-center mt-4"
+                      disabled={loading}
                     >
                       {loading ? (
                         <ActivityIndicator color="#fff" />
@@ -349,38 +346,40 @@ const LoginScreen: React.FC = () => {
                   {/* DIVIDER */}
                   <View className="flex-row items-center my-5">
                     <View className="flex-1 h-px bg-slate-300" />
-                    <Text className="text-xs text-slate-500 px-3 font-medium">or</Text>
+                    <Text className="text-xs text-slate-500 px-3 font-medium">
+                      or
+                    </Text>
                     <View className="flex-1 h-px bg-slate-300" />
                   </View>
 
-                  {/* ----------------------- LOGIN METHOD SWITCHER AT BOTTOM ----------------------- */}
-                  <View className="flex-col justify-around gap-3 ">
+                  {/* LOGIN METHOD SWITCHER */}
+                  <View className="flex-col justify-around gap-3">
                     <TouchableOpacity
                       activeOpacity={0.9}
                       className="flex-row items-center justify-center bg-white rounded-2xl py-3 border border-slate-200"
-                      onPress={() => selectMethod("mpin")}
+                      onPress={() => selectMethod('mpin')}
                     >
                       <MaterialCommunityIcons
                         name="dialpad"
                         size={15}
                         color="#1F2933"
                       />
-                      <Text className="ml-2 text-sm font-heading text-slate-800 font-medium">
+                      <Text className="ml-2 text-sm text-slate-800 font-medium">
                         Use MPIN
                       </Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       activeOpacity={0.9}
-                      className="flex-row items-center justify-center bg-white rounded-2xl py-3 mb-3 border border-slate-200 font-heading"
-                      onPress={() => selectMethod("password")}
+                      className="flex-row items-center justify-center bg-white rounded-2xl py-3 mb-3 border border-slate-200"
+                      onPress={() => selectMethod('password')}
                     >
                       <MaterialCommunityIcons
                         name="lock-outline"
                         size={15}
                         color="#1F2933"
                       />
-                      <Text className="ml-2 text-sm font-heading text-slate-800 font-medium">
+                      <Text className="ml-2 text-sm text-slate-800 font-medium">
                         Login using password
                       </Text>
                     </TouchableOpacity>
@@ -389,7 +388,7 @@ const LoginScreen: React.FC = () => {
                   {/* Register & forgot links */}
                   <View className="flex-row justify-center mt-5">
                     <Text className="text-xs text-slate-500 font-medium">
-                      Don&apos;t have an account ? {" "}
+                      Don't have an account?{' '}
                     </Text>
                     <TouchableOpacity onPress={goToRegister}>
                       <Text className="text-xs font-medium text-[#1FAD4E]">
@@ -421,4 +420,4 @@ const LoginScreen: React.FC = () => {
   );
 };
 
-export default LoginScreen;
+export default LoginPage;

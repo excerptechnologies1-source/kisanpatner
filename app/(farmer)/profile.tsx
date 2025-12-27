@@ -109,10 +109,8 @@ const ProfileScreen: React.FC = () => {
   return (
     <View className="flex-1 bg-gray-50">
       {/* TOP HEADER */}
-      <View className="bg-white border-b border-gray-200 px-5 pt-5 pb-5">
-        <Text className="text-xl font-medium text-gray-900">
-          My Profile
-        </Text>
+      <View className="bg-white border-b border-gray-200 px-5 pt-5 pb-5 mt-6">
+        <Text className="text-xl font-medium text-gray-900">My Profile</Text>
       </View>
 
       <ScrollView
@@ -317,9 +315,7 @@ const ProfileScreen: React.FC = () => {
                 Language Settings
               </Text>
             </View>
-            <Text className="text-xs text-gray-400 font-medium">
-              EN
-            </Text>
+            <Text className="text-xs text-gray-400 font-medium">EN</Text>
           </TouchableOpacity>
 
           <TouchableOpacity className="flex-row items-center justify-between py-3 border-t border-gray-100">

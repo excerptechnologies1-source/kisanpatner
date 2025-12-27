@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, PlusCircle, User } from "lucide-react-native";
+import { Home, PlusCircle, User,Truck, UserCog,Car } from "lucide-react-native";
 import React from "react";
 
 export default function TabLayout() {
@@ -11,7 +11,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#8e8e8e",
         tabBarStyle: {
           backgroundColor: "#ffffff",
-          height: 60,
+          
           paddingBottom: 8,
         },
       }}
@@ -27,25 +27,39 @@ export default function TabLayout() {
 
       {/* FARMER / TRADER AREA */}
       <Tabs.Screen
-        name="post"
+        name="NewOrdersList"
         options={{
-          title: "post",
+          title: "OrderList",
           tabBarIcon: ({ color, size }) => (
-            <PlusCircle color={color} size={size} />
+            <UserCog color={color} size={size} />
           ),
         }}
       />
 
-
-
       {/* PROFILE */}
       <Tabs.Screen
-        name="profile"
+        name="TransportOrders"
+        options={{
+          title: "Transport",
+          tabBarIcon: ({ color, size }) => <Car color={color} size={size} />,
+        }}
+      />
+ <Tabs.Screen
+        name="TransportVehicles"
+        options={{
+          title: "My Vehicles",
+          tabBarIcon: ({ color, size }) => <Truck color={color} size={size} />,
+        }}
+      />
+        <Tabs.Screen
+        name="TransportProfile"
         options={{
           title: "Profile",
           tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
         }}
       />
+
+      
     </Tabs>
   );
 }
