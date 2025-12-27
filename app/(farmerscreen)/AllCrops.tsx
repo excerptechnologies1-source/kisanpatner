@@ -13,6 +13,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { 
   Check, 
   X, 
@@ -23,8 +24,10 @@ import {
   MapPin, 
   Heart,
   TrendingUp,
-  ShoppingBag
+  ShoppingBag,
+  ChevronLeft
 } from 'lucide-react-native';
+import { router } from "expo-router";
 
 interface Offer {
   _id: string;
@@ -392,8 +395,19 @@ const Mycrop: React.FC = () => {
   };
 
  return (
+  <SafeAreaView className="bg-white flex-1">
+       <View className="flex-row items-center px-4 py-4 bg-white mb-3">
+            <TouchableOpacity
+              onPress={() => router.push('/(farmer)/home')}
+              className="p-2"
+            >
+              <ChevronLeft size={24} color="#374151" />
+            </TouchableOpacity>
+            <Text className="ml-3 text-xl font-medium text-gray-900"> My Crop</Text>
+          </View>
+
  <ScrollView
-      className="flex-1 bg-gray-50 pb-5"
+      className="flex-1 bg-white pb-5"
       refreshControl={
         <RefreshControl 
           refreshing={refreshing} 
@@ -402,16 +416,7 @@ const Mycrop: React.FC = () => {
         />
       }
     >
-      {/* Header */}
-      <View className="px-5 pt-6 pb-4">
-        <Text className="text-2xl font-subheading text-gray-900">My Products</Text>
-        <View className="flex-row items-center mt-1">
-          <Text className="text-sm text-gray-500">{products.length} products listed</Text>
-          <View className="ml-auto bg-green-50 px-3 py-1.5 rounded-full">
-            <Text className="text-xs font-medium text-green-700">Farmer Dashboard</Text>
-          </View>
-        </View>
-      </View>
+    
 
       {error && (
         <View className="mx-5 mb-4 p-4 bg-red-50 rounded-xl border border-red-200">
@@ -946,6 +951,7 @@ const Mycrop: React.FC = () => {
       </Modal>
 
     </ScrollView>
+   </SafeAreaView>
 )};
 
 export default Mycrop;

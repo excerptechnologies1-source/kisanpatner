@@ -1,6 +1,3 @@
-
-
-
 import {
   Banknote,
   Bell,
@@ -9,6 +6,7 @@ import {
   ShoppingBag,
   MapPin,
   Search,
+  ShieldCheck,
   Plus,
   Star,
   Store,
@@ -27,7 +25,7 @@ import {
   View,
 } from "react-native";
 
-import  { Marker } from "react-native-maps";
+import { Marker } from "react-native-maps";
 
 const { width } = Dimensions.get("window");
 
@@ -56,20 +54,62 @@ const banners = [
 ];
 
 const categories = [
-  { id: "1", label: "My Crop", icon: Leaf, route: "/(farmerscreen)/AllCrops" },
-  { id: "2", label: "Market", icon: Store, route: "/(trader)/home" },
-  { id: "3", label: "Loan", icon: Banknote, route: "/(trader)/home" },
   {
-    id: "4",
+    id: "1",
+    label: "Post Crop",
+    icon: Plus,
+    route: "/(farmer)/post",
+  },
+  {
+    id: "2",
+    label: "My Crop",
+    icon: Leaf,
+    route: "/(farmerscreen)/AllCrops",
+  },
+  {
+    id: "3",
     label: "My Orders",
     icon: ClipboardList,
     route: "/(farmerscreen)/FarmerOrder",
   },
-  { id: "5", label: "Crop Care", icon: Users, route: "/(farmerscreen)/cropcare" },
-  { id: "6", label: "Shopping", icon: ShoppingBag, route: "/(trader)/home" },
-  { id: "7", label: "Gov. Scheme", icon: Star, route: "/(trader)/home" },
-  { id: "8", label: "Notifications", icon: Bell, route: "/(trader)/home" },
+  {
+    id: "4",
+    label: "Labour",
+    icon: Users, // or Workers icon if you have
+    route: "/(labour)/LabourListScreen",
+  },
+  {
+    id: "5",
+    label: "Loans",
+    icon: Banknote,
+    route: "/(farmerscreen)/Loans",
+  },
+  {
+    id: "6",
+    label: "Market",
+    icon: Store,
+    route: "/(farmerscreen)/Market",
+  },
+  {
+    id: "7",
+    label: "Crop Care",
+    icon: ShieldCheck,
+    route: "/(farmerscreen)/cropcare",
+  },
+  {
+    id: "8",
+    label: "Shopping",
+    icon: ShoppingBag,
+    route: "/(farmerscreen)/Shopping",
+  },
+  {
+    id: "9",
+    label: "Gov Scheme",
+    icon: Star,
+    route: "/(farmerscreen)/GovScheme",
+  },
 ];
+
 const recentCrops = [
   {
     id: "1",
@@ -125,9 +165,9 @@ const FarmerHomeScreen: React.FC = () => {
   };
 
   return (
-    <View className="flex-1 bg-white py-2">
+    <View className="flex-1 bg-white">
       {/* TOP BAR */}
-      <View className="flex-row items-center justify-between px-4 pt-5 pb-3 mt-6 mb-3 bg-white">
+      <View className="flex-row items-center justify-between px-4 pb-3 pt-3 mt-3 mb-3 bg-white">
         {/* Left: Logo + App name */}
         <View className="flex-row items-center">
           <Image
@@ -216,6 +256,43 @@ const FarmerHomeScreen: React.FC = () => {
           </ScrollView>
         </View>
 
+        {/* RECENT CROP TITLE */}
+        <View className="px-5 mb-2 flex-row items-center justify-between">
+          <Text className="text-sm font-heading text-gray-800">
+            Recent Crop
+          </Text>
+        </View>
+
+        {/* RECENT CROP CARDS */}
+        <View className="mb-4">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="px-4"
+          >
+            {recentCrops.slice(0, 4).map((item) => (
+              <View
+                key={item.id}
+                className="w-25 mr-3 p-1 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden"
+              >
+                <Image
+                  source={{ uri: item.image }}
+                  className="w-full h-20 rounded-lg"
+                  resizeMode="cover"
+                />
+                <View className="p-2">
+                  <Text
+                    className="text-[11px] text-gray-800 font-subheading"
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </Text>
+                </View>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
+
         {/* CATEGORY TABS */}
         <View className="mb-4 px-3">
           <View className="flex-row flex-wrap">
@@ -251,46 +328,6 @@ const FarmerHomeScreen: React.FC = () => {
               );
             })}
           </View>
-        </View>
-
-        {/* RECENT CROP TITLE */}
-        <View className="px-5 mb-2 flex-row items-center justify-between">
-          <Text className="text-sm font-heading text-gray-800">
-            Recent Crop
-          </Text>
-          <TouchableOpacity>
-            <Text className="text-xs text-[#1FAD4E] font-medium">View all</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* RECENT CROP CARDS */}
-        <View className="mb-4">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="px-4"
-          >
-            {recentCrops.map((item) => (
-              <View
-                key={item.id}
-                className="w-32 mr-3 p-1 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden"
-              >
-                <Image
-                  source={{ uri: item.image }}
-                  className="w-full h-20 rounded-lg"
-                  resizeMode="cover"
-                />
-                <View className="p-2">
-                  <Text
-                    className="text-[11px] text-gray-800 font-subheading"
-                    numberOfLines={1}
-                  >
-                    {item.title}
-                  </Text>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
         </View>
 
         {/* MAP CARD */}
@@ -332,15 +369,7 @@ const FarmerHomeScreen: React.FC = () => {
         </View>
       </ScrollView>
 
-      {/* FLOATING ACTION BUTTON */}
-      <TouchableOpacity
-        className="w-12 h-12 rounded-full bg-[#1FAD4E] items-center justify-center absolute bottom-6 right-6 shadow-lg"
-        onPress={() => {
-          // handle add action
-        }}
-      >
-        <Plus size={22} color="#fff" />
-      </TouchableOpacity>
+      
     </View>
   );
 };

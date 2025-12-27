@@ -14,6 +14,9 @@ import {
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import {
+  ChevronLeft,
+} from 'lucide-react-native';
 
 const LoginPage = () => {
   const [loginMethod, setLoginMethod] = useState('otp'); // 'otp', 'mpin', 'password'
@@ -183,6 +186,17 @@ const LoginPage = () => {
 
   return (
     <View className="flex-1 bg-white py-10">
+         <View className="flex-row items-center px-4 py-4 ">
+            <TouchableOpacity
+              onPress={() => router.push('/(auth)/onboarding')}
+              className="p-2"
+            >
+              <ChevronLeft size={24} color="#374151" />
+             
+            </TouchableOpacity>
+           
+          </View>
+
       <StatusBar barStyle="dark-content" />
 
       <ImageBackground

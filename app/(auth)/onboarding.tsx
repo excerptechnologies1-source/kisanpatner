@@ -14,7 +14,7 @@ const SelectRoleScreen: React.FC = () => {
     });
 
     if (role == "employee"){
-      router.replace("/(labour)/LabourListScreen")
+      router.replace("/labourscreen/AddLabourScreen")
       return;
     }
   };
@@ -163,6 +163,7 @@ const SelectRoleScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
       </View>
+     
     </View>
   );
 };
