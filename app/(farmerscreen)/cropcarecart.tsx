@@ -5,7 +5,6 @@
 //   ScrollView,
 //   TouchableOpacity,
 //   Image,
-//   StyleSheet,
 //   Alert,
 //   ActivityIndicator,
 //   StatusBar,
@@ -17,6 +16,7 @@
 // import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, CreditCard, LogOut, User } from 'lucide-react-native';
 // import { router, useFocusEffect } from 'expo-router';
 // import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 // interface CartItem {
 //   _id?: string;
@@ -386,22 +386,22 @@
 
 //   if (loading.auth) {
 //     return (
-//       <View style={styles.loadingContainer}>
+//       <View className="flex-1 justify-center items-center bg-gray-50">
 //         <ActivityIndicator size="large" color="#2c5f2d" />
-//         <Text style={styles.loadingText}>Checking authentication...</Text>
+//         <Text className="mt-3 text-base text-gray-600 font-medium">Checking authentication...</Text>
 //       </View>
 //     );
 //   }
 
 //   return (
-//     <SafeAreaView style={styles.container}>
+//     <SafeAreaView className="flex-1 bg-gray-50">
 //       <StatusBar backgroundColor="#2c5f2d" barStyle="light-content" />
 
 //       {/* Notification Component */}
 //       {notification && (
 //         <Animated.View
+//           className="absolute top-16 right-4 p-4 rounded-lg z-[1001] max-w-[calc(100vw-32px)] shadow-lg shadow-black/15"
 //           style={[
-//             styles.notification,
 //             {
 //               backgroundColor: notification.type === 'success' ? '#28a745' : '#ff4d4f',
 //               transform: [{
@@ -414,74 +414,77 @@
 //             }
 //           ]}
 //         >
-//           <Text style={styles.notificationText}>{notification.message}</Text>
+//           <Text className="text-white font-bold text-sm">{notification.message}</Text>
 //         </Animated.View>
 //       )}
 
 //       {/* Header Section */}
-//       <View style={styles.header}>
-//         <View style={styles.headerRow}>
+//       <View className="bg-green-800 pt-3 pb-4 px-4 shadow-md shadow-black/10">
+//         <View className="flex-row items-center justify-between">
 //           <TouchableOpacity
 //             onPress={() => router.push("/farmerscreen/cropcare")}
-//             style={styles.backButtonHeader}
+//             className="p-2 rounded-lg bg-white/10"
 //           >
 //             <ArrowLeft size={24} color="white" />
 //           </TouchableOpacity>
-//           <View style={styles.headerCenter}>
-//             <Text style={styles.headerTitle}>🛒 Crop Care Cart</Text>
+//           <View className="items-center mx-3 flex-1">
+//             <Text className="text-xl font-bold text-white mb-1">🛒 Crop Care Cart</Text>
 //             {user ? (
-//               <View style={styles.userInfo}>
-//                 <Text style={styles.userName}>{user.personalInfo.name}</Text>
-//                 <View style={styles.roleBadge}>
-//                   <Text style={styles.roleText}>{user.role}</Text>
+//               <View className="flex-row items-center gap-2">
+//                 <Text className="text-sm text-gray-200">{user.personalInfo.name}</Text>
+//                 <View className="bg-white/20 px-2.5 py-0.5 rounded-full">
+//                   <Text className="text-white text-xs font-semibold">{user.role}</Text>
 //                 </View>
-//                 <TouchableOpacity onPress={handleLogout} style={styles.logoutButtonSmall}>
+//                 <TouchableOpacity 
+//                   onPress={handleLogout} 
+//                   className="flex-row items-center bg-white/15 px-2 py-1 rounded-lg gap-1"
+//                 >
 //                   <LogOut size={12} color="white" />
-//                   <Text style={styles.logoutTextSmall}>Logout</Text>
+//                   <Text className="text-white text-xs font-semibold">Logout</Text>
 //                 </TouchableOpacity>
 //               </View>
 //             ) : (
 //               <TouchableOpacity 
-//                 style={styles.loginPromptHeader}
+//                 className="flex-row items-center bg-white/15 px-3 py-1.5 rounded-lg gap-1.5"
 //                 onPress={() => setShowLoginModal(true)}
 //               >
 //                 <User size={14} color="white" />
-//                 <Text style={styles.loginTextHeader}>Tap to Login</Text>
+//                 <Text className="text-white text-xs font-semibold">Tap to Login</Text>
 //               </TouchableOpacity>
 //             )}
 //           </View>
-//           <View style={styles.headerRightPlaceholder} />
+//           <View className="w-10" />
 //         </View>
 //       </View>
 
-//       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-//         <View style={styles.mainContent}>
+//       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+//         <View className="p-5">
 //           {/* Show Login Prompt when not authenticated */}
 //           {!user ? (
-//             <View style={styles.loginPromptContainer}>
-//               <View style={styles.loginPromptIconContainer}>
-//                 <Text style={styles.loginPromptIcon}>🔒</Text>
+//             <View className="items-center justify-center py-12 px-5 mt-10">
+//               <View className="w-32 h-32 rounded-full bg-green-50 justify-center items-center mb-6">
+//                 <Text className="text-6xl text-green-800">🔒</Text>
 //               </View>
-//               <Text style={styles.loginPromptTitle}>Login Required</Text>
-//               <Text style={styles.loginPromptDescription}>
+//               <Text className="text-2xl font-bold text-gray-800 mb-3 text-center">Login Required</Text>
+//               <Text className="text-base text-gray-600 text-center mb-8 leading-relaxed">
 //                 Please login to view and manage your cart
 //               </Text>
 //               <TouchableOpacity
-//                 style={styles.loginButton}
+//                 className="flex-row items-center justify-center bg-green-800 px-8 py-3.5 rounded-lg gap-2.5"
 //                 onPress={() => setShowLoginModal(true)}
 //               >
 //                 <User size={20} color="white" />
-//                 <Text style={styles.loginButtonText}>Login Now</Text>
+//                 <Text className="text-white text-base font-bold">Login Now</Text>
 //               </TouchableOpacity>
 //             </View>
 //           ) : (
 //             <>
 //               {/* Cart Title Section */}
-//               <View style={styles.titleSection}>
-//                 <View style={styles.titleRow}>
-//                   <Text style={styles.cartTitle}>Shopping Cart</Text>
-//                   <View style={styles.cartCountBadge}>
-//                     <Text style={styles.cartCountText}>
+//               <View className="mb-6">
+//                 <View className="flex-row items-center justify-between">
+//                   <Text className="text-2xl font-bold text-gray-800">Shopping Cart</Text>
+//                   <View className="bg-green-800 px-4 py-2 rounded-full">
+//                     <Text className="text-white text-sm font-bold">
 //                       {cart.items.length} item{cart.items.length !== 1 ? 's' : ''}
 //                     </Text>
 //                   </View>
@@ -490,79 +493,79 @@
 
 //               {/* Empty Cart State */}
 //               {cart.items.length === 0 ? (
-//                 <View style={styles.emptyCartContainer}>
-//                   <View style={styles.emptyCartIconContainer}>
-//                     <Text style={styles.emptyCartIcon}>🛒</Text>
+//                 <View className="items-center py-12 px-5">
+//                   <View className="w-32 h-32 rounded-full bg-green-50 justify-center items-center mb-6">
+//                     <Text className="text-6xl text-green-800">🛒</Text>
 //                   </View>
-//                   <Text style={styles.emptyCartTitle}>Your cart is empty</Text>
-//                   <Text style={styles.emptyCartDescription}>
+//                   <Text className="text-2xl font-bold text-gray-800 mb-3 text-center">Your cart is empty</Text>
+//                   <Text className="text-base text-gray-600 text-center mb-8 leading-relaxed">
 //                     Add some products to get started with your crop care journey!
 //                   </Text>
 //                   <TouchableOpacity
-//                     style={styles.shoppingButton}
+//                     className="flex-row items-center bg-blue-50 px-6 py-3.5 rounded-lg gap-2.5"
 //                     onPress={() => router.push('/farmerscreen/cropcare')}
 //                   >
 //                     <ShoppingCart size={20} color="#333" />
-//                     <Text style={styles.shoppingButtonText}>Browse Products</Text>
+//                     <Text className="text-green-800 text-base font-bold">Browse Products</Text>
 //                   </TouchableOpacity>
 //                 </View>
 //               ) : (
-//                 <View style={styles.cartContent}>
+//                 <View className="gap-6">
 //                   {loading.cart ? (
-//                     <View style={styles.cartLoadingContainer}>
+//                     <View className="items-center justify-center py-12">
 //                       <ActivityIndicator size="large" color="#2c5f2d" />
-//                       <Text style={styles.cartLoadingText}>Loading cart...</Text>
+//                       <Text className="mt-4 text-base text-gray-600">Loading cart...</Text>
 //                     </View>
 //                   ) : (
 //                     <>
 //                       {/* Cart Items List */}
-//                       <View style={styles.cartItemsContainer}>
+//                       <View className="bg-white rounded-xl p-5 shadow-sm shadow-black/5">
 //                         {cart.items.map((item) => (
-//                           <View key={item._id} style={styles.cartItemCard}>
+//                           <View key={item._id} className="flex-row py-4 border-b border-gray-200 gap-4">
 //                             {/* Product Image */}
-//                             <View style={styles.itemImageWrapper}>
+//                             <View className="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden justify-center items-center">
 //                               {item.image ? (
 //                                 <Image
 //                                   source={{ uri: item.image }}
-//                                   style={styles.itemImage}
+//                                   className="w-full h-full"
 //                                   resizeMode="cover"
 //                                 />
 //                               ) : (
-//                                 <View style={styles.itemImagePlaceholder}>
-//                                   <Text style={styles.placeholderIcon}>🌱</Text>
+//                                 <View className="w-full h-full justify-center items-center">
+//                                   <Text className="text-4xl text-gray-500">🌱</Text>
 //                                 </View>
 //                               )}
 //                             </View>
 
 //                             {/* Product Details */}
-//                             <View style={styles.itemDetails}>
-//                               <View style={styles.itemTextContainer}>
-//                                 <Text style={styles.itemName} numberOfLines={1}>
+//                             <View className="flex-1 justify-between">
+//                               <View className="mb-3">
+//                                 <Text className="text-base font-bold text-gray-800 mb-1" numberOfLines={1}>
 //                                   {item.seedName}
 //                                 </Text>
-//                                 <Text style={styles.itemProduct} numberOfLines={1}>
+//                                 <Text className="text-sm text-gray-600 mb-1.5" numberOfLines={1}>
 //                                   {item.productName}
 //                                 </Text>
-//                                 <Text style={styles.itemPrice}>
+//                                 <Text className="text-sm font-semibold text-green-500">
 //                                   ₹{item.seedPrice.toFixed(2)} per unit
 //                                 </Text>
 //                               </View>
 
 //                               {/* Quantity Controls */}
-//                               <View style={styles.quantitySection}>
-//                                 <View style={styles.quantityControls}>
+//                               <View className="mt-2">
+//                                 <View className="flex-row items-center gap-3">
 //                                   <TouchableOpacity
-//                                     style={styles.quantityButton}
+//                                     className="w-8 h-8 rounded-full bg-gray-200 justify-center items-center"
 //                                     onPress={() => updateQuantity(item._id!, item.quantity - 1)}
 //                                     disabled={loading.cart}
 //                                   >
 //                                     <Minus size={16} color="#333" />
 //                                   </TouchableOpacity>
-//                                   <View style={styles.quantityDisplayContainer}>
-//                                     <Text style={styles.quantityDisplay}>{item.quantity}</Text>
+//                                   <View className="min-w-9 items-center">
+//                                     <Text className="text-base font-bold text-gray-800">{item.quantity}</Text>
 //                                   </View>
 //                                   <TouchableOpacity
-//                                     style={styles.quantityButton}
+//                                     className="w-8 h-8 rounded-full bg-gray-200 justify-center items-center"
 //                                     onPress={() => updateQuantity(item._id!, item.quantity + 1)}
 //                                     disabled={loading.cart}
 //                                   >
@@ -573,88 +576,90 @@
 //                             </View>
 
 //                             {/* Item Actions */}
-//                             <View style={styles.itemActions}>
-//                               <Text style={styles.itemTotalPrice}>
+//                             <View className="items-end justify-between">
+//                               <Text className="text-lg font-bold text-gray-800 mb-3">
 //                                 ₹{(item.seedPrice * item.quantity).toFixed(2)}
 //                               </Text>
 //                               <TouchableOpacity
-//                                 style={styles.removeItemButton}
+//                                 className="flex-row items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-red-50"
 //                                 onPress={() => removeItem(item._id!)}
 //                                 disabled={loading.cart}
 //                               >
 //                                 <Trash2 size={16} color="#ff4d4f" />
-//                                 <Text style={styles.removeItemText}>Remove</Text>
+//                                 <Text className="text-red-500 text-xs font-semibold">Remove</Text>
 //                               </TouchableOpacity>
 //                             </View>
 //                           </View>
 //                         ))}
 
 //                         {/* Clear Cart Button */}
-//                         <View style={styles.clearCartContainer}>
+//                         <View className="mt-5 items-end">
 //                           <TouchableOpacity
-//                             style={styles.clearCartButton}
+//                             className="flex-row items-center bg-red-500 px-5 py-3 rounded-lg gap-2"
 //                             onPress={clearCart}
 //                             disabled={loading.cart}
 //                           >
 //                             <Trash2 size={16} color="white" />
-//                             <Text style={styles.clearCartText}>Clear Cart</Text>
+//                             <Text className="text-white text-sm font-bold">Clear Cart</Text>
 //                           </TouchableOpacity>
 //                         </View>
 //                       </View>
 
 //                       {/* Order Summary */}
-//                       <View style={styles.orderSummaryCard}>
-//                         <Text style={styles.orderSummaryTitle}>Order Summary</Text>
+//                       <View className="bg-white rounded-xl p-6 shadow-sm shadow-black/5">
+//                         <Text className="text-xl font-bold text-gray-800 mb-5 pb-4 border-b-2 border-b-green-800">
+//                           Order Summary
+//                         </Text>
 
-//                         <View style={styles.summaryRows}>
-//                           <View style={styles.summaryRow}>
-//                             <Text style={styles.summaryLabel}>Subtotal</Text>
-//                             <Text style={styles.summaryValue}>₹{cart.subtotal.toFixed(2)}</Text>
+//                         <View className="gap-3 mb-5">
+//                           <View className="flex-row justify-between items-center">
+//                             <Text className="text-base text-gray-600">Subtotal</Text>
+//                             <Text className="text-base text-gray-600 font-medium">₹{cart.subtotal.toFixed(2)}</Text>
 //                           </View>
 
-//                           <View style={styles.summaryRow}>
-//                             <Text style={styles.summaryLabel}>GST (18%)</Text>
-//                             <Text style={styles.summaryValue}>₹{cart.gst.toFixed(2)}</Text>
+//                           <View className="flex-row justify-between items-center">
+//                             <Text className="text-base text-gray-600">GST (18%)</Text>
+//                             <Text className="text-base text-gray-600 font-medium">₹{cart.gst.toFixed(2)}</Text>
 //                           </View>
 
-//                           <View style={styles.summaryRow}>
-//                             <Text style={styles.summaryLabel}>Shipping</Text>
-//                             <Text style={styles.summaryValue}>
+//                           <View className="flex-row justify-between items-center">
+//                             <Text className="text-base text-gray-600">Shipping</Text>
+//                             <Text className="text-base text-gray-600 font-medium">
 //                               {cart.shipping === 0 ? 'FREE' : `₹${cart.shipping.toFixed(2)}`}
 //                             </Text>
 //                           </View>
 //                         </View>
 
 //                         {/* Total Section */}
-//                         <View style={styles.totalSection}>
-//                           <Text style={styles.totalLabel}>Total Amount</Text>
-//                           <Text style={styles.totalValue}>₹{cart.total.toFixed(2)}</Text>
+//                         <View className="flex-row justify-between items-center mt-5 pt-5 border-t-2 border-t-gray-200">
+//                           <Text className="text-lg font-bold text-gray-800">Total Amount</Text>
+//                           <Text className="text-2xl font-bold text-green-800">₹{cart.total.toFixed(2)}</Text>
 //                         </View>
 
 //                         {/* Action Buttons */}
-//                         <View style={styles.actionButtonsContainer}>
+//                         <View className="mt-7 gap-3">
 //                           <TouchableOpacity
-//                             style={styles.checkoutButton}
+//                             className="flex-row items-center justify-center bg-green-800 py-4 rounded-lg gap-2.5"
 //                             onPress={initiatePayment}
 //                             disabled={loading.payment || cart.items.length === 0}
 //                           >
 //                             <CreditCard size={20} color="white" />
-//                             <Text style={styles.checkoutButtonText}>Proceed to Checkout</Text>
+//                             <Text className="text-white text-base font-bold">Proceed to Checkout</Text>
 //                           </TouchableOpacity>
 
 //                           <TouchableOpacity
-//                             style={styles.continueShoppingButton}
+//                             className="flex-row items-center justify-center bg-gray-200 py-4 rounded-lg gap-2.5"
 //                             onPress={() => router.push('/farmerscreen/cropcare')}
 //                           >
 //                             <ShoppingCart size={20} color="#333" />
-//                             <Text style={styles.continueShoppingText}>Continue Shopping</Text>
+//                             <Text className="text-gray-800 text-base font-bold">Continue Shopping</Text>
 //                           </TouchableOpacity>
 //                         </View>
 
 //                         {/* Free Shipping Banner */}
 //                         {cart.subtotal < 500 && cart.items.length > 0 && (
-//                           <View style={styles.freeShippingBanner}>
-//                             <Text style={styles.freeShippingText}>
+//                           <View className="mt-4 p-3 bg-orange-50 rounded-lg border-l-4 border-l-orange-500">
+//                             <Text className="text-sm text-gray-600 text-center font-medium">
 //                               Add ₹{(500 - cart.subtotal).toFixed(2)} more for FREE shipping!
 //                             </Text>
 //                           </View>
@@ -676,28 +681,28 @@
 //         animationType="slide"
 //         onRequestClose={() => setShowLoginModal(false)}
 //       >
-//         <View style={styles.modalOverlay}>
-//           <View style={styles.modalContent}>
-//             <Text style={styles.modalIcon}>🔒</Text>
-//             <Text style={styles.modalTitle}>Login Required</Text>
-//             <Text style={styles.modalText}>
+//         <View className="flex-1 bg-black/50 justify-center items-center">
+//           <View className="bg-white rounded-2xl p-6 w-4/5 items-center">
+//             <Text className="text-5xl mb-4 text-green-800">🔒</Text>
+//             <Text className="text-xl font-bold text-gray-800 mb-2 text-center">Login Required</Text>
+//             <Text className="text-base text-gray-600 text-center mb-6 leading-relaxed">
 //               You need to login to access your cart
 //             </Text>
-//             <View style={styles.modalButtons}>
+//             <View className="flex-row justify-between w-full gap-3">
 //               <TouchableOpacity
-//                 style={[styles.modalButton, styles.cancelButton]}
+//                 className="flex-1 bg-gray-200 py-3 rounded-lg"
 //                 onPress={() => {
 //                   setShowLoginModal(false);
 //                   router.back();
 //                 }}
 //               >
-//                 <Text style={styles.cancelButtonText}>Cancel</Text>
+//                 <Text className="text-gray-800 font-bold text-center text-base">Cancel</Text>
 //               </TouchableOpacity>
 //               <TouchableOpacity
-//                 style={[styles.modalButton, styles.loginButton]}
+//                 className="flex-1 bg-green-800 py-3 rounded-lg"
 //                 onPress={handleLogin}
 //               >
-//                 <Text style={styles.loginButtonText}>Login</Text>
+//                 <Text className="text-white font-bold text-center text-base">Login</Text>
 //               </TouchableOpacity>
 //             </View>
 //           </View>
@@ -707,600 +712,25 @@
 //   );
 // };
 
-// // Styles
-// const styles = StyleSheet.create({
-//   // Container Styles
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#f8f9fa',
-//   },
-//   loadingContainer: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#f8f9fa',
-//   },
-//   loadingText: {
-//     marginTop: 12,
-//     fontSize: 16,
-//     color: '#666',
-//     fontWeight: '500',
-//   },
-//   scrollView: {
-//     flex: 1,
-//   },
-//   mainContent: {
-//     padding: 20,
-//   },
-
-//   // Header Styles
-//   header: {
-//     backgroundColor: '#2c5f2d',
-//     paddingTop: 12,
-//     paddingBottom: 16,
-//     paddingHorizontal: 16,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 8,
-//     elevation: 4,
-//   },
-//   headerRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//   },
-//   backButtonHeader: {
-//     padding: 8,
-//     borderRadius: 8,
-//     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-//   },
-//   headerCenter: {
-//     flex: 1,
-//     alignItems: 'center',
-//     marginHorizontal: 12,
-//   },
-//   headerTitle: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     color: 'white',
-//     marginBottom: 4,
-//   },
-//   userInfo: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 8,
-//   },
-//   userName: {
-//     fontSize: 14,
-//     color: 'rgba(255, 255, 255, 0.9)',
-//   },
-//   roleBadge: {
-//     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-//     paddingHorizontal: 10,
-//     paddingVertical: 3,
-//     borderRadius: 12,
-//   },
-//   roleText: {
-//     fontSize: 12,
-//     color: 'white',
-//     fontWeight: '600',
-//   },
-//   logoutButtonSmall: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-//     paddingHorizontal: 8,
-//     paddingVertical: 4,
-//     borderRadius: 8,
-//     gap: 4,
-//   },
-//   logoutTextSmall: {
-//     fontSize: 10,
-//     color: 'white',
-//     fontWeight: '600',
-//   },
-//   loginPromptHeader: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-//     paddingHorizontal: 12,
-//     paddingVertical: 6,
-//     borderRadius: 8,
-//     gap: 6,
-//   },
-//   loginTextHeader: {
-//     fontSize: 12,
-//     color: 'white',
-//     fontWeight: '600',
-//   },
-//   headerRightPlaceholder: {
-//     width: 40,
-//   },
-
-//   // Login Prompt Styles
-//   loginPromptContainer: {
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     paddingVertical: 60,
-//     paddingHorizontal: 20,
-//     marginTop: 40,
-//   },
-//   loginPromptIconContainer: {
-//     width: 120,
-//     height: 120,
-//     borderRadius: 60,
-//     backgroundColor: 'rgba(44, 95, 45, 0.1)',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     marginBottom: 24,
-//   },
-//   loginPromptIcon: {
-//     fontSize: 60,
-//     color: '#2c5f2d',
-//   },
-//   loginPromptTitle: {
-//     fontSize: 22,
-//     fontWeight: 'bold',
-//     color: '#333',
-//     marginBottom: 12,
-//     textAlign: 'center',
-//   },
-//   loginPromptDescription: {
-//     fontSize: 16,
-//     color: '#666',
-//     textAlign: 'center',
-//     marginBottom: 32,
-//     lineHeight: 22,
-//   },
-//   loginButton: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#2c5f2d',
-//     paddingHorizontal: 32,
-//     paddingVertical: 14,
-//     borderRadius: 8,
-//     gap: 10,
-//   },
-//   loginButtonText: {
-//     color: 'white',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-
-//   // Title Section
-//   titleSection: {
-//     marginBottom: 24,
-//   },
-//   titleRow: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'space-between',
-//   },
-//   cartTitle: {
-//     fontSize: 28,
-//     fontWeight: 'bold',
-//     color: '#333',
-//   },
-//   cartCountBadge: {
-//     backgroundColor: '#2c5f2d',
-//     paddingHorizontal: 16,
-//     paddingVertical: 8,
-//     borderRadius: 20,
-//   },
-//   cartCountText: {
-//     color: 'white',
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//   },
-
-//   // Cart Loading
-//   cartLoadingContainer: {
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     paddingVertical: 60,
-//   },
-//   cartLoadingText: {
-//     marginTop: 16,
-//     fontSize: 16,
-//     color: '#666',
-//   },
-
-//   // Empty Cart Styles
-//   emptyCartContainer: {
-//     alignItems: 'center',
-//     paddingVertical: 60,
-//     paddingHorizontal: 20,
-//   },
-//   emptyCartIconContainer: {
-//     width: 120,
-//     height: 120,
-//     borderRadius: 60,
-//     backgroundColor: 'rgba(44, 95, 45, 0.1)',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     marginBottom: 24,
-//   },
-//   emptyCartIcon: {
-//     fontSize: 60,
-//     color: '#2c5f2d',
-//   },
-//   emptyCartTitle: {
-//     fontSize: 22,
-//     fontWeight: 'bold',
-//     color: '#333',
-//     marginBottom: 12,
-//     textAlign: 'center',
-//   },
-//   emptyCartDescription: {
-//     fontSize: 16,
-//     color: '#666',
-//     textAlign: 'center',
-//     marginBottom: 32,
-//     lineHeight: 22,
-//   },
-//   shoppingButton: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     backgroundColor: '#f0f7ff',
-//     paddingHorizontal: 24,
-//     paddingVertical: 14,
-//     borderRadius: 8,
-//     gap: 10,
-//   },
-//   shoppingButtonText: {
-//     color: '#2c5f2d',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-
-//   // Cart Content Styles
-//   cartContent: {
-//     gap: 24,
-//   },
-//   cartItemsContainer: {
-//     backgroundColor: 'white',
-//     borderRadius: 12,
-//     padding: 20,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.05,
-//     shadowRadius: 8,
-//     elevation: 2,
-//   },
-
-//   // Cart Item Card Styles
-//   cartItemCard: {
-//     flexDirection: 'row',
-//     paddingVertical: 16,
-//     borderBottomWidth: 1,
-//     borderBottomColor: '#f0f0f0',
-//     gap: 16,
-//   },
-//   itemImageWrapper: {
-//     width: 80,
-//     height: 80,
-//     borderRadius: 8,
-//     backgroundColor: '#f5f5f5',
-//     overflow: 'hidden',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   itemImage: {
-//     width: '100%',
-//     height: '100%',
-//   },
-//   itemImagePlaceholder: {
-//     width: '100%',
-//     height: '100%',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   placeholderIcon: {
-//     fontSize: 32,
-//     color: '#999',
-//   },
-//   itemDetails: {
-//     flex: 1,
-//     justifyContent: 'space-between',
-//   },
-//   itemTextContainer: {
-//     marginBottom: 12,
-//   },
-//   itemName: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     color: '#333',
-//     marginBottom: 4,
-//   },
-//   itemProduct: {
-//     fontSize: 14,
-//     color: '#666',
-//     marginBottom: 6,
-//   },
-//   itemPrice: {
-//     fontSize: 15,
-//     fontWeight: '600',
-//     color: '#28a745',
-//   },
-//   quantitySection: {
-//     marginTop: 8,
-//   },
-//   quantityControls: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 12,
-//   },
-//   quantityButton: {
-//     width: 32,
-//     height: 32,
-//     borderRadius: 16,
-//     backgroundColor: '#f0f0f0',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   quantityDisplayContainer: {
-//     minWidth: 36,
-//     alignItems: 'center',
-//   },
-//   quantityDisplay: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//     color: '#333',
-//   },
-//   itemActions: {
-//     alignItems: 'flex-end',
-//     justifyContent: 'space-between',
-//   },
-//   itemTotalPrice: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: '#333',
-//     marginBottom: 12,
-//   },
-//   removeItemButton: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 6,
-//     paddingHorizontal: 10,
-//     paddingVertical: 6,
-//     borderRadius: 6,
-//     backgroundColor: '#fff5f5',
-//   },
-//   removeItemText: {
-//     color: '#ff4d4f',
-//     fontSize: 13,
-//     fontWeight: '600',
-//   },
-
-//   // Clear Cart Button
-//   clearCartContainer: {
-//     marginTop: 20,
-//     alignItems: 'flex-end',
-//   },
-//   clearCartButton: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     backgroundColor: '#ff4d4f',
-//     paddingHorizontal: 20,
-//     paddingVertical: 12,
-//     borderRadius: 8,
-//     gap: 8,
-//   },
-//   clearCartText: {
-//     color: 'white',
-//     fontSize: 14,
-//     fontWeight: 'bold',
-//   },
-
-//   // Order Summary Styles
-//   orderSummaryCard: {
-//     backgroundColor: 'white',
-//     borderRadius: 12,
-//     padding: 24,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.05,
-//     shadowRadius: 8,
-//     elevation: 2,
-//   },
-//   orderSummaryTitle: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     color: '#333',
-//     marginBottom: 20,
-//     paddingBottom: 16,
-//     borderBottomWidth: 2,
-//     borderBottomColor: '#2c5f2d',
-//   },
-//   summaryRows: {
-//     gap: 12,
-//     marginBottom: 20,
-//   },
-//   summaryRow: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//   },
-//   summaryLabel: {
-//     fontSize: 16,
-//     color: '#666',
-//   },
-//   summaryValue: {
-//     fontSize: 16,
-//     color: '#666',
-//     fontWeight: '500',
-//   },
-//   totalSection: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     alignItems: 'center',
-//     marginTop: 20,
-//     paddingTop: 20,
-//     borderTopWidth: 2,
-//     borderTopColor: '#eaeaea',
-//   },
-//   totalLabel: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: '#333',
-//   },
-//   totalValue: {
-//     fontSize: 22,
-//     fontWeight: 'bold',
-//     color: '#2c5f2d',
-//   },
-
-//   // Action Buttons
-//   actionButtonsContainer: {
-//     marginTop: 28,
-//     gap: 12,
-//   },
-//   checkoutButton: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#2c5f2d',
-//     paddingVertical: 16,
-//     borderRadius: 8,
-//     gap: 10,
-//   },
-//   checkoutButtonText: {
-//     color: 'white',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-//   continueShoppingButton: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#f0f0f0',
-//     paddingVertical: 16,
-//     borderRadius: 8,
-//     gap: 10,
-//   },
-//   continueShoppingText: {
-//     color: '#333',
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-
-//   // Free Shipping Banner
-//   freeShippingBanner: {
-//     marginTop: 16,
-//     padding: 12,
-//     backgroundColor: '#fff9f0',
-//     borderRadius: 8,
-//     borderLeftWidth: 4,
-//     borderLeftColor: '#ffa500',
-//   },
-//   freeShippingText: {
-//     fontSize: 14,
-//     color: '#666',
-//     textAlign: 'center',
-//     fontWeight: '500',
-//   },
-
-//   // Notification Styles
-//   notification: {
-//     position: 'absolute',
-//     top: 70,
-//     right: 16,
-//     padding: 16,
-//     borderRadius: 8,
-//     zIndex: 1001,
-//     maxWidth: width - 32,
-//     shadowColor: '#000',
-//     shadowOffset: { width: 0, height: 4 },
-//     shadowOpacity: 0.15,
-//     shadowRadius: 8,
-//     elevation: 5,
-//   },
-//   notificationText: {
-//     color: 'white',
-//     fontWeight: 'bold',
-//     fontSize: 14,
-//   },
-
-//   // Modal Styles
-//   modalOverlay: {
-//     flex: 1,
-//     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//   },
-//   modalContent: {
-//     backgroundColor: 'white',
-//     borderRadius: 16,
-//     padding: 24,
-//     width: '80%',
-//     alignItems: 'center',
-//   },
-//   modalIcon: {
-//     fontSize: 48,
-//     marginBottom: 16,
-//     color: '#2c5f2d',
-//   },
-//   modalTitle: {
-//     fontSize: 20,
-//     fontWeight: 'bold',
-//     color: '#333',
-//     marginBottom: 8,
-//     textAlign: 'center',
-//   },
-//   modalText: {
-//     fontSize: 16,
-//     color: '#666',
-//     textAlign: 'center',
-//     marginBottom: 24,
-//     lineHeight: 22,
-//   },
-//   modalButtons: {
-//     flexDirection: 'row',
-//     justifyContent: 'space-between',
-//     width: '100%',
-//     gap: 12,
-//   },
-//   modalButton: {
-//     flex: 1,
-//     paddingVertical: 12,
-//     borderRadius: 8,
-//     alignItems: 'center',
-//   },
-//   cancelButton: {
-//     backgroundColor: '#e0e0e0',
-//   },
-//   cancelButtonText: {
-//     color: '#333',
-//     fontWeight: 'bold',
-//     fontSize: 16,
-//   },
-//   loginButton: {
-//     backgroundColor: '#2c5f2d',
-//   },
-// });
-
 // export default CropcareCart;
 
 
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  Alert,
-  ActivityIndicator,
-  StatusBar,
-  Dimensions,
-  Animated,
-  Modal,
-} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ShoppingCart, Trash2, Plus, Minus, ArrowLeft, CreditCard, LogOut, User } from 'lucide-react-native';
 import { router, useFocusEffect } from 'expo-router';
+import { ArrowLeft, CreditCard, LogOut, Minus, Plus, ShoppingCart, Trash2, User } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Animated,
+  Dimensions,
+  Image,
+  Modal,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -1372,7 +802,6 @@ const CropcareCart: React.FC = () => {
     if (user) {
       fetchUserCart();
     } else {
-      // Reset cart when user is not authenticated
       setCart({
         items: [],
         subtotal: 0,
@@ -1412,7 +841,6 @@ const CropcareCart: React.FC = () => {
   const checkAuthStatus = async () => {
     setLoading(prev => ({ ...prev, auth: true }));
     try {
-      // Check all required authentication items
       const [userData, role, userId, farmerId] = await Promise.all([
         AsyncStorage.getItem('userData'),
         AsyncStorage.getItem('userRole'),
@@ -1420,13 +848,11 @@ const CropcareCart: React.FC = () => {
         AsyncStorage.getItem('farmerId'),
       ]);
 
-      console.log('Cart Auth check:', { userData, role, userId, farmerId });
-
       if (userData && role && userId) {
         try {
           const parsedUserData = JSON.parse(userData);
           const phone = await AsyncStorage.getItem('phone');
-          
+
           const userObj: User = {
             _id: userId,
             role: role,
@@ -1441,21 +867,18 @@ const CropcareCart: React.FC = () => {
             }
           };
 
-          // Add farmerId if available
           if (farmerId) {
             userObj.farmerId = farmerId;
           }
 
           setUser(userObj);
           setShowLoginModal(false);
-          console.log('Cart User authenticated:', userObj);
         } catch (error) {
           console.error('Error parsing user data:', error);
           setUser(null);
           setShowLoginModal(true);
         }
       } else {
-        console.log('Cart User not authenticated');
         setUser(null);
         setShowLoginModal(true);
       }
@@ -1497,14 +920,9 @@ const CropcareCart: React.FC = () => {
 
     setLoading(prev => ({ ...prev, cart: true }));
     try {
-      // Use farmerId if available, otherwise use userId
       const idToUse = user.farmerId || user._id;
-      console.log('Fetching cart for ID:', idToUse);
-      
       const response = await fetch(`${CART_API_URL}/cart/${idToUse}`);
       const data = await response.json();
-
-      console.log('Cart API response:', data);
 
       if (data.success && data.data) {
         setCart(data.data);
@@ -1662,8 +1080,7 @@ const CropcareCart: React.FC = () => {
       return;
     }
 
-    // Navigate to checkout page
-    router.push('/farmerscreen/cropcarecheckout');
+    router.push('/(farmerscreen)/cropcarecheckout');
   };
 
   const showNotification = (type: 'success' | 'error', message: string) => {
@@ -1672,91 +1089,74 @@ const CropcareCart: React.FC = () => {
 
   if (loading.auth) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-50">
+      <View className="flex-1 justify-center items-center bg-[#F4F6F8]">
         <ActivityIndicator size="large" color="#2c5f2d" />
-        <Text className="mt-3 text-base text-gray-600 font-medium">Checking authentication...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      <StatusBar backgroundColor="#2c5f2d" barStyle="light-content" />
-
-      {/* Notification Component */}
-      {notification && (
-        <Animated.View
-          className="absolute top-16 right-4 p-4 rounded-lg z-[1001] max-w-[calc(100vw-32px)] shadow-lg shadow-black/15"
-          style={[
-            {
-              backgroundColor: notification.type === 'success' ? '#28a745' : '#ff4d4f',
-              transform: [{
-                translateX: notificationAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [width, 0]
-                })
-              }],
-              opacity: notificationAnim,
-            }
-          ]}
-        >
-          <Text className="text-white font-bold text-sm">{notification.message}</Text>
-        </Animated.View>
-      )}
-
-      {/* Header Section */}
-      <View className="bg-green-800 pt-3 pb-4 px-4 shadow-md shadow-black/10">
+    <SafeAreaView className="flex-1 bg-[#F4F6F8]">
+      {/* Consistent Header Design */}
+      <View className="bg-white px-5 py-4 shadow-sm elevation-4">
         <View className="flex-row items-center justify-between">
-          <TouchableOpacity
-            onPress={() => router.push("/farmerscreen/cropcare")}
-            className="p-2 rounded-lg bg-white/10"
-          >
-            <ArrowLeft size={24} color="white" />
-          </TouchableOpacity>
-          <View className="items-center mx-3 flex-1">
-            <Text className="text-xl font-bold text-white mb-1">🛒 Crop Care Cart</Text>
-            {user ? (
-              <View className="flex-row items-center gap-2">
-                <Text className="text-sm text-gray-200">{user.personalInfo.name}</Text>
-                <View className="bg-white/20 px-2.5 py-0.5 rounded-full">
-                  <Text className="text-white text-xs font-semibold">{user.role}</Text>
-                </View>
-                <TouchableOpacity 
-                  onPress={handleLogout} 
-                  className="flex-row items-center bg-white/15 px-2 py-1 rounded-lg gap-1"
-                >
-                  <LogOut size={12} color="white" />
-                  <Text className="text-white text-xs font-semibold">Logout</Text>
-                </TouchableOpacity>
-              </View>
-            ) : (
-              <TouchableOpacity 
-                className="flex-row items-center bg-white/15 px-3 py-1.5 rounded-lg gap-1.5"
-                onPress={() => setShowLoginModal(true)}
-              >
-                <User size={14} color="white" />
-                <Text className="text-white text-xs font-semibold">Tap to Login</Text>
-              </TouchableOpacity>
-            )}
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={() => router.push("/(farmerscreen)/cropcare")} className="mr-3 p-1">
+              <ArrowLeft size={24} color="#000000ff" />
+            </TouchableOpacity>
+            <View>
+              <Text className="text-xl font-medium text-black">Crop Care Cart</Text>
+              {user && (
+                <Text className="text-xs text-black/80">
+                  Hello, {user.personalInfo.name.split(" ")[0]}
+                </Text>
+              )}
+            </View>
           </View>
-          <View className="w-10" />
+
+          {user && (
+            <TouchableOpacity onPress={handleLogout} className="p-1">
+              <LogOut size={20} color="#000000ff" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="p-5">
+      <View className="flex-1">
+        {/* Notification Component */}
+        {notification && (
+          <Animated.View
+            className="absolute top-4 right-4 p-4 rounded-lg z-[1001] max-w-[calc(100vw-32px)] shadow-lg shadow-black/15"
+            style={[
+              {
+                backgroundColor: notification.type === 'success' ? '#28a745' : '#ff4d4f',
+                transform: [{
+                  translateX: notificationAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [width, 0]
+                  })
+                }],
+                opacity: notificationAnim,
+              }
+            ]}
+          >
+            <Text className="text-white font-bold text-sm">{notification.message}</Text>
+          </Animated.View>
+        )}
+
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: 16, paddingBottom: 40 }}>
           {/* Show Login Prompt when not authenticated */}
           {!user ? (
             <View className="items-center justify-center py-12 px-5 mt-10">
-              <View className="w-32 h-32 rounded-full bg-green-50 justify-center items-center mb-6">
-                <Text className="text-6xl text-green-800">🔒</Text>
+              <View className="w-24 h-24 rounded-full bg-[#e8f5e9] justify-center items-center mb-6">
+                <Text className="text-5xl text-[#2c5f2d]">🔒</Text>
               </View>
-              <Text className="text-2xl font-bold text-gray-800 mb-3 text-center">Login Required</Text>
-              <Text className="text-base text-gray-600 text-center mb-8 leading-relaxed">
+              <Text className="text-2xl font-bold text-[#333] mb-3 text-center">Login Required</Text>
+              <Text className="text-base text-gray-500 text-center mb-8 leading-relaxed">
                 Please login to view and manage your cart
               </Text>
               <TouchableOpacity
-                className="flex-row items-center justify-center bg-green-800 px-8 py-3.5 rounded-lg gap-2.5"
+                className="flex-row items-center justify-center bg-[#2c5f2d] px-8 py-3.5 rounded-lg gap-2.5"
                 onPress={() => setShowLoginModal(true)}
               >
                 <User size={20} color="white" />
@@ -1765,51 +1165,50 @@ const CropcareCart: React.FC = () => {
             </View>
           ) : (
             <>
-              {/* Cart Title Section */}
-              <View className="mb-6">
-                <View className="flex-row items-center justify-between">
-                  <Text className="text-2xl font-bold text-gray-800">Shopping Cart</Text>
-                  <View className="bg-green-800 px-4 py-2 rounded-full">
-                    <Text className="text-white text-sm font-bold">
+              {/* Header Info */}
+              {cart.items.length > 0 && (
+                <View className="flex-row items-center justify-between mb-6">
+                  <Text className="text-xl font-medium text-[#1a1a1a]">Shopping List</Text>
+                  <View className="bg-[#e8f5e9] px-3 py-1 rounded-full border border-[#2c5f2d]/20">
+                    <Text className="text-[#2c5f2d] text-xs font-bold">
                       {cart.items.length} item{cart.items.length !== 1 ? 's' : ''}
                     </Text>
                   </View>
                 </View>
-              </View>
+              )}
 
               {/* Empty Cart State */}
               {cart.items.length === 0 ? (
                 <View className="items-center py-12 px-5">
-                  <View className="w-32 h-32 rounded-full bg-green-50 justify-center items-center mb-6">
-                    <Text className="text-6xl text-green-800">🛒</Text>
+                  <View className="w-24 h-24 rounded-full bg-gray-100 justify-center items-center mb-6">
+                    <ShoppingCart size={40} color="#999" />
                   </View>
-                  <Text className="text-2xl font-bold text-gray-800 mb-3 text-center">Your cart is empty</Text>
-                  <Text className="text-base text-gray-600 text-center mb-8 leading-relaxed">
-                    Add some products to get started with your crop care journey!
+                  <Text className="text-xl font-bold text-[#333] mb-2 text-center">Your cart is empty</Text>
+                  <Text className="text-sm text-gray-500 text-center mb-8">
+                    Add products from the Crop Care section.
                   </Text>
                   <TouchableOpacity
-                    className="flex-row items-center bg-blue-50 px-6 py-3.5 rounded-lg gap-2.5"
-                    onPress={() => router.push('/farmerscreen/cropcare')}
+                    className="flex-row items-center bg-[#2c5f2d] px-6 py-3 rounded-lg gap-2"
+                    onPress={() => router.push('/(farmerscreen)/cropcare')}
                   >
-                    <ShoppingCart size={20} color="#333" />
-                    <Text className="text-green-800 text-base font-bold">Browse Products</Text>
+                    <Text className="text-white text-sm font-medium">Browse Products</Text>
                   </TouchableOpacity>
                 </View>
               ) : (
-                <View className="gap-6">
+                <View className="gap-4">
                   {loading.cart ? (
                     <View className="items-center justify-center py-12">
                       <ActivityIndicator size="large" color="#2c5f2d" />
-                      <Text className="mt-4 text-base text-gray-600">Loading cart...</Text>
+                      <Text className="mt-4 text-sm text-gray-500">Loading cart...</Text>
                     </View>
                   ) : (
                     <>
                       {/* Cart Items List */}
-                      <View className="bg-white rounded-xl p-5 shadow-sm shadow-black/5">
-                        {cart.items.map((item) => (
-                          <View key={item._id} className="flex-row py-4 border-b border-gray-200 gap-4">
+                      {cart.items.map((item) => (
+                        <View key={item._id} className="bg-white rounded-2xl p-4 shadow-sm elevation-[2] border border-black/5">
+                          <View className="flex-row gap-4">
                             {/* Product Image */}
-                            <View className="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden justify-center items-center">
+                            <View className="w-20 h-20 rounded-xl bg-gray-50 overflow-hidden justify-center items-center border border-gray-100">
                               {item.image ? (
                                 <Image
                                   source={{ uri: item.image }}
@@ -1817,135 +1216,135 @@ const CropcareCart: React.FC = () => {
                                   resizeMode="cover"
                                 />
                               ) : (
-                                <View className="w-full h-full justify-center items-center">
-                                  <Text className="text-4xl text-gray-500">🌱</Text>
+                                <View className="w-full h-full justify-center items-center bg-[#e8f5e9]">
+                                  <Text className="text-3xl text-gray-400">🌱</Text>
                                 </View>
                               )}
                             </View>
 
                             {/* Product Details */}
-                            <View className="flex-1 justify-between">
-                              <View className="mb-3">
-                                <Text className="text-base font-bold text-gray-800 mb-1" numberOfLines={1}>
+                            <View className="flex-1 justify-between py-0.5">
+                              <View>
+                                <Text className="text-[15px] font-bold text-[#333] leading-5 mb-1" numberOfLines={1}>
                                   {item.seedName}
                                 </Text>
-                                <Text className="text-sm text-gray-600 mb-1.5" numberOfLines={1}>
+                                <Text className="text-xs text-gray-500 mb-1" numberOfLines={1}>
                                   {item.productName}
                                 </Text>
-                                <Text className="text-sm font-semibold text-green-500">
-                                  ₹{item.seedPrice.toFixed(2)} per unit
+                                <Text className="text-sm font-medium text-[#2c5f2d]">
+                                  ₹{item.seedPrice.toFixed(2)} <Text className="text-gray-400 text-xs font-normal">/ unit</Text>
                                 </Text>
                               </View>
 
                               {/* Quantity Controls */}
-                              <View className="mt-2">
-                                <View className="flex-row items-center gap-3">
+                              <View className="flex-row items-center justify-between mt-2">
+                                <View className="flex-row items-center bg-gray-50 rounded-lg p-1 border border-gray-200">
                                   <TouchableOpacity
-                                    className="w-8 h-8 rounded-full bg-gray-200 justify-center items-center"
+                                    className="w-7 h-7 bg-white rounded-md justify-center items-center shadow-sm"
                                     onPress={() => updateQuantity(item._id!, item.quantity - 1)}
                                     disabled={loading.cart}
                                   >
-                                    <Minus size={16} color="#333" />
+                                    <Minus size={14} color="#333" />
                                   </TouchableOpacity>
-                                  <View className="min-w-9 items-center">
-                                    <Text className="text-base font-bold text-gray-800">{item.quantity}</Text>
+                                  <View className="min-w-[32px] items-center px-2">
+                                    <Text className="text-sm font-bold text-[#333]">{item.quantity}</Text>
                                   </View>
                                   <TouchableOpacity
-                                    className="w-8 h-8 rounded-full bg-gray-200 justify-center items-center"
+                                    className="w-7 h-7 bg-[#2c5f2d] rounded-md justify-center items-center shadow-sm"
                                     onPress={() => updateQuantity(item._id!, item.quantity + 1)}
                                     disabled={loading.cart}
                                   >
-                                    <Plus size={16} color="#333" />
+                                    <Plus size={14} color="white" />
                                   </TouchableOpacity>
                                 </View>
+
+                                <TouchableOpacity
+                                  onPress={() => removeItem(item._id!)}
+                                  className="p-2"
+                                  disabled={loading.cart}
+                                >
+                                  <Trash2 size={18} color="#ff4d4f" />
+                                </TouchableOpacity>
                               </View>
                             </View>
-
-                            {/* Item Actions */}
-                            <View className="items-end justify-between">
-                              <Text className="text-lg font-bold text-gray-800 mb-3">
-                                ₹{(item.seedPrice * item.quantity).toFixed(2)}
-                              </Text>
-                              <TouchableOpacity
-                                className="flex-row items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-red-50"
-                                onPress={() => removeItem(item._id!)}
-                                disabled={loading.cart}
-                              >
-                                <Trash2 size={16} color="#ff4d4f" />
-                                <Text className="text-red-500 text-xs font-semibold">Remove</Text>
-                              </TouchableOpacity>
-                            </View>
                           </View>
-                        ))}
 
-                        {/* Clear Cart Button */}
-                        <View className="mt-5 items-end">
-                          <TouchableOpacity
-                            className="flex-row items-center bg-red-500 px-5 py-3 rounded-lg gap-2"
-                            onPress={clearCart}
-                            disabled={loading.cart}
-                          >
-                            <Trash2 size={16} color="white" />
-                            <Text className="text-white text-sm font-bold">Clear Cart</Text>
-                          </TouchableOpacity>
+                          <View className="mt-3 pt-3 border-t border-gray-100 flex-row justify-between items-center">
+                            <Text className="text-xs text-gray-500 font-medium">Subtotal</Text>
+                            <Text className="text-base font-bold text-[#333]">
+                              ₹{(item.seedPrice * item.quantity).toFixed(2)}
+                            </Text>
+                          </View>
                         </View>
+                      ))}
+
+                      {/* Clear Cart Button */}
+                      <View className="items-end mb-4">
+                        <TouchableOpacity
+                          className="flex-row items-center px-4 py-2"
+                          onPress={clearCart}
+                          disabled={loading.cart}
+                        >
+                          <Text className="text-red-500 text-xs font-medium">Clear Shopping Cart</Text>
+                        </TouchableOpacity>
                       </View>
 
                       {/* Order Summary */}
-                      <View className="bg-white rounded-xl p-6 shadow-sm shadow-black/5">
-                        <Text className="text-xl font-bold text-gray-800 mb-5 pb-4 border-b-2 border-b-green-800">
+                      <View className="bg-white rounded-2xl p-5 shadow-sm elevation-[2] border border-black/5 mb-8">
+                        <Text className="text-lg font-bold text-[#333] mb-4">
                           Order Summary
                         </Text>
 
-                        <View className="gap-3 mb-5">
+                        <View className="gap-3 mb-4">
                           <View className="flex-row justify-between items-center">
-                            <Text className="text-base text-gray-600">Subtotal</Text>
-                            <Text className="text-base text-gray-600 font-medium">₹{cart.subtotal.toFixed(2)}</Text>
+                            <Text className="text-sm text-gray-500">Subtotal</Text>
+                            <Text className="text-sm text-[#333] font-medium">₹{cart.subtotal.toFixed(2)}</Text>
                           </View>
 
                           <View className="flex-row justify-between items-center">
-                            <Text className="text-base text-gray-600">GST (18%)</Text>
-                            <Text className="text-base text-gray-600 font-medium">₹{cart.gst.toFixed(2)}</Text>
+                            <Text className="text-sm text-gray-500">GST (18%)</Text>
+                            <Text className="text-sm text-[#333] font-medium">₹{cart.gst.toFixed(2)}</Text>
                           </View>
 
                           <View className="flex-row justify-between items-center">
-                            <Text className="text-base text-gray-600">Shipping</Text>
-                            <Text className="text-base text-gray-600 font-medium">
+                            <Text className="text-sm text-gray-500">Shipping</Text>
+                            <Text className="text-sm font-medium text-[#2c5f2d]">
                               {cart.shipping === 0 ? 'FREE' : `₹${cart.shipping.toFixed(2)}`}
                             </Text>
                           </View>
                         </View>
 
+                        <View className="h-[1px] bg-gray-100 mb-4" />
+
                         {/* Total Section */}
-                        <View className="flex-row justify-between items-center mt-5 pt-5 border-t-2 border-t-gray-200">
-                          <Text className="text-lg font-bold text-gray-800">Total Amount</Text>
-                          <Text className="text-2xl font-bold text-green-800">₹{cart.total.toFixed(2)}</Text>
+                        <View className="flex-row justify-between items-center mb-6">
+                          <Text className="text-base font-bold text-[#333]">Total Amount</Text>
+                          <Text className="text-xl font-bold text-[#2c5f2d]">₹{cart.total.toFixed(2)}</Text>
                         </View>
 
                         {/* Action Buttons */}
-                        <View className="mt-7 gap-3">
+                        <View className="gap-3">
                           <TouchableOpacity
-                            className="flex-row items-center justify-center bg-green-800 py-4 rounded-lg gap-2.5"
+                            className="flex-row items-center justify-center bg-[#2c5f2d] py-3.5 rounded-xl shadow-md shadow-green-900/20"
                             onPress={initiatePayment}
                             disabled={loading.payment || cart.items.length === 0}
                           >
-                            <CreditCard size={20} color="white" />
-                            <Text className="text-white text-base font-bold">Proceed to Checkout</Text>
+                            <CreditCard size={18} color="white" className="mr-2" />
+                            <Text className="text-white text-sm font-bold ml-2">Proceed to Checkout</Text>
                           </TouchableOpacity>
 
                           <TouchableOpacity
-                            className="flex-row items-center justify-center bg-gray-200 py-4 rounded-lg gap-2.5"
-                            onPress={() => router.push('/farmerscreen/cropcare')}
+                            className="flex-row items-center justify-center bg-gray-50 py-3.5 rounded-xl border border-gray-100"
+                            onPress={() => router.push('/(farmerscreen)/cropcare')}
                           >
-                            <ShoppingCart size={20} color="#333" />
-                            <Text className="text-gray-800 text-base font-bold">Continue Shopping</Text>
+                            <Text className="text-gray-600 text-sm font-medium">Continue Shopping</Text>
                           </TouchableOpacity>
                         </View>
 
                         {/* Free Shipping Banner */}
                         {cart.subtotal < 500 && cart.items.length > 0 && (
-                          <View className="mt-4 p-3 bg-orange-50 rounded-lg border-l-4 border-l-orange-500">
-                            <Text className="text-sm text-gray-600 text-center font-medium">
+                          <View className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-100">
+                            <Text className="text-xs text-orange-700 text-center font-medium">
                               Add ₹{(500 - cart.subtotal).toFixed(2)} more for FREE shipping!
                             </Text>
                           </View>
@@ -1957,38 +1356,40 @@ const CropcareCart: React.FC = () => {
               )}
             </>
           )}
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
 
       {/* Login Modal */}
       <Modal
         visible={showLoginModal}
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         onRequestClose={() => setShowLoginModal(false)}
       >
         <View className="flex-1 bg-black/50 justify-center items-center">
-          <View className="bg-white rounded-2xl p-6 w-4/5 items-center">
-            <Text className="text-5xl mb-4 text-green-800">🔒</Text>
-            <Text className="text-xl font-bold text-gray-800 mb-2 text-center">Login Required</Text>
-            <Text className="text-base text-gray-600 text-center mb-6 leading-relaxed">
-              You need to login to access your cart
+          <View className="bg-white rounded-[20px] p-6 w-4/5 items-center elevation-[5]">
+            <View className="w-[60px] h-[60px] rounded-full bg-[#FF5252] justify-center items-center mb-4">
+              <LogOut size={32} color="#fff" />
+            </View>
+            <Text className="text-xl font-bold mb-2 text-[#333]">Login Required</Text>
+            <Text className="text-[15px] text-gray-500 text-center mb-6">
+              Please login to access your cart
             </Text>
-            <View className="flex-row justify-between w-full gap-3">
+            <View className="flex-row w-full justify-between gap-3">
               <TouchableOpacity
-                className="flex-1 bg-gray-200 py-3 rounded-lg"
+                className="flex-1 py-3 rounded-[10px] items-center justify-center bg-gray-100"
                 onPress={() => {
                   setShowLoginModal(false);
                   router.back();
                 }}
               >
-                <Text className="text-gray-800 font-bold text-center text-base">Cancel</Text>
+                <Text className="text-gray-500 text-sm font-medium">Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                className="flex-1 bg-green-800 py-3 rounded-lg"
+                className="flex-1 py-3 rounded-[10px] items-center justify-center bg-[#2c5f2d]"
                 onPress={handleLogin}
               >
-                <Text className="text-white font-bold text-center text-base">Login</Text>
+                <Text className="text-white text-sm font-bold">Login</Text>
               </TouchableOpacity>
             </View>
           </View>

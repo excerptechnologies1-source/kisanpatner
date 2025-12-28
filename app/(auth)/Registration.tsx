@@ -633,26 +633,29 @@ const FarmerRegistration: React.FC = () => {
       {role === 'farmer' && (
         <>
           <View className="mb-3">
-            <Text className="text-sm font-subheading text-gray-800 mb-1.5">
-              Farm Location <Text className="text-red-500">*</Text>
-            </Text>
-            <View className="flex flex-row items-center gap-3">
-              <TouchableOpacity
-                className="bg-[#1FAD4E] w-10 h-10 rounded-full flex items-center justify-center"
-                onPress={getCurrentLocation}
-              >
-                <MapPin size={18} color="#fff" />
-              </TouchableOpacity>
+  <Text className="text-sm font-subheading text-gray-800 mb-1.5">
+    Farm Location <Text className="text-red-500">*</Text>
+  </Text>
+  
+  <View className="flex flex-row items-center gap-3">
+    <TouchableOpacity
+      className="flex flex-row items-center bg-green-50 border border-green-200 rounded-lg px-4 py-3 active:bg-green-100"
+      onPress={getCurrentLocation}
+    >
+      <MapPin size={18} color="#1FAD4E" className="mr-2" />
+      <Text className="text-green-700 font-medium"> Use Current Location</Text>
+    </TouchableOpacity>
 
-              {formData.farmLocation.latitude && (
-                <Text className="text-xs text-gray-600">
-                  Location:{' '}
-                  {parseFloat(formData.farmLocation.latitude).toFixed(6)},{' '}
-                  {parseFloat(formData.farmLocation.longitude).toFixed(6)}
-                </Text>
-              )}
-            </View>
-          </View>
+    {formData.farmLocation.latitude && (
+      <View className="flex-1">
+        <Text className="text-xs text-gray-500 mb-1">Selected Location:</Text>
+        <Text className="text-sm text-gray-800 font-medium">
+          {parseFloat(formData.farmLocation.latitude).toFixed(6)}, {parseFloat(formData.farmLocation.longitude).toFixed(6)}
+        </Text>
+      </View>
+    )}
+  </View>
+</View>
 
           <Text className="text-base font-medium text-gray-800 mt-3 mb-3">
             Farm Land (Acres)

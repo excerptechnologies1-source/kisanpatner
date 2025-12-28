@@ -167,7 +167,7 @@ const FarmerHomeScreen: React.FC = () => {
   return (
     <View className="flex-1 bg-white">
       {/* TOP BAR */}
-      <View className="flex-row items-center justify-between px-4 pb-3 pt-3 mt-3 mb-3 bg-white">
+      <View className="flex-row items-center justify-between px-4 pb-3 pt-3 mt-3 bg-white">
         {/* Left: Logo + App name */}
         <View className="flex-row items-center">
           <Image
@@ -209,7 +209,7 @@ const FarmerHomeScreen: React.FC = () => {
       >
         {/* BANNER SLIDER */}
         {/* BANNER SLIDER */}
-        <View className="mb-4">
+        <View className="mb-4 mt-2">
           <ScrollView
             horizontal
             pagingEnabled
