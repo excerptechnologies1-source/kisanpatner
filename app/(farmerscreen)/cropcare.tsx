@@ -4,14 +4,12 @@
 //   Text,
 //   ScrollView,
 //   TouchableOpacity,
-//   StyleSheet,
 //   ActivityIndicator,
-//   Image,
 //   Alert,
 //   Modal,
 // } from "react-native";
 // import axios from "axios";
-// import { Plus, Check, ShoppingCart, LogOut } from "lucide-react-native";
+// import { CropIcon, Check, ShoppingCart, LogOut,ChevronLeft } from "lucide-react-native";
 // import { router } from "expo-router";
 // import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { SafeAreaView } from "react-native-safe-area-context";
@@ -367,625 +365,293 @@
 
 //   if (isLoadingUser) {
 //     return (
-//       <SafeAreaView style={styles.safeArea}>
-//         <View style={styles.loadingContainer}>
+//       <SafeAreaView className="flex-1 bg-gray-50">
+//         <View className="flex-1 justify-center items-center">
 //           <ActivityIndicator size="large" color="#2c5f2d" />
-//           <Text style={styles.loadingText}>Checking authentication...</Text>
+//           <Text className="mt-4 text-base text-gray-600">Checking authentication...</Text>
 //         </View>
 //       </SafeAreaView>
 //     );
 //   }
 
 //   return (
-//     <SafeAreaView style={styles.safeArea}>
-//       {/* HEADER WITH CART */}
-//       <View style={styles.header}>
-//         <View>
-//           <Text style={styles.headerTitle}>🌾 Crop Care</Text>
-//           {user ? (
-//             <View style={styles.userInfo}>
-//               <Text style={styles.headerSubtitle}>
-//                 Welcome, {user.personalInfo.name}
-//               </Text>
-//               <TouchableOpacity onPress={handleLogout} style={styles.logoutBtn}>
-//                 <LogOut size={14} color="#fff" />
-//                 <Text style={styles.logoutText}>Logout</Text>
-//               </TouchableOpacity>
-//             </View>
-//           ) : (
-//             <Text style={styles.headerSubtitle}>Please login to continue</Text>
-//           )}
-//         </View>
-//         {user && (
-//           <TouchableOpacity
-//             style={styles.cartBtn}
-//             onPress={() => router.push("/farmerscreen/cropcarecart")}
-//           >
-//             <ShoppingCart size={24} color="#fff" />
-//             {cartItems.length > 0 && (
-//               <View style={styles.cartBadge}>
-//                 <Text style={styles.cartBadgeText}>{cartItems.length}</Text>
-//               </View>
-//             )}
-//           </TouchableOpacity>
-//         )}
-//       </View>
+//     <SafeAreaView className="flex-1 bg-gray-50">
+//       {/* HEADER */}
+// <View className="rounded-b-3xl px-4 py-2 border-b border-gray-200">
+//   <View className="flex-row items-center justify-start">
+//     <TouchableOpacity
+//       onPress={() => router.push('/(farmer)/home')}
+//       className="p-2"
+//     >
+//       <ChevronLeft size={24} color="#374151" />
+//     </TouchableOpacity>
+    
+//     {/* Add icon before the text */}
+//     <View className="ml-2 flex-row items-center">
+//       <Text className="text-2xl font-medium text-black ml-2">Crop Care</Text>
+//     </View>
+//   </View>
 
-//       <ScrollView style={styles.container}>
-//         {!user ? (
-//           // Show login prompt when not authenticated
-//           <View style={styles.loginPromptContainer}>
-//             <Text style={styles.loginPromptIcon}>🔒</Text>
-//             <Text style={styles.loginPromptTitle}>Login Required</Text>
-//             <Text style={styles.loginPromptText}>
-//               Please login to access Crop Care features
+//   {user ? (
+//     <View className="flex-row items-center justify-between mt-2">
+//       <Text className="font-medium text-black">
+//         Welcome, {user.personalInfo.name}
+//       </Text>
+
+//       <View className="flex-row items-center">
+//         <TouchableOpacity
+//           onPress={handleLogout}
+//           className="flex-row items-center bg-white/20 px-3 py-1.5 rounded-full mr-3"
+//         >
+//           <LogOut size={14} color="#920505ff" />
+//           <Text className="text-black font-medium ml-1 font-medium">Logout</Text>
+//         </TouchableOpacity>
+
+//         <TouchableOpacity
+//           onPress={() => router.push("/(farmerscreen)/cropcarecart")}
+//           className="bg-emerald-50 p-3 rounded-full relative"
+//         >
+//           <ShoppingCart size={22} color="#015e2fff" />
+//           {cartItems.length > 0 && (
+//             <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-5 h-5 items-center justify-center">
+//               <Text className="text-black text-xs font-medium">
+//                 {cartItems.length}
+//               </Text>
+//             </View>
+//           )}
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   ) : (
+//     <Text className="font-medium text-green-100 mt-1">
+//       Please login to continue
+//     </Text>
+//   )}
+// </View>
+
+// <ScrollView
+//   className="flex-1 px-4"
+//   contentContainerStyle={{ paddingBottom: 40 }}
+//   showsVerticalScrollIndicator={false}
+// >
+//   <View className="mt-6">
+//   <Text className="text-lg font-medium text-gray-800 mb-3">
+//     Categories
+//   </Text>
+
+//   {loading.categories ? (
+//     <ActivityIndicator color="#2c5f2d" />
+//   ) : categories.length === 0 ? (
+//     <Text className="font-medium text-gray-500">No categories available</Text>
+//   ) : (
+//     categories.map((cat) => {
+//       const isSelected = selectedCategory === cat._id;
+
+//       return (
+//         <TouchableOpacity
+//           key={cat._id}
+//           onPress={() => handleCategorySelect(cat._id)}
+//           className={`
+//             bg-white rounded-2xl px-4 py-4 mb-2
+//             flex-row items-center justify-between
+//             shadow-sm
+//             ${isSelected
+//               ? "border-2 border-green-700 bg-green-50"
+//               : "border border-gray-100"}
+//           `}
+//         >
+//           <Text className="text-base font-medium text-gray-800">
+//             {cat.name}
+//           </Text>
+
+//           {isSelected && <Check size={18} color="#2c5f2d" />}
+//         </TouchableOpacity>
+//       );
+//     })
+//   )}
+// </View>
+
+// {selectedCategory && (
+//   <View className="mt-6">
+//     <Text className="text-lg font-medium text-gray-800 mb-3">
+//       Subcategories
+//     </Text>
+
+//     {loading.subCategories ? (
+//       <ActivityIndicator color="#2c5f2d" />
+//     ) : getFilteredSubCategories().length === 0 ? (
+//       <Text className="font-medium text-gray-500">
+//         No subcategories available
+//       </Text>
+//     ) : (
+//       getFilteredSubCategories().map((sub) => {
+//         const isSelected = selectedSubCategory === sub._id;
+
+//         return (
+//           <TouchableOpacity
+//             key={sub._id}
+//             onPress={() => handleSubCategorySelect(sub._id)}
+//             className={`
+//               bg-white rounded-2xl px-4 py-4 mb-2
+//               flex-row items-center justify-between
+//               shadow-sm
+//               ${isSelected
+//                 ? "border-2 border-green-700 bg-green-50"
+//                 : "border border-gray-100"}
+//             `}
+//           >
+//             <Text className="text-base font-medium text-gray-800">
+//               {sub.name}
 //             </Text>
+
+//             {isSelected && <Check size={18} color="#2c5f2d" />}
+//           </TouchableOpacity>
+//         );
+//       })
+//     )}
+//   </View>
+// )}
+
+// {selectedSubCategory && (
+//   <View className="mt-6">
+//     <Text className="text-lg font-medium text-gray-800 mb-3">
+//       Products
+//     </Text>
+
+//     {loading.products ? (
+//       <ActivityIndicator color="#2c5f2d" />
+//     ) : products.length === 0 ? (
+//       <Text className="font-medium text-gray-500">
+//         No products available
+//       </Text>
+//     ) : (
+//       products.map((product) => (
+//         <View
+//           key={product._id}
+//           className="bg-white rounded-2xl p-4 mb-4 shadow-sm"
+//         >
+//           {/* Header */}
+//           <View className="flex-row justify-between items-center">
+//             <Text className="text-base font-semibold text-gray-800 flex-1">
+//               {product.name}
+//             </Text>
+
 //             <TouchableOpacity
-//               style={styles.loginButton}
-//               onPress={() => router.push("/(auth)/Login?role=farmer")}
+//               onPress={() =>
+//                 setSelectedProduct(
+//                   selectedProduct?._id === product._id
+//                     ? null
+//                     : product
+//                 )
+//               }
 //             >
-//               <Text style={styles.loginButtonText}>Login Now</Text>
+//               <Text className="font-medium text-green-700 font-medium">
+//                 {selectedProduct?._id === product._id ? "Hide" : "Details"}
+//               </Text>
 //             </TouchableOpacity>
 //           </View>
-//         ) : (
-//           // Show content when authenticated
-//           <>
-//             {/* CATEGORIES */}
-//             <View style={styles.section}>
-//               <Text style={styles.sectionTitle}>Categories</Text>
-//               {loading.categories ? (
-//                 <ActivityIndicator size="large" color="#2c5f2d" />
-//               ) : categories.length === 0 ? (
-//                 <Text style={styles.emptyText}>No categories available</Text>
-//               ) : (
-//                 categories.map((cat) => (
-//                   <TouchableOpacity
-//                     key={cat._id}
-//                     style={[
-//                       styles.card,
-//                       selectedCategory === cat._id && styles.activeCard,
-//                     ]}
-//                     onPress={() => handleCategorySelect(cat._id)}
-//                   >
-//                     <View style={styles.cardContent}>
-//                       <Text style={styles.cardIcon}>📁</Text>
-//                       <Text style={styles.cardTitle}>{cat.name}</Text>
-//                     </View>
-//                     {selectedCategory === cat._id && (
-//                       <Check size={20} color="#2c5f2d" />
-//                     )}
-//                   </TouchableOpacity>
-//                 ))
-//               )}
-//             </View>
 
-//             {/* SUBCATEGORIES */}
-//             {selectedCategory && (
-//               <View style={styles.section}>
-//                 <Text style={styles.sectionTitle}>Subcategories</Text>
-//                 {loading.subCategories ? (
-//                   <ActivityIndicator size="large" color="#2c5f2d" />
-//                 ) : getFilteredSubCategories().length === 0 ? (
-//                   <Text style={styles.emptyText}>
-//                     No subcategories available
-//                   </Text>
-//                 ) : (
-//                   getFilteredSubCategories().map((sub) => (
-//                     <TouchableOpacity
-//                       key={sub._id}
-//                       style={[
-//                         styles.card,
-//                         selectedSubCategory === sub._id && styles.activeCard,
-//                       ]}
-//                       onPress={() => handleSubCategorySelect(sub._id)}
-//                     >
-//                       <View style={styles.cardContent}>
-//                         <Text style={styles.cardIcon}>🌱</Text>
-//                         <Text style={styles.cardTitle}>{sub.name}</Text>
-//                       </View>
-//                       {selectedSubCategory === sub._id && (
-//                         <Check size={20} color="#2c5f2d" />
-//                       )}
-//                     </TouchableOpacity>
-//                   ))
-//                 )}
-//               </View>
-//             )}
+//           {/* Expanded details */}
+//           {selectedProduct?._id === product._id && (
+//             <View className="mt-3 bg-gray-50 rounded-xl p-3">
+//               <Text className="text-xs font-semibold text-gray-500 mb-2">
+//                 Target Pests / Diseases
+//               </Text>
 
-//             {/* PRODUCTS */}
-//             {selectedSubCategory && (
-//               <View style={styles.section}>
-//                 <Text style={styles.sectionTitle}>Products</Text>
-//                 {loading.products ? (
-//                   <ActivityIndicator size="large" color="#2c5f2d" />
-//                 ) : products.length === 0 ? (
-//                   <Text style={styles.emptyText}>
-//                     No products available in this subcategory
-//                   </Text>
-//                 ) : (
-//                   products.map((product) => (
-//                     <View key={product._id} style={styles.productCard}>
-//                       {/* Product Header */}
-//                       <View style={styles.productHeader}>
-//                         <Text style={styles.productTitle}>{product.name}</Text>
-//                         <TouchableOpacity
-//                           onPress={() =>
-//                             setSelectedProduct(
-//                               selectedProduct?._id === product._id
-//                                 ? null
-//                                 : product
-//                             )
-//                           }
-//                         >
-//                           <Text style={styles.detailsBtn}>
-//                             {selectedProduct?._id === product._id
-//                               ? "▼ Hide"
-//                               : "▶ Details"}
-//                           </Text>
-//                         </TouchableOpacity>
-//                       </View>
-
-//                       {/* Product Details (Expandable) */}
-//                       {selectedProduct?._id === product._id && (
-//                         <View style={styles.productDetails}>
-//                           {/* Target Pests */}
-//                           {product.targetPestsDiseases.length > 0 && (
-//                             <View style={styles.detailSection}>
-//                               <Text style={styles.detailTitle}>
-//                                 🎯 Target Pests/Diseases:
-//                               </Text>
-//                               {product.targetPestsDiseases.map((pest, idx) => (
-//                                 <Text key={idx} style={styles.detailItem}>
-//                                   • {pest.name}
-//                                 </Text>
-//                               ))}
-//                             </View>
-//                           )}
-//                         </View>
-//                       )}
-
-//                       {/* Recommended Seeds */}
-//                       <View style={styles.seedsSection}>
-//                         <Text style={styles.seedsSectionTitle}>
-//                           🌱 Available Seeds ({product.recommendedSeeds.length})
-//                         </Text>
-//                         {product.recommendedSeeds.map((seed, idx) => (
-//                           <View key={idx} style={styles.seedCard}>
-//                             <View style={styles.seedInfo}>
-//                               <Text style={styles.seedName}>{seed.name}</Text>
-//                               <Text style={styles.seedPrice}>
-//                                 ₹{seed.price.toFixed(2)}
-//                               </Text>
-//                             </View>
-
-//                             <TouchableOpacity
-//                               style={[
-//                                 styles.addBtn,
-//                                 isSeedInCart(seed.name) && styles.addedBtn,
-//                               ]}
-//                               onPress={() => addToCart(product, seed)}
-//                               disabled={loading.cart}
-//                             >
-//                               {isSeedInCart(seed.name) ? (
-//                                 <>
-//                                   <Check size={16} color="#fff" />
-//                                   <Text style={styles.addBtnText}>
-//                                     Added ({getSeedCartQuantity(seed.name)})
-//                                   </Text>
-//                                 </>
-//                               ) : (
-//                                 <>
-//                                   <Plus size={16} color="#fff" />
-//                                   <Text style={styles.addBtnText}>
-//                                     Add to Cart
-//                                   </Text>
-//                                 </>
-//                               )}
-//                             </TouchableOpacity>
-//                           </View>
-//                         ))}
-//                       </View>
-//                     </View>
-//                   ))
-//                 )}
-//               </View>
-//             )}
-
-//             {/* Empty State */}
-//             {!selectedCategory && categories.length > 0 && (
-//               <View style={styles.emptyState}>
-//                 <Text style={styles.emptyIcon}>👈</Text>
-//                 <Text style={styles.emptyTitle}>Select a Category</Text>
-//                 <Text style={styles.emptyText}>
-//                   Choose a category above to view subcategories and products
+//               {product.targetPestsDiseases.map((pest, i) => (
+//                 <Text key={i} className="font-medium text-gray-600 ml-1">
+//                   • {pest.name}
 //                 </Text>
-//               </View>
-//             )}
-//           </>
-//         )}
-//       </ScrollView>
-
-//       {/* Login Modal */}
-//       <Modal
-//         visible={showLoginModal}
-//         transparent={true}
-//         animationType="slide"
-//         onRequestClose={() => setShowLoginModal(false)}
-//       >
-//         <View style={styles.modalOverlay}>
-//           <View style={styles.modalContent}>
-//             <Text style={styles.modalIcon}>🔒</Text>
-//             <Text style={styles.modalTitle}>Login Required</Text>
-//             <Text style={styles.modalText}>
-//               You need to login to access Crop Care features
-//             </Text>
-//             <View style={styles.modalButtons}>
-//               <TouchableOpacity
-//                 style={[styles.modalButton, styles.cancelButton]}
-//                 onPress={() => {
-//                   setShowLoginModal(false);
-//                   router.back();
-//                 }}
-//               >
-//                 <Text style={styles.cancelButtonText}>Cancel</Text>
-//               </TouchableOpacity>
-//               <TouchableOpacity
-//                 style={[styles.modalButton, styles.loginButton]}
-//                 onPress={handleLogin}
-//               >
-//                 <Text style={styles.loginButtonText}>Login</Text>
-//               </TouchableOpacity>
+//               ))}
 //             </View>
+//           )}
+
+//           {/* Seeds */}
+//           <View className="mt-4">
+//             <Text className="text-xs font-semibold text-gray-500 mb-2">
+//               Available Seeds
+//             </Text>
+
+//             {product.recommendedSeeds.map((seed, i) => (
+//               <View
+//                 key={i}
+//                 className="flex-row justify-between items-center bg-green-50 p-3 rounded-xl mb-2"
+//               >
+//                 <View>
+//                   <Text className="font-medium font-semibold text-gray-800">
+//                     {seed.name}
+//                   </Text>
+//                   <Text className="font-medium text-green-700 font-medium">
+//                     ₹{seed.price.toFixed(2)}
+//                   </Text>
+//                 </View>
+
+//                 <TouchableOpacity
+//                   className={`px-4 py-2 rounded-lg ${
+//                     isSeedInCart(seed.name)
+//                       ? "bg-green-600"
+//                       : "bg-green-800"
+//                   }`}
+//                   onPress={() => addToCart(product, seed)}
+//                 >
+//                   <Text className="text-black text-xs font-semibold">
+//                     {isSeedInCart(seed.name)
+//                       ? `Added (${getSeedCartQuantity(seed.name)})`
+//                       : "Add"}
+//                   </Text>
+//                 </TouchableOpacity>
+//               </View>
+//             ))}
 //           </View>
 //         </View>
-//       </Modal>
+//       ))
+//     )}
+//   </View>
+// )}
+
+
+// </ScrollView>
+
 //     </SafeAreaView>
 //   );
 // }
 
-// /* ===================== STYLES ===================== */
-
-// const styles = StyleSheet.create({
-//   safeArea: {
-//     flex: 1,
-//     backgroundColor: "#f8f9fa",
-//   },
-//   loadingContainer: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     backgroundColor: "#f8f9fa",
-//   },
-//   loadingText: {
-//     marginTop: 16,
-//     fontSize: 16,
-//     color: "#666",
-//   },
-//   header: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     padding: 16,
-//     backgroundColor: "#2c5f2d",
-//   },
-//   headerTitle: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     color: "#fff",
-//   },
-//   userInfo: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginTop: 4,
-//   },
-//   headerSubtitle: {
-//     fontSize: 14,
-//     color: "#e0e0e0",
-//   },
-//   logoutBtn: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     marginLeft: 12,
-//     backgroundColor: "rgba(255,255,255,0.2)",
-//     paddingHorizontal: 8,
-//     paddingVertical: 4,
-//     borderRadius: 12,
-//   },
-//   logoutText: {
-//     color: "#fff",
-//     fontSize: 12,
-//     marginLeft: 4,
-//   },
-//   cartBtn: {
-//     backgroundColor: "rgba(255,255,255,0.2)",
-//     padding: 12,
-//     borderRadius: 30,
-//     position: "relative",
-//   },
-//   cartBadge: {
-//     position: "absolute",
-//     top: -5,
-//     right: -5,
-//     backgroundColor: "#ff4d4f",
-//     borderRadius: 10,
-//     minWidth: 20,
-//     height: 20,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   cartBadgeText: {
-//     color: "#fff",
-//     fontSize: 12,
-//     fontWeight: "bold",
-//   },
-//   container: {
-//     flex: 1,
-//     padding: 16,
-//   },
-//   loginPromptContainer: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//     padding: 40,
-//     minHeight: 300,
-//   },
-//   loginPromptIcon: {
-//     fontSize: 48,
-//     marginBottom: 16,
-//   },
-//   loginPromptTitle: {
-//     fontSize: 24,
-//     fontWeight: "bold",
-//     color: "#333",
-//     marginBottom: 8,
-//   },
-//   loginPromptText: {
-//     fontSize: 16,
-//     color: "#666",
-//     textAlign: "center",
-//     marginBottom: 24,
-//   },
-//   loginButton: {
-//     backgroundColor: "#2c5f2d",
-//     paddingHorizontal: 32,
-//     paddingVertical: 12,
-//     borderRadius: 8,
-//   },
-//   loginButtonText: {
-//     color: "#fff",
-//     fontSize: 16,
-//     fontWeight: "bold",
-//   },
-//   section: {
-//     marginBottom: 24,
-//   },
-//   sectionTitle: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     color: "#333",
-//     marginBottom: 12,
-//   },
-//   card: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     padding: 16,
-//     backgroundColor: "#fff",
-//     borderRadius: 12,
-//     marginBottom: 10,
-//     borderWidth: 2,
-//     borderColor: "transparent",
-//     elevation: 2,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 4,
-//   },
-//   activeCard: {
-//     borderColor: "#2c5f2d",
-//     backgroundColor: "#f0f7ff",
-//   },
-//   cardContent: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     flex: 1,
-//   },
-//   cardIcon: {
-//     fontSize: 24,
-//     marginRight: 12,
-//   },
-//   cardTitle: {
-//     fontSize: 16,
-//     fontWeight: "600",
-//     color: "#333",
-//   },
-//   productCard: {
-//     backgroundColor: "#fff",
-//     padding: 16,
-//     borderRadius: 12,
-//     marginBottom: 12,
-//     elevation: 2,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 4,
-//   },
-//   productHeader: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     marginBottom: 12,
-//   },
-//   productTitle: {
-//     fontSize: 18,
-//     fontWeight: "bold",
-//     color: "#333",
-//     flex: 1,
-//   },
-//   detailsBtn: {
-//     color: "#2c5f2d",
-//     fontSize: 14,
-//     fontWeight: "600",
-//   },
-//   productDetails: {
-//     backgroundColor: "#f8f9fa",
-//     padding: 12,
-//     borderRadius: 8,
-//     marginBottom: 12,
-//   },
-//   detailSection: {
-//     marginBottom: 12,
-//   },
-//   detailTitle: {
-//     fontSize: 14,
-//     fontWeight: "bold",
-//     color: "#666",
-//     marginBottom: 6,
-//   },
-//   detailItem: {
-//     fontSize: 14,
-//     color: "#666",
-//     marginLeft: 8,
-//     marginTop: 4,
-//   },
-//   seedsSection: {
-//     marginTop: 8,
-//   },
-//   seedsSectionTitle: {
-//     fontSize: 14,
-//     fontWeight: "bold",
-//     color: "#666",
-//     marginBottom: 8,
-//   },
-//   seedCard: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     alignItems: "center",
-//     padding: 12,
-//     backgroundColor: "#f0fff4",
-//     borderRadius: 8,
-//     marginBottom: 8,
-//     borderLeftWidth: 4,
-//     borderLeftColor: "#28a745",
-//   },
-//   seedInfo: {
-//     flex: 1,
-//   },
-//   seedName: {
-//     fontSize: 16,
-//     fontWeight: "600",
-//     color: "#333",
-//   },
-//   seedPrice: {
-//     fontSize: 14,
-//     fontWeight: "bold",
-//     color: "#28a745",
-//     marginTop: 4,
-//   },
-//   addBtn: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     backgroundColor: "#2c5f2d",
-//     paddingHorizontal: 16,
-//     paddingVertical: 10,
-//     borderRadius: 8,
-//     gap: 6,
-//   },
-//   addedBtn: {
-//     backgroundColor: "#28a745",
-//   },
-//   addBtnText: {
-//     color: "#fff",
-//     fontSize: 14,
-//     fontWeight: "bold",
-//   },
-//   emptyState: {
-//     alignItems: "center",
-//     justifyContent: "center",
-//     padding: 40,
-//   },
-//   emptyIcon: {
-//     fontSize: 48,
-//     marginBottom: 16,
-//   },
-//   emptyTitle: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     color: "#666",
-//     marginBottom: 8,
-//   },
-//   emptyText: {
-//     fontSize: 14,
-//     color: "#999",
-//     textAlign: "center",
-//   },
-//   modalOverlay: {
-//     flex: 1,
-//     backgroundColor: "rgba(0, 0, 0, 0.5)",
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   modalContent: {
-//     backgroundColor: "white",
-//     borderRadius: 16,
-//     padding: 24,
-//     width: "80%",
-//     alignItems: "center",
-//   },
-//   modalIcon: {
-//     fontSize: 48,
-//     marginBottom: 16,
-//   },
-//   modalTitle: {
-//     fontSize: 20,
-//     fontWeight: "bold",
-//     color: "#333",
-//     marginBottom: 8,
-//   },
-//   modalText: {
-//     fontSize: 16,
-//     color: "#666",
-//     textAlign: "center",
-//     marginBottom: 24,
-//   },
-//   modalButtons: {
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//     width: "100%",
-//   },
-//   modalButton: {
-//     flex: 1,
-//     paddingVertical: 12,
-//     borderRadius: 8,
-//     alignItems: "center",
-//     marginHorizontal: 8,
-//   },
-//   cancelButton: {
-//     backgroundColor: "#e0e0e0",
-//   },
-//   cancelButtonText: {
-//     color: "#333",
-//     fontWeight: "bold",
-//   },
- 
-// });
 
 
-import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { router, useNavigation } from "expo-router";
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
+  ArrowLeft,
+  Check,
+  ChevronRight,
+  Leaf,
+  LogOut,
+  ShoppingCart
+} from "lucide-react-native";
+import { useEffect, useState } from "react";
+import {
   ActivityIndicator,
   Alert,
+  Dimensions,
+  FlatList,
+  Image,
+  LayoutAnimation,
   Modal,
+  Platform,
+  Text,
+  TouchableOpacity,
+  UIManager,
+  View,
 } from "react-native";
-import axios from "axios";
-import { CropIcon, Check, ShoppingCart, LogOut,ChevronLeft } from "lucide-react-native";
-import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+// Enable LayoutAnimation for Android
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
 
 /* ===================== INTERFACES ===================== */
 
@@ -1024,13 +690,14 @@ interface Product {
   _id: string;
   name: string;
   subCategoryId:
-    | string
-    | { _id: string; name: string; categoryId: { _id: string; name: string } };
+  | string
+  | { _id: string; name: string; categoryId: { _id: string; name: string } };
   targetPestsDiseases: TargetPestDisease[];
   recommendedSeeds: RecommendedSeed[];
   status: "active" | "inactive";
   createdAt: string;
   updatedAt: string;
+  image?: string;
 }
 
 interface User {
@@ -1050,18 +717,34 @@ interface CartItem {
   image?: string;
 }
 
+/* ===================== CONSTANTS ===================== */
+
+const { width } = Dimensions.get("window");
+// Note: Card width calculation isn't strictly needed for flex-wrap but useful if we want exact sizing. 
+// Using w-[48%] with gap is a good Tailwind approach.
+
+type ViewState = "categories" | "subCategories" | "products";
+
 /* ===================== COMPONENT ===================== */
 
 export default function Cropcare() {
-  // State
+  const navigation = useNavigation();
+
+  // Navigation State
+  const [viewState, setViewState] = useState<ViewState>("categories");
+  const [history, setHistory] = useState<ViewState[]>([]);
+
+  // Data State
   const [categories, setCategories] = useState<Category[]>([]);
-  const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(
-    null
-  );
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [filteredSubCategories, setFilteredSubCategories] = useState<SubCategory[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+
+  // Selection State
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [selectedSubCategory, setSelectedSubCategory] = useState<SubCategory | null>(null);
+  const [expandedProduct, setExpandedProduct] = useState<string | null>(null);
+
+  // User & Cart State
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -1088,15 +771,12 @@ export default function Cropcare() {
   const checkUserAuth = async () => {
     setIsLoadingUser(true);
     try {
-      // Check all required authentication items
       const [userData, role, userId, farmerId] = await Promise.all([
         AsyncStorage.getItem("userData"),
         AsyncStorage.getItem("userRole"),
         AsyncStorage.getItem("userId"),
         AsyncStorage.getItem("farmerId"),
       ]);
-
-      console.log("Auth check:", { userData, role, userId, farmerId });
 
       if (userData && role && userId) {
         const parsed = JSON.parse(userData);
@@ -1108,16 +788,9 @@ export default function Cropcare() {
             mobileNo: parsed.personalInfo?.mobileNo || parsed.mobileNo || "",
           },
         };
-
-        // Add farmerId if available
-        if (farmerId) {
-          userObj.farmerId = farmerId;
-        }
-
+        if (farmerId) userObj.farmerId = farmerId;
         setUser(userObj);
-        console.log("User authenticated:", userObj);
       } else {
-        console.log("User not authenticated, showing login modal");
         setShowLoginModal(true);
         setUser(null);
       }
@@ -1130,36 +803,28 @@ export default function Cropcare() {
     }
   };
 
-  const handleLogin = () => {
-    setShowLoginModal(false);
-    router.push("/(auth)/Login?role=farmer");
-  };
-
   const handleLogout = async () => {
     try {
       await AsyncStorage.clear();
       setUser(null);
       setCartItems([]);
       setShowLoginModal(true);
-      Alert.alert("Logged out", "You have been logged out successfully");
     } catch (err) {
       console.error("Logout error:", err);
     }
   };
 
-  /* ===================== FETCH DATA ===================== */
+  /* ===================== DATA FETCHING ===================== */
 
   useEffect(() => {
     if (user) {
       fetchCategories();
-      fetchSubCategories();
       fetchUserCart();
     }
   }, [user]);
 
   const fetchCategories = async () => {
     if (!user) return;
-    
     setLoading((prev) => ({ ...prev, categories: true }));
     try {
       const res = await axios.get(`${CROPCARE_API}/categories`);
@@ -1168,30 +833,26 @@ export default function Cropcare() {
           (c: Category) => c.status === "active"
         );
         setCategories(activeCategories);
-
-        // Auto-select first category
-        if (activeCategories.length > 0 && !selectedCategory) {
-          setSelectedCategory(activeCategories[0]._id);
-        }
       }
     } catch (err) {
-      console.error("Error fetching categories:", err);
       Alert.alert("Error", "Failed to load categories");
     } finally {
       setLoading((prev) => ({ ...prev, categories: false }));
     }
   };
 
-  const fetchSubCategories = async () => {
+  const fetchSubCategories = async (categoryId: string) => {
     if (!user) return;
-    
     setLoading((prev) => ({ ...prev, subCategories: true }));
     try {
       const res = await axios.get(`${CROPCARE_API}/subcategories`);
       if (res.data.success) {
-        setSubCategories(
-          res.data.data.filter((s: SubCategory) => s.status === "active")
-        );
+        const allSubs = res.data.data.filter((s: SubCategory) => s.status === "active");
+        const relevantSubs = allSubs.filter((sub: SubCategory) => {
+          const cId = typeof sub.categoryId === "string" ? sub.categoryId : sub.categoryId._id;
+          return cId === categoryId;
+        });
+        setFilteredSubCategories(relevantSubs);
       }
     } catch (err) {
       console.error("Error fetching subcategories:", err);
@@ -1202,51 +863,40 @@ export default function Cropcare() {
 
   const fetchProducts = async (subId: string) => {
     if (!user) return;
-    
     setLoading((prev) => ({ ...prev, products: true }));
     try {
       const res = await axios.get(`${CROPCARE_API}/products`);
       if (res.data.success) {
-        // Handle both string and object subCategoryId
-        const filteredProducts = res.data.data.filter((p: Product) => {
-          const productSubCatId =
-            typeof p.subCategoryId === "string"
-              ? p.subCategoryId
-              : p.subCategoryId._id;
-          return productSubCatId === subId && p.status === "active";
+        const relevantProducts = res.data.data.filter((p: Product) => {
+          const sId = typeof p.subCategoryId === "string" ? p.subCategoryId : p.subCategoryId._id;
+          return sId === subId && p.status === "active";
         });
-
-        console.log("Filtered products:", filteredProducts.length);
-        setProducts(filteredProducts);
+        setFilteredProducts(relevantProducts);
       }
     } catch (err) {
       console.error("Error fetching products:", err);
-      Alert.alert("Error", "Failed to load products");
     } finally {
       setLoading((prev) => ({ ...prev, products: false }));
     }
   };
 
-  /* ===================== CART ===================== */
-
   const fetchUserCart = async () => {
     if (!user) return;
-
     setLoading((prev) => ({ ...prev, cart: true }));
     try {
-      // Use farmerId if available, otherwise use userId
       const idToUse = user.farmerId || user._id;
       const res = await axios.get(`${CART_API}/cropcare/cart/${idToUse}`);
       if (res.data.success) {
         setCartItems(res.data.data.items || []);
       }
     } catch (err) {
-      console.error("Error fetching cart:", err);
       setCartItems([]);
     } finally {
       setLoading((prev) => ({ ...prev, cart: false }));
     }
   };
+
+  /* ===================== CART OPERATIONS ===================== */
 
   const addToCart = async (product: Product, seed: RecommendedSeed) => {
     if (!user) {
@@ -1266,9 +916,7 @@ export default function Cropcare() {
         image: seed.image,
       };
 
-      // Use farmerId if available, otherwise use userId
       const idToUse = user.farmerId || user._id;
-      
       const res = await axios.post(`${CART_API}/cropcare/cart/add`, {
         userId: idToUse,
         item: cartItem,
@@ -1279,11 +927,7 @@ export default function Cropcare() {
         Alert.alert("Success", `${seed.name} added to cart!`);
       }
     } catch (err: any) {
-      console.error("Error adding to cart:", err);
-      Alert.alert(
-        "Error",
-        err.response?.data?.message || "Failed to add to cart"
-      );
+      Alert.alert("Error", err.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading((prev) => ({ ...prev, cart: false }));
     }
@@ -1293,298 +937,352 @@ export default function Cropcare() {
     return cartItems.some((item) => item.seedName === seedName);
   };
 
-  const getSeedCartQuantity = (seedName: string): number => {
-    const item = cartItems.find((item) => item.seedName === seedName);
-    return item ? item.quantity : 0;
+  /* ===================== NAVIGATION HANDLERS ===================== */
+
+  const navigateTo = (view: ViewState) => {
+    setHistory((prev) => [...prev, viewState]);
+    setViewState(view);
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   };
 
-  /* ===================== FILTERING ===================== */
-
-  const getFilteredSubCategories = () => {
-    if (!selectedCategory) return [];
-    return subCategories.filter((sub) => {
-      const catId =
-        typeof sub.categoryId === "string"
-          ? sub.categoryId
-          : sub.categoryId._id;
-      return catId === selectedCategory;
-    });
-  };
-
-  /* ===================== HANDLERS ===================== */
-
-  const handleCategorySelect = (catId: string) => {
-    if (!user) {
-      setShowLoginModal(true);
-      return;
+  const handleBack = () => {
+    if (history.length > 0) {
+      const prevView = history[history.length - 1];
+      setHistory((prev) => prev.slice(0, -1));
+      setViewState(prevView);
+      if (viewState === "subCategories") setSelectedCategory(null);
+      if (viewState === "products") setSelectedSubCategory(null);
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    } else {
+      router.back();
     }
-    setSelectedCategory(catId);
-    setSelectedSubCategory(null);
-    setSelectedProduct(null);
-    setProducts([]);
   };
 
-  const handleSubCategorySelect = (subId: string) => {
-    if (!user) {
-      setShowLoginModal(true);
-      return;
-    }
-    setSelectedSubCategory(subId);
-    setSelectedProduct(null);
-    fetchProducts(subId);
+  const onSelectCategory = (category: Category) => {
+    setSelectedCategory(category);
+    fetchSubCategories(category._id);
+    navigateTo("subCategories");
   };
 
-  /* ===================== RENDER ===================== */
+  const onSelectSubCategory = (subCategory: SubCategory) => {
+    setSelectedSubCategory(subCategory);
+    fetchProducts(subCategory._id);
+    navigateTo("products");
+  };
+
+  /* ===================== RENDER HELPERS ===================== */
+
+  const renderHeader = () => (
+    <View className="bg-white px-5 py-4 shadow-sm elevation-4">
+      <View className="flex-row justify-between items-center">
+        <View className="flex-row items-center">
+          {viewState !== "categories" && (
+            <TouchableOpacity onPress={handleBack} className="mr-3 p-1">
+              <ArrowLeft size={24} color="#000000ff" />
+            </TouchableOpacity>
+          )}
+          <View>
+            <Text className="text-xl font-medium text-black">
+              {viewState === "categories"
+                ? "Crop Care"
+                : viewState === "subCategories"
+                  ? selectedCategory?.name
+                  : selectedSubCategory?.name}
+            </Text>
+            {user && (
+              <Text className="text-xs text-black/80">
+                Hello, {user.personalInfo.name.split(" ")[0]}
+              </Text>
+            )}
+          </View>
+        </View>
+
+        <View className="flex-row items-center">
+          {user && (
+            <TouchableOpacity
+              className="mr-4 relative"
+              onPress={() => router.push("/(farmerscreen)/cropcarecart")}
+            >
+              <ShoppingCart size={24} color="#016c17ff" />
+              {cartItems.length > 0 && (
+                <View className="absolute -top-2 -right-2 bg-[#FF5252] rounded-full w-[18px] h-[18px] items-center justify-center border-[1.5px] border-[#2c5f2d]">
+                  <Text className="text-white text-[9px] font-medium">{cartItems.length}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
+
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderCategoryCard = ({ item }: { item: Category }) => (
+    <TouchableOpacity
+      className="bg-white rounded-lg p-3 mb-4 elevation-[2] border border-black/5 flex-1 m-2"
+      onPress={() => onSelectCategory(item)}
+      activeOpacity={0.8}
+    >
+      <View className="w-full h-[100px] rounded-xl overflow-hidden mb-3 bg-gray-100 justify-center items-center">
+
+        <View className="w-full h-full bg-[#e8f5e9] justify-center items-center">
+          <Leaf size={32} color="#2c5f2d" />
+        </View>
+
+      </View>
+      <View className="flex-1">
+        <Text className="text-[15px] font-medium text-[#333] mb-1 leading-5" numberOfLines={2}>
+          {item.name}
+        </Text>
+        <View className="flex-row items-center mt-1">
+          <Text className="text-xs text-[#2c5f2d] font-medium mr-1">View Items</Text>
+          <ChevronRight size={16} color="#2c5f2d" />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderSubCategoryCard = ({ item }: { item: SubCategory }) => (
+    <TouchableOpacity
+      className="bg-white rounded-lg p-3 mb-4 elevation-[2] border border-black/5 flex-1 m-2"
+      onPress={() => onSelectSubCategory(item)}
+      activeOpacity={0.8}
+    >
+      <View className="w-full h-[100px] rounded-xl overflow-hidden mb-3 bg-gray-100 justify-center items-center">
+        {item.image ? (
+          <Image source={{ uri: item.image }} className="w-full h-full" resizeMode="contain" />
+        ) : (
+          <View className="w-full h-full bg-[#e3f2fd] justify-center items-center">
+            <Leaf size={32} color="#1565c0" />
+          </View>
+        )}
+      </View>
+      <View className="flex-1">
+        <Text className="text-[15px] font-medium text-[#333] mb-1 leading-5" numberOfLines={2}>
+          {item.name}
+        </Text>
+        <Text className="text-xs text-gray-500">Tap to explore</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
+  const renderProductCard = ({ item }: { item: Product }) => {
+    return (
+      <View className="bg-white rounded-2xl mb-4 shadow-sm elevation-[2] border border-black/5 overflow-hidden">
+        <View className="flex-row justify-between items-center p-4">
+          <View className="flex-row items-center flex-1">
+            <View className="w-12 h-12 rounded-xl bg-[#e8f5e9] justify-center items-center mr-3">
+              <Leaf size={24} color="#2c5f2d" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-base font-medium text-[#333] mb-0.5">{item.name}</Text>
+              <Text className="text-xs text-gray-500">
+                {item.targetPestsDiseases.length} Pests/Diseases Covered
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View className="px-4 pb-4 border-t border-gray-100">
+          {/* Pests/Diseases */}
+          {item.targetPestsDiseases.length > 0 && (
+            <View className="mt-4">
+              <Text className="text-[13px] font-medium text-gray-400 mb-2 uppercase">Target Pests & Diseases</Text>
+              <View className="flex-row flex-wrap gap-2">
+                {item.targetPestsDiseases.map((pest, idx) => (
+                  <View key={idx} className="bg-gray-100 px-3 py-1.5 rounded-full border border-gray-200">
+                    <Text className="text-xs text-gray-600">{pest.name}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Recommended Seeds */}
+          <View className="mt-4">
+            <Text className="text-[13px] font-medium text-gray-400 mb-2 uppercase">Recommended Seeds / Solutions</Text>
+            {item.recommendedSeeds.map((seed, idx) => {
+              const added = isSeedInCart(seed.name);
+              return (
+                <View key={idx} className="flex-row justify-between items-center bg-gray-50 p-3 rounded-xl mb-2 border border-gray-100">
+                  <View className="flex-1">
+                    <Text className="text-sm font-medium text-[#333]">{seed.name}</Text>
+                    <Text className="text-sm font-medium text-[#2c5f2d] mt-0.5">₹{seed.price.toFixed(2)}</Text>
+                  </View>
+                  <TouchableOpacity
+                    className={`flex-row items-center px-3 py-2 rounded-lg ${added ? "bg-[#4CAF50]" : "bg-[#2c5f2d]"
+                      }`}
+                    onPress={() => addToCart(item, seed)}
+                    disabled={loading.cart}
+                  >
+                    {added ? (
+                      <>
+                        <Check size={16} color="#fff" />
+                        <Text className="text-white text-xs font-medium ml-1.5">Added</Text>
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart size={16} color="#fff" />
+                        <Text className="text-white text-xs font-medium ml-1.5">Add</Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                </View>
+              );
+            })}
+            {item.recommendedSeeds.length === 0 && (
+              <Text className="text-center text-gray-400 text-sm italic">No recommendations available.</Text>
+            )}
+          </View>
+        </View>
+      </View>
+    );
+  };
+
+  /* ===================== MAIN RENDER ===================== */
 
   if (isLoadingUser) {
     return (
-      <SafeAreaView className="flex-1 bg-gray-50">
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#2c5f2d" />
-          <Text className="mt-4 text-base text-gray-600">Checking authentication...</Text>
-        </View>
-      </SafeAreaView>
+      <View className="flex-1 justify-center items-center bg-[#F4F6F8]">
+        <ActivityIndicator size="large" color="#2c5f2d" />
+      </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
-      {/* HEADER */}
-<View className="rounded-b-3xl px-4 py-2 border-b border-gray-200">
-  <View className="flex-row items-center justify-start">
-    <TouchableOpacity
-      onPress={() => router.push('/(farmer)/home')}
-      className="p-2"
-    >
-      <ChevronLeft size={24} color="#374151" />
-    </TouchableOpacity>
-    
-    {/* Add icon before the text */}
-    <View className="ml-2 flex-row items-center">
-      <Text className="text-2xl font-medium text-black ml-2">Crop Care</Text>
-    </View>
-  </View>
+    <SafeAreaView className="flex-1 bg-white">
+      {renderHeader()}
 
-  {user ? (
-    <View className="flex-row items-center justify-between mt-2">
-      <Text className="font-medium text-black">
-        Welcome, {user.personalInfo.name}
-      </Text>
-
-      <View className="flex-row items-center">
-        <TouchableOpacity
-          onPress={handleLogout}
-          className="flex-row items-center bg-white/20 px-3 py-1.5 rounded-full mr-3"
-        >
-          <LogOut size={14} color="#920505ff" />
-          <Text className="text-black font-medium ml-1 font-medium">Logout</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={() => router.push("/(farmerscreen)/cropcarecart")}
-          className="bg-emerald-50 p-3 rounded-full relative"
-        >
-          <ShoppingCart size={22} color="#015e2fff" />
-          {cartItems.length > 0 && (
-            <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-5 h-5 items-center justify-center">
-              <Text className="text-black text-xs font-medium">
-                {cartItems.length}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      </View>
-    </View>
-  ) : (
-    <Text className="font-medium text-green-100 mt-1">
-      Please login to continue
-    </Text>
-  )}
-</View>
-
-<ScrollView
-  className="flex-1 px-4"
-  contentContainerStyle={{ paddingBottom: 40 }}
-  showsVerticalScrollIndicator={false}
->
-  <View className="mt-6">
-  <Text className="text-lg font-medium text-gray-800 mb-3">
-    Categories
-  </Text>
-
-  {loading.categories ? (
-    <ActivityIndicator color="#2c5f2d" />
-  ) : categories.length === 0 ? (
-    <Text className="font-medium text-gray-500">No categories available</Text>
-  ) : (
-    categories.map((cat) => {
-      const isSelected = selectedCategory === cat._id;
-
-      return (
-        <TouchableOpacity
-          key={cat._id}
-          onPress={() => handleCategorySelect(cat._id)}
-          className={`
-            bg-white rounded-2xl px-4 py-4 mb-2
-            flex-row items-center justify-between
-            shadow-sm
-            ${isSelected
-              ? "border-2 border-green-700 bg-green-50"
-              : "border border-gray-100"}
-          `}
-        >
-          <Text className="text-base font-medium text-gray-800">
-            {cat.name}
-          </Text>
-
-          {isSelected && <Check size={18} color="#2c5f2d" />}
-        </TouchableOpacity>
-      );
-    })
-  )}
-</View>
-
-{selectedCategory && (
-  <View className="mt-6">
-    <Text className="text-lg font-medium text-gray-800 mb-3">
-      Subcategories
-    </Text>
-
-    {loading.subCategories ? (
-      <ActivityIndicator color="#2c5f2d" />
-    ) : getFilteredSubCategories().length === 0 ? (
-      <Text className="font-medium text-gray-500">
-        No subcategories available
-      </Text>
-    ) : (
-      getFilteredSubCategories().map((sub) => {
-        const isSelected = selectedSubCategory === sub._id;
-
-        return (
-          <TouchableOpacity
-            key={sub._id}
-            onPress={() => handleSubCategorySelect(sub._id)}
-            className={`
-              bg-white rounded-2xl px-4 py-4 mb-2
-              flex-row items-center justify-between
-              shadow-sm
-              ${isSelected
-                ? "border-2 border-green-700 bg-green-50"
-                : "border border-gray-100"}
-            `}
-          >
-            <Text className="text-base font-medium text-gray-800">
-              {sub.name}
-            </Text>
-
-            {isSelected && <Check size={18} color="#2c5f2d" />}
-          </TouchableOpacity>
-        );
-      })
-    )}
-  </View>
-)}
-
-{selectedSubCategory && (
-  <View className="mt-6">
-    <Text className="text-lg font-medium text-gray-800 mb-3">
-      Products
-    </Text>
-
-    {loading.products ? (
-      <ActivityIndicator color="#2c5f2d" />
-    ) : products.length === 0 ? (
-      <Text className="font-medium text-gray-500">
-        No products available
-      </Text>
-    ) : (
-      products.map((product) => (
-        <View
-          key={product._id}
-          className="bg-white rounded-2xl p-4 mb-4 shadow-sm"
-        >
-          {/* Header */}
-          <View className="flex-row justify-between items-center">
-            <Text className="text-base font-semibold text-gray-800 flex-1">
-              {product.name}
-            </Text>
-
-            <TouchableOpacity
-              onPress={() =>
-                setSelectedProduct(
-                  selectedProduct?._id === product._id
-                    ? null
-                    : product
-                )
-              }
-            >
-              <Text className="font-medium text-green-700 font-medium">
-                {selectedProduct?._id === product._id ? "Hide" : "Details"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Expanded details */}
-          {selectedProduct?._id === product._id && (
-            <View className="mt-3 bg-gray-50 rounded-xl p-3">
-              <Text className="text-xs font-semibold text-gray-500 mb-2">
-                Target Pests / Diseases
-              </Text>
-
-              {product.targetPestsDiseases.map((pest, i) => (
-                <Text key={i} className="font-medium text-gray-600 ml-1">
-                  • {pest.name}
-                </Text>
-              ))}
-            </View>
-          )}
-
-          {/* Seeds */}
-          <View className="mt-4">
-            <Text className="text-xs font-semibold text-gray-500 mb-2">
-              Available Seeds
-            </Text>
-
-            {product.recommendedSeeds.map((seed, i) => (
-              <View
-                key={i}
-                className="flex-row justify-between items-center bg-green-50 p-3 rounded-xl mb-2"
-              >
-                <View>
-                  <Text className="font-medium font-semibold text-gray-800">
-                    {seed.name}
-                  </Text>
-                  <Text className="font-medium text-green-700 font-medium">
-                    ₹{seed.price.toFixed(2)}
-                  </Text>
+      <View className="flex-1">
+        {/* Categories View */}
+        {viewState === "categories" && (
+          loading.categories ? (
+            <ActivityIndicator size="large" color="#2c5f2d" className="mt-12" />
+          ) : (
+            <FlatList
+              data={categories}
+              renderItem={renderCategoryCard}
+              keyExtractor={(item) => item._id}
+              numColumns={2}
+              contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+              columnWrapperStyle={{ justifyContent: 'space-between' }}
+              showsVerticalScrollIndicator={false}
+              ListHeaderComponent={
+                <View className="mb-5 mt-2">
+                  <Text className="text-[22px] font-medium text-[#1a1a1a]">Select Category</Text>
+                  <Text className="text-sm text-gray-500 mt-1">Browse by crop type</Text>
                 </View>
+              }
+              ListEmptyComponent={<Text className="text-center text-gray-400 mt-8 text-base">No categories found.</Text>}
+            />
+          )
+        )}
 
-                <TouchableOpacity
-                  className={`px-4 py-2 rounded-lg ${
-                    isSeedInCart(seed.name)
-                      ? "bg-green-600"
-                      : "bg-green-800"
-                  }`}
-                  onPress={() => addToCart(product, seed)}
-                >
-                  <Text className="text-black text-xs font-semibold">
-                    {isSeedInCart(seed.name)
-                      ? `Added (${getSeedCartQuantity(seed.name)})`
-                      : "Add"}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+        {/* SubCategories View */}
+        {viewState === "subCategories" && (
+          loading.subCategories ? (
+            <ActivityIndicator size="large" color="#2c5f2d" className="mt-12" />
+          ) : (
+            <FlatList
+              data={filteredSubCategories}
+              renderItem={renderSubCategoryCard}
+              keyExtractor={(item) => item._id}
+              numColumns={2}
+              contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+              columnWrapperStyle={{ justifyContent: 'space-between' }}
+              showsVerticalScrollIndicator={false}
+              ListHeaderComponent={
+                <View className="mb-5 mt-2">
+                  <Text className="text-[22px] font-medium text-[#1a1a1a]">{selectedCategory?.name}</Text>
+                  <Text className="text-sm text-gray-500 mt-1">Select a crop to view diseases</Text>
+                </View>
+              }
+              ListEmptyComponent={<Text className="text-center text-gray-400 mt-8 text-base">No subcategories found.</Text>}
+            />
+          )
+        )}
+
+        {/* Products View */}
+        {viewState === "products" && (
+          loading.products ? (
+            <ActivityIndicator size="large" color="#2c5f2d" className="mt-12" />
+          ) : (
+            <FlatList
+              data={filteredProducts}
+              renderItem={renderProductCard}
+              keyExtractor={(item) => item._id}
+              contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
+              showsVerticalScrollIndicator={false}
+              ListHeaderComponent={
+                <View className="mb-5 mt-2">
+                  <Text className="text-[22px] font-medium text-[#1a1a1a]">Diseases & Solutions</Text>
+                  <Text className="text-sm text-gray-500 mt-1 mb-4">{selectedSubCategory?.name}</Text>
+
+                  {/* Video Demo Section */}
+                  <View className="w-full h-48 bg-black/90 rounded-xl overflow-hidden justify-center items-center mb-6 relative shadow-sm elevation-4">
+                    <Image
+                      source={{ uri: "https://img.freepik.com/free-photo/smart-farming-with-iot-futuristic-agriculture-concept_53876-124627.jpg" }}
+                      className="absolute w-full h-full opacity-60"
+                      resizeMode="cover"
+                    />
+                    <View className="w-16 h-16 bg-white/20 rounded-full justify-center items-center backdrop-blur-sm border border-white/30">
+                      <View className="w-12 h-12 bg-[#2c5f2d] rounded-full justify-center items-center pl-1">
+                        <Leaf size={24} color="#fff" fill="#fff" />
+                      </View>
+                    </View>
+                    <Text className="text-white font-medium mt-3 bg-black/40 px-3 py-1 rounded-full text-xs">
+                      Watch Demo: How to treat {selectedSubCategory?.name}
+                    </Text>
+                  </View>
+
+                  <Text className="text-lg font-bold text-[#333] mb-2">Recommended Products</Text>
+                </View>
+              }
+              ListEmptyComponent={<Text className="text-center text-gray-400 mt-8 text-base">No products found.</Text>}
+            />
+          )
+        )}
+      </View>
+
+      {/* Login Modal */}
+      <Modal
+        visible={showLoginModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowLoginModal(false)}
+      >
+        <View className="flex-1 bg-black/50 justify-center items-center">
+          <View className="bg-white rounded-[20px] p-6 w-4/5 items-center elevation-[5]">
+            <View className="w-[60px] h-[60px] rounded-full bg-[#FF5252] justify-center items-center mb-4">
+              <LogOut size={32} color="#fff" />
+            </View>
+            <Text className="text-xl font-medium mb-2 text-[#333]">Login Required</Text>
+            <Text className="text-[15px] text-gray-500 text-center mb-6">
+              Please login to access Crop Care features.
+            </Text>
+            <View className="flex-row w-full justify-between gap-3">
+              <TouchableOpacity
+                className="flex-1 py-3 rounded-[10px] items-center justify-center bg-gray-100"
+                onPress={() => {
+                  setShowLoginModal(false);
+                  router.back();
+                }}
+              >
+                <Text className="text-gray-500 text-sm font-medium">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="flex-1 py-3 rounded-[10px] items-center justify-center bg-[#2c5f2d]"
+                onPress={() => {
+                  setShowLoginModal(false);
+                  router.push("/(auth)/Login?role=farmer");
+                }}
+              >
+                <Text className="text-white text-sm font-medium">Login</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      ))
-    )}
-  </View>
-)}
-
-
-</ScrollView>
-
+      </Modal>
     </SafeAreaView>
   );
 }

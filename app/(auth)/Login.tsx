@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useRef,useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   Platform,
   StatusBar,
   ImageBackground,
+  Animated
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -183,6 +184,41 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+
+  const scale = useRef(new Animated.Value(1)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.parallel([
+        Animated.sequence([
+          Animated.timing(scale, {
+            toValue: 1.6,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scale, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.sequence([
+          Animated.timing(opacity, {
+            toValue: 0.2,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ]),
+      ])
+    ).start();
+  }, []);
 
   return (
     <View className="flex-1 bg-white py-10">
@@ -388,13 +424,43 @@ const LoginPage = () => {
                   {/* Register & forgot links */}
                   <View className="flex-row justify-center mt-5">
                     <Text className="text-xs text-slate-500 font-medium">
-                      Don't have an account?{' '}
+                      Don't have an account ?{' '}
                     </Text>
                     <TouchableOpacity onPress={goToRegister}>
-                      <Text className="text-xs font-medium text-[#1FAD4E]">
-                        Register here
-                      </Text>
-                    </TouchableOpacity>
+      <View style={{ position: "relative" }}>
+        
+        {/* Text */}
+        <Text className="text-sm font-bold font-medium text-[#1FAD4E]">
+          Register Here
+        </Text>
+
+        {/* 🔴 Blinking Dot Top-Right */}
+        <View style={{ position: "absolute", top: -5, right: -12 }}>
+          <Animated.View
+            style={{
+              position: "absolute",
+              width: 10,
+              height: 10,
+              borderRadius: 7,
+              backgroundColor: "red",
+              opacity,
+              transform: [{ scale }],
+            }}
+          />
+          <View
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: "red",
+              alignSelf: "center",
+              marginTop: 3,
+            }}
+          />
+        </View>
+
+      </View>
+    </TouchableOpacity>
                   </View>
 
                   <View className="flex-row justify-center items-center mt-1">
