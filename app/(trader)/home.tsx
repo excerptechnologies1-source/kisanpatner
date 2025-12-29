@@ -218,7 +218,7 @@ const Home = () => {
       icon: <Entypo name="crop" size={26} color="#4CAF50" />,
     },
     {
-      link: "/(traderscreen)/TraderOrder",
+      link: "/(traderscreen)/TraderOrderHistory",
       title: "My Order",
       icon: <MaterialCommunityIcons name="truck-delivery" size={26} color="#4CAF50" />,
     },

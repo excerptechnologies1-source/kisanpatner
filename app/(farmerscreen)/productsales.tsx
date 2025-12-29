@@ -37,7 +37,7 @@ interface GradePrice {
   pricePerUnit: string;
   totalQty: string;
   quantityType: string;
-  priceType: string; 
+  priceType: string;
 }
 
 interface CapturedPhoto {
@@ -64,7 +64,7 @@ const SellProductForm: React.FC = () => {
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  
+
   // Step 3: Grade & Pricing
   const [gradePrices, setGradePrices] = useState<GradePrice[]>([
     { grade: "A Grade", pricePerUnit: "", totalQty: "", quantityType: "", priceType: "" },
@@ -132,7 +132,7 @@ const SellProductForm: React.FC = () => {
       console.error("Error fetching subcategories:", error);
     }
   };
-  
+
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === "ios");
     if (selectedDate) {
@@ -146,7 +146,7 @@ const SellProductForm: React.FC = () => {
       setDeliveryTime(selectedTime);
     }
   };
-  
+
   const formatDate = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -205,7 +205,7 @@ const SellProductForm: React.FC = () => {
   const openCamera = async () => {
     try {
       console.log("Opening camera...");
-      
+
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
       if (status !== "granted") {
         Alert.alert("Permission Denied", "Camera permission is required");
@@ -238,9 +238,9 @@ const SellProductForm: React.FC = () => {
           const loc = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.Balanced,
           });
-          
+
           const text = `Lat: ${loc.coords.latitude.toFixed(6)}\nLon: ${loc.coords.longitude.toFixed(6)}\n${new Date().toLocaleString()}`;
-          
+
           console.log("Location obtained:", text);
           setGpsText(text);
           setCapturedImage(imageUri);
@@ -260,7 +260,7 @@ const SellProductForm: React.FC = () => {
   const saveWithWatermark = async () => {
     try {
       console.log("Saving photo...");
-      
+
       if (!capturedImage) {
         Alert.alert("Error", "No image to save");
         return;
@@ -273,18 +273,18 @@ const SellProductForm: React.FC = () => {
         return;
       }
 
-      const newPhoto = { 
-        uri: capturedImage, 
+      const newPhoto = {
+        uri: capturedImage,
         watermarkedUri: capturedImage,
         timestamp: new Date().toISOString()
       };
 
       console.log("Adding photo:", newPhoto);
-      
+
       setCropPhotos([...cropPhotos, newPhoto]);
       setCapturedImage(null);
       setGpsText("");
-      
+
       Alert.alert("Success", "Photo saved!");
     } catch (error) {
       console.error("Error saving photo:", error);
@@ -366,14 +366,14 @@ const SellProductForm: React.FC = () => {
     }
 
     // ✅ ADD VALIDATION FOR GRADE PRICES
-    const selectedGradeObjects = gradePrices.filter((gp) => 
+    const selectedGradeObjects = gradePrices.filter((gp) =>
       selectedGrades.includes(gp.grade)
     );
 
     for (const gp of selectedGradeObjects) {
       if (!gp.pricePerUnit || !gp.totalQty || !gp.quantityType || !gp.priceType) {
         Alert.alert(
-          "Incomplete Grade Information", 
+          "Incomplete Grade Information",
           `Please fill all fields for ${gp.grade} including Quantity Type and Price Type`
         );
         return;
@@ -398,7 +398,7 @@ const farmerId = await AsyncStorage.getItem('farmerId');
     formData.append("deliveryDate", formatDate(deliveryDate));
     formData.append("deliveryTime", formatTime(deliveryTime));
     formData.append("nearestMarket", nearestMarket);
-    
+
     formData.append("farmLocation", JSON.stringify({
       lat: farmLocation.latitude.toString(),
       lng: farmLocation.longitude.toString()
@@ -419,10 +419,10 @@ const farmerId = await AsyncStorage.getItem('farmerId');
 
     cropPhotos.forEach((photo, index) => {
       const photoUri = photo.watermarkedUri || photo.uri;
-      const normalizedUri = photoUri.startsWith('file://') 
-        ? photoUri 
+      const normalizedUri = photoUri.startsWith('file://')
+        ? photoUri
         : `file://${photoUri}`;
-      
+
       formData.append("photos", {
         uri: normalizedUri,
         type: "image/jpeg",
@@ -532,25 +532,25 @@ const farmerId = await AsyncStorage.getItem('farmerId');
   const renderProgressBar = () => {
     const totalSteps = 4;
     const progress = (step - 1) / (totalSteps - 1);
-    
+
     return (
       <View className="relative py-4 ">
         <View className="absolute top-5 left-10 right-10 h-0.5">
           <View className="absolute top-6 left-0 right-0 h-0.5 bg-gray-200" />
-          <View 
-            className="absolute top-0 left-0 h-0.5 bg-green-600" 
-            style={{ width: `${progress * 100}%` }} 
+          <View
+            className="absolute top-0 left-0 h-0.5 bg-green-600"
+            style={{ width: `${progress * 100}%` }}
           />
         </View>
-        
+
         <View className="flex-row justify-between px-6 py-4">
           {[1, 2, 3, 4].map((stepNum) => (
             <View key={stepNum} className="items-center z-10">
               <View
                 className={`
                   w-8 h-8 rounded-full items-center justify-center border-2
-                  ${step >= stepNum 
-                    ? "bg-green-600 border-green-600" 
+                  ${step >= stepNum
+                    ? "bg-green-600 border-green-600"
                     : "bg-white border-gray-300"
                   }
                 `}
@@ -567,8 +567,8 @@ const farmerId = await AsyncStorage.getItem('farmerId');
               <Text
                 className={`
                   text-xs mt-1 text-center
-                  ${step >= stepNum 
-                    ? "text-green-600 font-medium" 
+                  ${step >= stepNum
+                    ? "text-green-600 font-medium"
                     : "text-gray-500"
                   }
                 `}
@@ -714,7 +714,7 @@ const farmerId = await AsyncStorage.getItem('farmerId');
 
       <ScrollView className="flex-1" keyboardShouldPersistTaps="handled">
         {renderProgressBar()}
-        
+
         <View className="p-4">
           {/* Step 1: Category Selection */}
           {step === 1 && (
@@ -941,8 +941,8 @@ const farmerId = await AsyncStorage.getItem('farmerId');
                     key={index}
                     className={`
                       bg-white border rounded-lg p-4 mb-3
-                      ${selectedGrades.includes(gp.grade) 
-                        ? "border-green-600 bg-green-50" 
+                      ${selectedGrades.includes(gp.grade)
+                        ? "border-green-600 bg-green-50"
                         : "border-gray-300"
                       }
                     `}
@@ -954,8 +954,8 @@ const farmerId = await AsyncStorage.getItem('farmerId');
                       <View
                         className={`
                           w-6 h-6 border-2 rounded mr-3 items-center justify-center
-                          ${selectedGrades.includes(gp.grade) 
-                            ? "bg-green-600 border-green-600" 
+                          ${selectedGrades.includes(gp.grade)
+                            ? "bg-green-600 border-green-600"
                             : "border-gray-400"
                           }
                         `}
@@ -1055,9 +1055,9 @@ const farmerId = await AsyncStorage.getItem('farmerId');
 
               <View className="bg-gray-100 p-4 rounded-lg mb-4">
                 <Text className="text-base font-medium mb-2 text-gray-900">Farm Location</Text>
-                <TouchableOpacity 
-                  className="bg-orange-500 py-3 rounded-lg mb-3" 
-                  onPress={getCurrentLocation} 
+                <TouchableOpacity
+                  className="bg-orange-500 py-3 rounded-lg mb-3"
+                  onPress={getCurrentLocation}
                   disabled={isGettingLocation}
                 >
                   {isGettingLocation ? (
@@ -1085,35 +1085,35 @@ const farmerId = await AsyncStorage.getItem('farmerId');
 
                 <View className="mt-4">
                   <Text className="text-base font-medium mb-2 text-gray-900">Delivery Date</Text>
-                  <TouchableOpacity 
-                    className="bg-white border border-gray-300 rounded-lg p-3 mb-3" 
+                  <TouchableOpacity
+                    className="bg-white border border-gray-300 rounded-lg p-3 mb-3"
                     onPress={() => setShowDatePicker(true)}
                   >
                     <Text className="text-base text-gray-900">📅 {formatDate(deliveryDate)}</Text>
                   </TouchableOpacity>
                   {showDatePicker && (
-                    <DateTimePicker 
-                      value={deliveryDate} 
-                      mode="date" 
-                      display="default" 
-                      onChange={onDateChange} 
-                      minimumDate={new Date()} 
+                    <DateTimePicker
+                      value={deliveryDate}
+                      mode="date"
+                      display="default"
+                      onChange={onDateChange}
+                      minimumDate={new Date()}
                     />
                   )}
-                  
+
                   <Text className="text-base font-medium mb-2 text-gray-900">Delivery Time</Text>
-                  <TouchableOpacity 
-                    className="bg-white border border-gray-300 rounded-lg p-3 mb-3" 
+                  <TouchableOpacity
+                    className="bg-white border border-gray-300 rounded-lg p-3 mb-3"
                     onPress={() => setShowTimePicker(true)}
                   >
                     <Text className="text-base text-gray-900">🕐 {formatTime(deliveryTime)}</Text>
                   </TouchableOpacity>
                   {showTimePicker && (
-                    <DateTimePicker 
-                      value={deliveryTime} 
-                      mode="time" 
-                      display="default" 
-                      onChange={onTimeChange} 
+                    <DateTimePicker
+                      value={deliveryTime}
+                      mode="time"
+                      display="default"
+                      onChange={onTimeChange}
                     />
                   )}
                 </View>
@@ -1185,3 +1185,5 @@ const farmerId = await AsyncStorage.getItem('farmerId');
 };
 
 export default SellProductForm;
+
+

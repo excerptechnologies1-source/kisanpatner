@@ -73,7 +73,7 @@
 //       setLabourers(response.data?.data || []);
 //     } catch (error) {
 //       console.error("Error fetching labourers:", error);
-//       Alert.alert("Error", "Failed to fetch data. Ensure backend is running.");
+//       showAppAlert("Error", "Failed to fetch data. Ensure backend is running.");
 //     } finally {
 //       setLoading(false);
 //       setRefreshing(false);
@@ -124,7 +124,7 @@
 //         });
 //       }
 //     } catch (error) {
-//       Alert.alert("Error", "Failed to assign labourer");
+//       showAppAlert("Error", "Failed to assign labourer");
 //     }
 //   };
 
@@ -309,6 +309,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationProps, Labourer } from "../labourscreen/types";
 import { ChevronLeft } from "lucide-react-native";
 import { Picker } from "@react-native-picker/picker";
+import CustomAlert from "@/components/CustomAlert";
 
 // Images
 const maleAvatar = "https://cdn-icons-png.flaticon.com/512/6858/6858504.png";
@@ -332,6 +333,18 @@ export default function LabourListScreen({
   const [searchText, setSearchText] = useState("");
   const [villageFilter, setVillageFilter] = useState("");
   const [error, setError] = useState<string>("");
+  const [showAlert, setShowAlert] = useState(false);
+const [alertTitle, setAlertTitle] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
+const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+
+const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+  setAlertAction(() => action || null);
+  setShowAlert(true);
+};
+
 
   // Fetch unique villages from API
   const fetchVillages = async () => {
@@ -378,7 +391,7 @@ export default function LabourListScreen({
     } catch (error: any) {
       console.error("Error fetching labourers:", error);
       setError("Failed to fetch data. Please check your connection.");
-      Alert.alert(
+      showAppAlert(
         "Error",
         error?.response?.data?.message ||
           "Failed to fetch data. Ensure backend is running."
@@ -446,7 +459,7 @@ export default function LabourListScreen({
         });
       }
     } catch (error: any) {
-      Alert.alert(
+      showAppAlert(
         "Error",
         error?.response?.data?.message || "Failed to assign labourer"
       );
@@ -460,6 +473,7 @@ export default function LabourListScreen({
   };
 
   return (
+    <>
     <SafeAreaView className="bg-white flex-1">
       {/* Header */}
       <View className="flex-row items-center px-4 py-4 border-b border-gray-200">
@@ -628,5 +642,17 @@ export default function LabourListScreen({
         <View className="h-20" />
       </ScrollView>
     </SafeAreaView>
+
+     <CustomAlert
+  visible={showAlert}
+  title={alertTitle}
+  message={alertMessage}
+  onClose={() => {
+    setShowAlert(false);
+    if (alertAction) alertAction();
+  }}
+/>
+
+    </>
   );
 }

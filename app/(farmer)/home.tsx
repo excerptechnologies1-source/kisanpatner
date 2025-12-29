@@ -7,6 +7,7 @@ import {
   MapPin,
   Search,
   ShieldCheck,
+  ShoppingCart,
   Plus,
   Star,
   Store,
@@ -70,7 +71,7 @@ const categories = [
     id: "3",
     label: "My Orders",
     icon: ClipboardList,
-    route: "/(farmerscreen)/FarmerOrder",
+    route: "/(farmerscreen)/FarmerOrderHistory",
   },
   {
     id: "4",
@@ -167,7 +168,7 @@ const FarmerHomeScreen: React.FC = () => {
   return (
     <View className="flex-1 bg-white">
       {/* TOP BAR */}
-      <View className="flex-row items-center justify-between px-4 pb-3 pt-3 mt-3 bg-white">
+      <View className="flex-row items-center justify-between px-4 pb-2 pt-5 mt-5 bg-white">
         {/* Left: Logo + App name */}
         <View className="flex-row items-center">
           <Image
@@ -192,6 +193,18 @@ const FarmerHomeScreen: React.FC = () => {
             <Text className="text-sm font-medium text-gray-700">EN</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity
+      className="w-9 h-9 rounded-full items-center justify-center me-2 border border-gray-300 relative"
+      activeOpacity={0.7}
+      onPress={() => router.push("/(farmerscreen)/FarmerOrder")}
+    >
+      <ShoppingCart size={18} color="#374151" />
+      {/* Cart item count badge - optional */}
+      <View className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 border border-white items-center justify-center">
+        <Text className="text-[10px] font-bold text-white">3</Text>
+      </View>
+    </TouchableOpacity>
+
           {/* Notification */}
           <TouchableOpacity
             className="w-9 h-9 rounded-full items-center justify-center relative border border-gray-300"
@@ -209,7 +222,7 @@ const FarmerHomeScreen: React.FC = () => {
       >
         {/* BANNER SLIDER */}
         {/* BANNER SLIDER */}
-        <View className="mb-4 mt-2">
+        <View className="mb-2 mt-2">
           <ScrollView
             horizontal
             pagingEnabled
@@ -264,7 +277,7 @@ const FarmerHomeScreen: React.FC = () => {
         </View>
 
         {/* RECENT CROP CARDS */}
-        <View className="mb-4">
+        <View className="mb-3">
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

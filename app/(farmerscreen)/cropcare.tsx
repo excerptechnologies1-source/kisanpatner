@@ -168,7 +168,7 @@
 //       setUser(null);
 //       setCartItems([]);
 //       setShowLoginModal(true);
-//       Alert.alert("Logged out", "You have been logged out successfully");
+//       showAppAlert("Logged out", "You have been logged out successfully");
 //     } catch (err) {
 //       console.error("Logout error:", err);
 //     }
@@ -203,7 +203,7 @@
 //       }
 //     } catch (err) {
 //       console.error("Error fetching categories:", err);
-//       Alert.alert("Error", "Failed to load categories");
+//       showAppAlert("Error", "Failed to load categories");
 //     } finally {
 //       setLoading((prev) => ({ ...prev, categories: false }));
 //     }
@@ -248,7 +248,7 @@
 //       }
 //     } catch (err) {
 //       console.error("Error fetching products:", err);
-//       Alert.alert("Error", "Failed to load products");
+//       showAppAlert("Error", "Failed to load products");
 //     } finally {
 //       setLoading((prev) => ({ ...prev, products: false }));
 //     }
@@ -303,11 +303,11 @@
 
 //       if (res.data.success) {
 //         setCartItems(res.data.data.items);
-//         Alert.alert("Success", `${seed.name} added to cart!`);
+//         showAppAlert("Success", `${seed.name} added to cart!`);
 //       }
 //     } catch (err: any) {
 //       console.error("Error adding to cart:", err);
-//       Alert.alert(
+//       showAppAlert(
 //         "Error",
 //         err.response?.data?.message || "Failed to add to cart"
 //       );
@@ -645,6 +645,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CustomAlert from "@/components/CustomAlert";
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === 'android') {
@@ -750,6 +751,19 @@ export default function Cropcare() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [isLoadingUser, setIsLoadingUser] = useState(true);
 
+  const [showAlert, setShowAlert] = useState(false);
+const [alertTitle, setAlertTitle] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
+const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+
+const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+  setAlertAction(() => action || null);
+  setShowAlert(true);
+};
+
+
   // Loading states
   const [loading, setLoading] = useState({
     categories: false,
@@ -835,7 +849,7 @@ export default function Cropcare() {
         setCategories(activeCategories);
       }
     } catch (err) {
-      Alert.alert("Error", "Failed to load categories");
+      showAppAlert("Error", "Failed to load categories");
     } finally {
       setLoading((prev) => ({ ...prev, categories: false }));
     }
@@ -924,10 +938,10 @@ export default function Cropcare() {
 
       if (res.data.success) {
         setCartItems(res.data.data.items);
-        Alert.alert("Success", `${seed.name} added to cart!`);
+        showAppAlert("Success", `${seed.name} added to cart!`);
       }
     } catch (err: any) {
-      Alert.alert("Error", err.response?.data?.message || "Failed to add to cart");
+      showAppAlert("Error", err.response?.data?.message || "Failed to add to cart");
     } finally {
       setLoading((prev) => ({ ...prev, cart: false }));
     }
@@ -1150,6 +1164,7 @@ export default function Cropcare() {
   }
 
   return (
+    <>
     <SafeAreaView className="flex-1 bg-white">
       {renderHeader()}
 
@@ -1284,5 +1299,17 @@ export default function Cropcare() {
         </View>
       </Modal>
     </SafeAreaView>
+
+    <CustomAlert
+  visible={showAlert}
+  title={alertTitle}
+  message={alertMessage}
+  onClose={() => {
+    setShowAlert(false);
+    if (alertAction) alertAction();
+  }}
+/>
+
+    </>
   );
 }
