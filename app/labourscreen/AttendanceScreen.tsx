@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import axios from 'axios';
 import { NavigationProps } from './types';
+import CustomAlert from '@/components/CustomAlert';
 
 const API_URL = Platform.OS === 'android' ? 'https://labourkisan.etpl.ai' : 'https://labourkisan.etpl.ai';
 
@@ -24,13 +25,25 @@ export default function AttendanceScreen() {
   const [status, setStatus] = useState<'present' | 'absent' | ''>('');
   const [notes, setNotes] = useState<string>('');
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [showAlert, setShowAlert] = useState(false);
+const [alertTitle, setAlertTitle] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
+const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+
+const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+  setAlertAction(() => action || null);
+  setShowAlert(true);
+};
+
 
   // If you wanted to fetch assignment details first like in web, you could do it here inside useEffect.
   // But we passed labourer details initially, so we can display them immediately.
   
   const handleSubmit = async () => {
       if (!status) {
-          Alert.alert('Validation', 'Please select a status (Present/Absent)');
+          showAppAlert('Validation', 'Please select a status (Present/Absent)');
           return;
       }
 
@@ -46,13 +59,17 @@ export default function AttendanceScreen() {
           const response = await axios.post<{ success: boolean }>(`${API_URL}/labour/attendance/${assignmentId}`, attendanceData);
           
           if (response.data.success) {
-               Alert.alert('Success', 'Attendance Confirmed!', [
-                   { text: 'OK', onPress: () => router.push("/(labour)/LabourListScreen") }
-               ]);
+              
+
+               showAppAlert(
+                'Success 🎉',
+                'Registration Successful!',
+                () => router.push('/(labour)/LabourListScreen')
+                );
           }
 
       } catch (error) {
-          Alert.alert('Error', 'Failed to confirm attendance');
+          showAppAlert('Error', 'Failed to confirm attendance');
           console.error(error);
       } finally {
           setSubmitting(false);
@@ -60,6 +77,7 @@ export default function AttendanceScreen() {
   };
 
   return (
+    <>
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       {/* Header */}
       <View className="flex-row items-center p-4 border-b border-gray-100">
@@ -156,5 +174,17 @@ export default function AttendanceScreen() {
           </TouchableOpacity>
       </View>
     </SafeAreaView>
+
+<CustomAlert
+  visible={showAlert}
+  title={alertTitle}
+  message={alertMessage}
+  onClose={() => {
+    setShowAlert(false);
+    if (alertAction) alertAction();
+  }}
+/>
+
+    </>
   );
 }

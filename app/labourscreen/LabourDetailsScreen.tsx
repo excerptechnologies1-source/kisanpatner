@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import axios from 'axios';
 import { NavigationProps, Labourer } from './types';
+import CustomAlert from '@/components/CustomAlert';
 
 const API_URL = Platform.OS === 'android' ? 'https://labourkisan.etpl.ai' : 'https://labourkisan.etpl.ai';
 
@@ -13,6 +14,18 @@ export default function LabourDetailsScreen() {
   const [labourer, setLabourer] = useState<Labourer | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [assigning, setAssigning] = useState<boolean>(false);
+  const [showAlert, setShowAlert] = useState(false);
+const [alertTitle, setAlertTitle] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
+const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+
+const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+  setAlertAction(() => action || null);
+  setShowAlert(true);
+};
+
 
   useEffect(() => {
     fetchLabourerDetails();
@@ -24,7 +37,7 @@ export default function LabourDetailsScreen() {
       setLabourer(response.data.data);
     } catch (error) {
       console.error(error);
-      Alert.alert('Error', 'Failed to fetch details');
+      showAppAlert('Error', 'Failed to fetch details');
     } finally {
       setLoading(false);
     }
@@ -55,7 +68,7 @@ export default function LabourDetailsScreen() {
           }
       }
     } catch (error) {
-        Alert.alert('Error', 'Failed to assign labourer');
+        showAppAlert('Error', 'Failed to assign labourer');
         console.error(error);
     } finally {
         setAssigning(false);
@@ -165,6 +178,17 @@ export default function LabourDetailsScreen() {
               )}
           </TouchableOpacity>
       </View>
+
+      <CustomAlert
+  visible={showAlert}
+  title={alertTitle}
+  message={alertMessage}
+  onClose={() => {
+    setShowAlert(false);
+    if (alertAction) alertAction();
+  }}
+/>
+
 
     </SafeAreaView>
   );

@@ -732,6 +732,7 @@ import {
   View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import CustomAlert from '@/components/CustomAlert';
 
 
 interface CartItem {
@@ -789,6 +790,17 @@ const CropcareCart: React.FC = () => {
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [notificationAnim] = useState(new Animated.Value(0));
   const [showLoginModal, setShowLoginModal] = useState(false);
+    const [showAlert, setShowAlert] = useState(false);
+const [alertTitle, setAlertTitle] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
+const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+
+const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+  setAlertAction(() => action || null);
+  setShowAlert(true);
+};
 
   const CART_API_URL = 'https://kisan.etpl.ai/api/cropcare';
 
@@ -1023,51 +1035,44 @@ const CropcareCart: React.FC = () => {
   };
 
   const clearCart = async () => {
-    if (!user) {
-      setShowLoginModal(true);
-      return;
-    }
+  if (!user) {
+    setShowLoginModal(true);
+    return;
+  }
 
-    Alert.alert(
-      'Clear Cart',
-      'Are you sure you want to clear your cart?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Clear',
-          style: 'destructive',
-          onPress: async () => {
-            setLoading(prev => ({ ...prev, cart: true }));
-            try {
-              const idToUse = user.farmerId || user._id;
-              const response = await fetch(`${CART_API_URL}/cart/clear/${idToUse}`, {
-                method: 'DELETE',
-              });
+  showAppAlert(
+    "Clear Cart",
+    "Are you sure you want to clear your cart?",
+    async () => {
+      setLoading(prev => ({ ...prev, cart: true }));
+      try {
+        const idToUse = user.farmerId || user._id;
+        const response = await fetch(`${CART_API_URL}/cart/clear/${idToUse}`, {
+          method: 'DELETE',
+        });
 
-              const data = await response.json();
-              if (data.success) {
-                setCart({
-                  items: [],
-                  subtotal: 0,
-                  gst: 0,
-                  shipping: 0,
-                  total: 0
-                });
-                showNotification('success', 'Cart cleared');
-              } else {
-                showNotification('error', data.message || 'Failed to clear cart');
-              }
-            } catch (error) {
-              console.error('Error clearing cart:', error);
-              showNotification('error', 'Failed to clear cart');
-            } finally {
-              setLoading(prev => ({ ...prev, cart: false }));
-            }
-          }
+        const data = await response.json();
+        if (data.success) {
+          setCart({
+            items: [],
+            subtotal: 0,
+            gst: 0,
+            shipping: 0,
+            total: 0
+          });
+          showNotification('success', 'Cart cleared');
+        } else {
+          showNotification('error', data.message || 'Failed to clear cart');
         }
-      ]
-    );
-  };
+      } catch (error) {
+        console.error('Error clearing cart:', error);
+        showNotification('error', 'Failed to clear cart');
+      } finally {
+        setLoading(prev => ({ ...prev, cart: false }));
+      }
+    }
+  );
+};
 
   const initiatePayment = () => {
     if (!user) {
@@ -1094,6 +1099,9 @@ const CropcareCart: React.FC = () => {
       </View>
     );
   }
+
+
+
 
   return (
     <SafeAreaView className="flex-1 bg-[#F4F6F8]">

@@ -77,7 +77,7 @@ const CategoriesScreen: React.FC = () => {
     if (!selected) return;
 
     router.push({
-      pathname: "/farmerscreen/subcategories",
+      pathname: "/(farmerscreen)/subcategories",
       params: { category: selected.label },
     });
   };

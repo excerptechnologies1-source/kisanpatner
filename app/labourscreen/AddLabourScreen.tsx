@@ -25,7 +25,7 @@
 
 // //   const handleSubmit = async () => {
 // //     if (!formData.name.trim() || !formData.villageName.trim()) {
-// //       Alert.alert('Validation Error', 'Name and Village Name are required fields');
+// //       showAppAlert('Validation Error', 'Name and Village Name are required fields');
 // //       return;
 // //     }
 
@@ -50,13 +50,13 @@
 // //       const response = await axios.post(`${API_URL}/labour`, payload);
       
 // //       if (response.data.success) {
-// //         Alert.alert('Success', 'Labourer added successfully!', [
+// //         showAppAlert('Success', 'Labourer added successfully!', [
 // //             { text: 'OK', onPress: () => navigation.goBack() }
 // //         ]);
 // //       }
 // //     } catch (error) {
 // //       console.error(error);
-// //       Alert.alert('Error', error.response?.data?.message || 'Failed to create labourer.');
+// //       showAppAlert('Error', error.response?.data?.message || 'Failed to create labourer.');
 // //     } finally {
 // //       setLoading(false);
 // //     }
@@ -308,7 +308,7 @@
 
 //   const handleSubmit = async (): Promise<void> => {
 //     if (!formData.name.trim() || !formData.villageName.trim()) {
-//       Alert.alert(
+//       showAppAlert(
 //         'Validation Error',
 //         'Name and Village Name are required fields'
 //       );
@@ -342,13 +342,13 @@
 //       );
 
 //       if (response.data.success) {
-//         Alert.alert('Success', 'Labourer added successfully!', [
+//         showAppAlert('Success', 'Labourer added successfully!', [
 //           { text: 'OK', onPress: () => router.push("/(labour)/LabourListScreen") },
 //         ]);
 //       }
 //     } catch (err) {
 //       const error = err as AxiosError<{ message?: string }>;
-//       Alert.alert(
+//       showAppAlert(
 //         'Error',
 //         error.response?.data?.message || 'Failed to create labourer.'
 //       );
@@ -492,6 +492,7 @@ import { NavigationProps } from './types';
 import {
   ChevronLeft,
 } from 'lucide-react-native';
+import CustomAlert from '@/components/CustomAlert';
 
 /* ----------------------------- API & Models -------------------------------- */
 
@@ -591,6 +592,19 @@ export default function AddLabourScreen({
     address: '',
   });
 
+  const [showAlert, setShowAlert] = useState(false);
+const [alertTitle, setAlertTitle] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
+const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+
+const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+  setAlertAction(() => action || null);
+  setShowAlert(true);
+};
+
+
   const handleChange = <K extends keyof LabourFormData>(
     name: K,
     value: LabourFormData[K]
@@ -600,7 +614,7 @@ export default function AddLabourScreen({
 
   const handleSubmit = async (): Promise<void> => {
     if (!formData.name.trim() || !formData.villageName.trim()) {
-      Alert.alert('Validation Error', 'Name and Village Name are required fields');
+      showAppAlert('Validation Error', 'Name and Village Name are required fields');
       return;
     }
 
@@ -631,19 +645,18 @@ export default function AddLabourScreen({
       );
 
       if (response.data.success) {
-        Alert.alert('Success', 'Labourer added successfully!', [
-          { text: 'OK', onPress: () => router.push("/(auth)/onboarding") },
-        ]);
+        showAppAlert('Success', 'Labourer added successfully!', () => router.push('/(auth)/onboarding'));
       }
     } catch (err) {
       const error = err as AxiosError<{ message?: string }>;
-      Alert.alert('Error', error.response?.data?.message || 'Failed to create labourer.');
+      showAppAlert('Error', error.response?.data?.message || 'Failed to create labourer.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
+    <>
     <SafeAreaView style={{ flex: 1, backgroundColor: '#f9fafb' }}>
       {/* Header */}
       <View className="flex-row items-center p-4 bg-white border-b border-gray-200">
@@ -753,5 +766,17 @@ export default function AddLabourScreen({
         </View>
       </ScrollView>
     </SafeAreaView>
+
+     <CustomAlert
+  visible={showAlert}
+  title={alertTitle}
+  message={alertMessage}
+  onClose={() => {
+    setShowAlert(false);
+    if (alertAction) alertAction();
+  }}
+/>
+
+    </>
   );
 }

@@ -11,6 +11,8 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+import {ShoppingCart} from "lucide-react-native";
+import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -81,6 +83,18 @@ const KisanHeader: React.FC = () => {
                 <Text className="text-white text-[10px] font-medium">3</Text>
               </View>
             </TouchableOpacity>
+
+             <TouchableOpacity
+      className="w-9 h-9 rounded-full items-center justify-center me-2 border border-gray-300 relative"
+      activeOpacity={0.7}
+      onPress={() => router.push("/(traderscreen)/TraderOrder")}
+    >
+      <ShoppingCart size={18} color="#374151" />
+      {/* Cart item count badge - optional */}
+      <View className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 border border-white items-center justify-center">
+        <Text className="text-[10px] font-bold text-white">3</Text>
+      </View>
+    </TouchableOpacity>
 
           </View>
         </View>

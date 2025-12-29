@@ -522,6 +522,7 @@ import {
   CheckCircle,
   XCircle,
   MoreVertical,
+  ShoppingCart,
   Star,
   Route,
   Timer
@@ -856,6 +857,9 @@ const quickActions = [
           </View>
           
           <View className="flex-row items-center space-x-3">
+
+         
+
             <TouchableOpacity className="relative">
               <View className="w-12 h-12 bg-slate-100 rounded-2xl items-center justify-center">
                 <Bell size={20} color="#475569" />

@@ -23,10 +23,22 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import CustomAlert from '../../components/CustomAlert';
 
 const ProfileScreen: React.FC = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+const [alertTitle, setAlertTitle] = useState("");
+const [alertMessage, setAlertMessage] = useState("");
+const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+ setAlertAction(() => handleLogout);
+  setShowAlert(true);
+};
+
 
   // mock data
   const user = {
@@ -71,7 +83,7 @@ const ProfileScreen: React.FC = () => {
   ];
 
   const confirmLogout = () => {
-    Alert.alert(
+    showAppAlert(
       "Logout",
       "Are you sure you want to logout?",
       [
@@ -100,13 +112,14 @@ const ProfileScreen: React.FC = () => {
       router.replace("/(auth)/Login");
     } catch (err) {
       console.error("Logout error:", err);
-      Alert.alert("Error", "Failed to logout. Please try again.");
+      showAppAlert("Error", "Failed to logout. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
+    <>
     <View className="flex-1 bg-gray-50">
       {/* TOP HEADER */}
       <View className="bg-white border-b border-gray-200 px-5 pt-5 pb-5 mt-6">
@@ -355,6 +368,18 @@ const ProfileScreen: React.FC = () => {
         </View>
       </ScrollView>
     </View>
+     
+     <CustomAlert
+  visible={showAlert}
+  title={alertTitle}
+  message={alertMessage}
+  onClose={() => {
+    setShowAlert(false);
+    if (alertAction) alertAction();   // optional navigation callback
+  }}
+/>
+
+    </>
   );
 };
 

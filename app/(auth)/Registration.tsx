@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import CustomAlert from '../../components/CustomAlert';
 
 interface Category {
   _id: string;
@@ -50,6 +51,7 @@ interface FormData {
     uncultivated: string;
   };
   commodities: string[];
+  
   nearestMarkets: Market[];
   bankDetails: {
     accountHolderName: string;
@@ -133,6 +135,18 @@ const FarmerRegistration: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertTitle, setAlertTitle] = useState("");
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertAction, setAlertAction] = useState<null | (() => void)>(null);
+
+   const showAppAlert = (title: string, message: string, action?: () => void) => {
+  setAlertTitle(title);
+  setAlertMessage(message);
+  setAlertAction(() => action || null);
+  setShowAlert(true);
+};
+
 
   useEffect(() => {
     fetchCategories();
@@ -186,7 +200,7 @@ const FarmerRegistration: React.FC = () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location permission required.');
+        showAppAlert('Permission Denied', 'Location permission required.');
         return;
       }
       const location = await Location.getCurrentPositionAsync({});
@@ -197,9 +211,9 @@ const FarmerRegistration: React.FC = () => {
           longitude: location.coords.longitude.toString(),
         },
       }));
-      Alert.alert('Success', 'Location captured!');
+      showAppAlert('Success', 'Location captured!');
     } catch (error) {
-      Alert.alert('Error', 'Unable to get location.');
+      showAppAlert('Error', 'Failed to pick document.');
     }
   };
 
@@ -249,7 +263,7 @@ const FarmerRegistration: React.FC = () => {
         }));
       }
     } catch (error) {
-      Alert.alert('Error', 'Failed to pick document.');
+      showAppAlert('Error', 'Failed to pick document.');
     }
   };
 
@@ -396,9 +410,13 @@ const FarmerRegistration: React.FC = () => {
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
       if (response.status === 200 || response.status === 201) {
-        Alert.alert('Success', 'Registration Successful!', [
-          { text: 'OK', onPress: () => router.push('/(auth)/Login') },
-        ]);
+        
+
+          showAppAlert(
+            'Success 🎉',
+            'Registration Successful!',
+            () => router.push('/(auth)/Login')
+          );
       }
     } catch (error: any) {
       setError(error?.response?.data?.message || 'Registration failed.');
@@ -1031,6 +1049,7 @@ const FarmerRegistration: React.FC = () => {
   );
 
   return (
+    <>
     <View className="flex-1 bg-white py-10">
        <View className="absolute -top-24 -left-40 w-72 h-72 rounded-full bg-[#E8FDEB]" />
       <ScrollView
@@ -1126,9 +1145,23 @@ const FarmerRegistration: React.FC = () => {
         </View>
       </ScrollView>
     </View>
+     
+     <CustomAlert
+  visible={showAlert}
+  title={alertTitle}
+  message={alertMessage}
+  onClose={() => {
+    setShowAlert(false);
+    if (alertAction) alertAction();   // optional navigation callback
+  }}
+/>
+
+    </>
   );
 };
 
 export default FarmerRegistration;
+
+
 
 
