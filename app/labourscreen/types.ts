@@ -13,6 +13,12 @@ export interface Labourer {
     address?: string;
     todayAttendance?: 'present' | 'absent' | 'pending';
     gender?: 'male' | 'female';
+    totalPresentDays?: number;
+    attendanceSummary?: {
+        present: number;
+        absent: number;
+        pending: number;
+    };
 }
 
 export type RootStackParamList = {

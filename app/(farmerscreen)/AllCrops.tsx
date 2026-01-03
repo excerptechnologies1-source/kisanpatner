@@ -30,6 +30,7 @@ import {
 } from 'lucide-react-native';
 import { router } from "expo-router";
 import CustomAlert from '@/components/CustomAlert';
+import DotLoader from '@/components/DotLoader';
 
 interface Offer {
   _id: string;
@@ -389,7 +390,7 @@ const Mycrop: React.FC = () => {
   if (loading && !refreshing) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-50">
-        <ActivityIndicator size="large" color="#16a34a" />
+        <DotLoader/>
         <Text className="mt-4 text-gray-600 font-medium">Loading your products...</Text>
       </View>
     );

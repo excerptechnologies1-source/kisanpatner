@@ -26,7 +26,7 @@ export default function TabLayout() {
 
       {/* FARMER / TRADER AREA */}
       <Tabs.Screen
-        name="NewOrdersList"
+        name="TransportOrders"
         options={{
           title: "OrderList",
           tabBarIcon: ({ color, size }) => (

@@ -1,85 +1,84 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
-  View,
+  FlatList,
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  Image,
-  FlatList
+  View
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 
 import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import renderSliderItem from './renderSliderItem';
 import renderCategoryItem from './renderCategoryItem';
+import renderSliderItem from './renderSliderItem';
 
 
 const slider = [
-    {
-      id: "1",
-      img: "https://media.post.rvohealth.io/wp-content/uploads/2020/09/AN313-Tomatoes-732x549-Thumb.jpg",
-      title: "Fresh Tomatoes Arrived",
-      des: "Premium Quality Tomatoes available now.",
-    },
-    {
-      id: "2",
-      img: "https://thumbs.dreamstime.com/b/vegetables-group-white-background-vector-illustration-48246562.jpg",
-      title: "Fresh Vegetables Arrived",
-      des: "Premium Quality vegetables available now.",
-    },
-    {
-      id: "3",
-      img: "https://happyharvestfarms.com/blog/wp-content/uploads/2024/01/Vegetables-3.jpg",
-      title: "Fresh Vegetables Arrived",
-      des: "Premium Quality vegetables available now.",
-    },
-  ];
+  {
+    id: "1",
+    img: "https://media.post.rvohealth.io/wp-content/uploads/2020/09/AN313-Tomatoes-732x549-Thumb.jpg",
+    title: "Fresh Tomatoes Arrived",
+    des: "Premium Quality Tomatoes available now.",
+  },
+  {
+    id: "2",
+    img: "https://thumbs.dreamstime.com/b/vegetables-group-white-background-vector-illustration-48246562.jpg",
+    title: "Fresh Vegetables Arrived",
+    des: "Premium Quality vegetables available now.",
+  },
+  {
+    id: "3",
+    img: "https://happyharvestfarms.com/blog/wp-content/uploads/2024/01/Vegetables-3.jpg",
+    title: "Fresh Vegetables Arrived",
+    des: "Premium Quality vegetables available now.",
+  },
+];
 
-   const Category=[
-    {
-      id: "1",
-      img: "https://cdn.firstcry.com/education/2022/11/08143105/Green-Vegetables-Names-in-English-for-Kids.jpg",
-      title: "Tomatoes",
-    },
-    {
-      id: "2",
-      img: "https://images.squarespace-cdn.com/content/v1/578753d7d482e9c3a909de40/1475214227717-ZZC578EFLPPMNHNRTKQH/444B0502.jpg?format=2500w",
-      title: "Tomatoes",
-    },
-    {
-      id: "3",
-      img: "https://hips.hearstapps.com/hmg-prod/images/fresh-vegetables-in-basket-on-wooden-background-royalty-free-image-1676394780.jpg?crop=1xw:0.84415xh;0,0.108xh",
-      title: "Tomatoes",
-    },
-    {
-      id: "4",
-      img: "https://cdn.britannica.com/63/186963-138-AEE87658/vegetables.jpg?w=800&h=450&c=crop",
-      title: "Tomatoes",
-    },
-    {
-      id: "5",
-      img: "https://5.imimg.com/data5/ANDROID/Default/2024/11/469480228/YS/EE/TL/63667197/product-jpeg-500x500.jpg",
-      title: "Tomatoes",
-    },
-    {
-      id: "6",
-      img: "https://media.post.rvohealth.io/wp-content/uploads/sites/3/2025/05/healthful-vegetables-GettyImages-1251268295-Facebook.jpg",
-      title: "Tomatoes",
-    },
-    {
-      id: "7",
-      img: "https://agricultureguruji.com/wp-content/uploads/2021/05/best-vegetable-grow-in-greenhouse-scaled.jpeg",
-      title: "Tomatoes",
-    },
-    {
-      id: "8",
-      img: "https://media.post.rvohealth.io/wp-content/uploads/2020/09/AN313-Tomatoes-732x549-Thumb.jpg",
-      title: "Tomatoes",
-    },
-  ]
+const Category = [
+  {
+    id: "1",
+    img: "https://cdn.firstcry.com/education/2022/11/08143105/Green-Vegetables-Names-in-English-for-Kids.jpg",
+    title: "Tomatoes",
+  },
+  {
+    id: "2",
+    img: "https://images.squarespace-cdn.com/content/v1/578753d7d482e9c3a909de40/1475214227717-ZZC578EFLPPMNHNRTKQH/444B0502.jpg?format=2500w",
+    title: "Tomatoes",
+  },
+  {
+    id: "3",
+    img: "https://hips.hearstapps.com/hmg-prod/images/fresh-vegetables-in-basket-on-wooden-background-royalty-free-image-1676394780.jpg?crop=1xw:0.84415xh;0,0.108xh",
+    title: "Tomatoes",
+  },
+  {
+    id: "4",
+    img: "https://cdn.britannica.com/63/186963-138-AEE87658/vegetables.jpg?w=800&h=450&c=crop",
+    title: "Tomatoes",
+  },
+  {
+    id: "5",
+    img: "https://5.imimg.com/data5/ANDROID/Default/2024/11/469480228/YS/EE/TL/63667197/product-jpeg-500x500.jpg",
+    title: "Tomatoes",
+  },
+  {
+    id: "6",
+    img: "https://media.post.rvohealth.io/wp-content/uploads/sites/3/2025/05/healthful-vegetables-GettyImages-1251268295-Facebook.jpg",
+    title: "Tomatoes",
+  },
+  {
+    id: "7",
+    img: "https://agricultureguruji.com/wp-content/uploads/2021/05/best-vegetable-grow-in-greenhouse-scaled.jpeg",
+    title: "Tomatoes",
+  },
+  {
+    id: "8",
+    img: "https://media.post.rvohealth.io/wp-content/uploads/2020/09/AN313-Tomatoes-732x549-Thumb.jpg",
+    title: "Tomatoes",
+  },
+]
 
 
 const TraderDashboard = () => {
@@ -96,13 +95,13 @@ const TraderDashboard = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar backgroundColor="#4CAF50" barStyle="light-content" />
-    
+
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         {/* Action Buttons Row */}
         <View style={styles.actionsRow}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionCard}
-            onPress={() => (navigation.navigate as any)('traders/PostRequirement')}
+            onPress={() => (navigation.navigate as any)('PostRequirement')}
           >
             <View style={styles.actionIcon}>
               <Feather name="plus" size={18} color="#4CAF50" />
@@ -130,7 +129,7 @@ const TraderDashboard = () => {
           <View className="px-4 mb-3">
             <Text className="text-lg font-semibold text-gray-700">Featured Products</Text>
           </View>
-          
+
           <FlatList
             data={slider}
             keyExtractor={(item) => item.id}
@@ -138,26 +137,26 @@ const TraderDashboard = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{ paddingHorizontal: 16 }}
             renderItem={renderSliderItem}
-            snapToInterval={272} 
+            snapToInterval={272}
             decelerationRate="fast"
           />
         </View>
-         {/* Add more sections as needed */}
+        {/* Add more sections as needed */}
         <View className="px-6 mt-8">
           <Text className="text-lg font-semibold text-gray-700 mb-4">
-           Explore Category
+            Explore Category
           </Text>
           {/* Add your recently viewed items here */}
         </View>
-  <FlatList
-  data={Category}
-  numColumns={2}
-  keyExtractor={(item) => item.id}
-  renderItem={renderCategoryItem}
-  scrollEnabled={false}  // because ScrollView already scrolls
-  columnWrapperStyle={{ justifyContent: "space-between" }}
-  contentContainerStyle={{ paddingHorizontal: 16 }}
-/>
+        <FlatList
+          data={Category}
+          numColumns={2}
+          keyExtractor={(item) => item.id}
+          renderItem={renderCategoryItem}
+          scrollEnabled={false}  // because ScrollView already scrolls
+          columnWrapperStyle={{ justifyContent: "space-between" }}
+          contentContainerStyle={{ paddingHorizontal: 16 }}
+        />
 
         {/* Spacer for bottom navigation */}
         <View style={styles.spacer} />
@@ -165,18 +164,18 @@ const TraderDashboard = () => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navIcon} onPress={() => {}}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => { }}>
           <Feather name="home" size={22} color="#4CAF50" />
         </TouchableOpacity>
 
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.floatingAdd}
-          onPress={() => (navigation.navigate as any)('traders/PostRequirement')}
+          onPress={() => (navigation.navigate as any)('PostRequirement')}
         >
           <Feather name="plus" size={28} color="#fff" />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.navIcon} onPress={() => {}}>
+        <TouchableOpacity style={styles.navIcon} onPress={() => { }}>
           <Feather name="refresh-cw" size={22} color="#4CAF50" />
         </TouchableOpacity>
       </View>

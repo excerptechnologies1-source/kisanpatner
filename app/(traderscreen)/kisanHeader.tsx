@@ -1,18 +1,20 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BlurView } from "expo-blur";
+import { router } from "expo-router";
+import { ShoppingCart } from "lucide-react-native";
 import React, { useRef, useState } from "react";
 import {
-    Animated,
-    Dimensions,
-    Modal,
-    Pressable,
-    SafeAreaView,
-    Text,
-    TouchableOpacity,
-    View,
+  Alert,
+  Animated,
+  Dimensions,
+  Modal,
+  Pressable,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import {ShoppingCart} from "lucide-react-native";
-import { router } from "expo-router";
 
 const { width } = Dimensions.get("window");
 
@@ -51,10 +53,88 @@ const KisanHeader: React.FC = () => {
     { id: 1, icon: "person-outline", label: "Profile", route: "/profile" },
     { id: 2, icon: "home-outline", label: "Home", route: "/home" },
     { id: 3, icon: "cart-outline", label: "My Orders", route: "/orders" },
-    { id: 4, icon: "settings-outline", label: "Settings", route: "/settings" },
-    { id: 5, icon: "help-circle-outline", label: "Help & Support", route: "/help" },
+    // { id: 4, icon: "settings-outline", label: "Settings", route: "/settings" },
+    // { id: 5, icon: "help-circle-outline", label: "Help & Support", route: "/help" },
     { id: 6, icon: "log-out-outline", label: "Logout", route: "/logout" },
   ];
+
+  const handleMenuItemPress = async (item: MenuItem) => {
+    closeSidebar();
+
+    // Small delay to let sidebar close animation complete
+    setTimeout(async () => {
+      switch (item.label) {
+        case "Profile":
+          router.push("/(trader)/profile");
+          break;
+
+        case "Home":
+          router.push("/(trader)/home");
+          break;
+
+        case "My Orders":
+          router.push("/(traderscreen)/TraderOrder");
+          break;
+
+        case "Settings":
+          Alert.alert(
+            "Coming Soon",
+            "Settings page is under development.",
+            [{ text: "OK" }]
+          );
+          break;
+
+        case "Help & Support":
+          Alert.alert(
+            "Coming Soon",
+            "Help & Support page is under development.",
+            [{ text: "OK" }]
+          );
+          break;
+
+        case "Logout":
+          Alert.alert(
+            "Logout",
+            "Are you sure you want to logout?",
+            [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Logout",
+                style: "destructive",
+                onPress: async () => {
+                  try {
+                    // Clear authentication data
+                    const keysToRemove = [
+                      "userData",
+                      "userId",
+                      "userName",
+                      "userMobile",
+                      "userRole",
+                      "traderId",
+                      "isLoggedIn",
+                    ];
+                    await AsyncStorage.multiRemove(keysToRemove);
+
+                    // Navigate to login
+                    router.replace({
+                      pathname: "/(auth)/Login",
+                      params: { role: "trader" },
+                    });
+                  } catch (error) {
+                    console.error("Logout error:", error);
+                    Alert.alert("Error", "Failed to logout. Please try again.");
+                  }
+                },
+              },
+            ]
+          );
+          break;
+
+        default:
+          console.log("Unknown menu item:", item.label);
+      }
+    }, 300);
+  };
 
   return (
     <View className="relative w-full bg-[#68D75D]">
@@ -62,7 +142,7 @@ const KisanHeader: React.FC = () => {
       <SafeAreaView>
         <View className="h-28 justify-end">
           <View className="h-16 px-4 flex-row items-center justify-between bg-black/20">
-            
+
             {/* Menu Button */}
             <TouchableOpacity onPress={openSidebar} className="p-2">
               <Ionicons name="menu" size={28} color="white" />
@@ -84,17 +164,17 @@ const KisanHeader: React.FC = () => {
               </View>
             </TouchableOpacity>
 
-             <TouchableOpacity
-      className="w-9 h-9 rounded-full items-center justify-center me-2 border border-gray-300 relative"
-      activeOpacity={0.7}
-      onPress={() => router.push("/(traderscreen)/TraderOrder")}
-    >
-      <ShoppingCart size={18} color="#374151" />
-      {/* Cart item count badge - optional */}
-      <View className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 border border-white items-center justify-center">
-        <Text className="text-[10px] font-bold text-white">3</Text>
-      </View>
-    </TouchableOpacity>
+            <TouchableOpacity
+              className="w-9 h-9 rounded-full items-center justify-center me-2 border border-gray-300 relative"
+              activeOpacity={0.7}
+              onPress={() => router.push("/(traderscreen)/TraderOrder")}
+            >
+              <ShoppingCart size={18} color="#374151" />
+              {/* Cart item count badge - optional */}
+              <View className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 border border-white items-center justify-center">
+                <Text className="text-[10px] font-bold text-white">3</Text>
+              </View>
+            </TouchableOpacity>
 
           </View>
         </View>
@@ -135,7 +215,7 @@ const KisanHeader: React.FC = () => {
               {menuItems.map((item) => (
                 <TouchableOpacity
                   key={item.id}
-                  onPress={() => console.log("Pressed:", item.label)}
+                  onPress={() => handleMenuItemPress(item)}
                   className="flex-row items-center py-4 border-b border-gray-200"
                 >
                   <Ionicons

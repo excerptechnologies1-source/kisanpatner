@@ -170,6 +170,7 @@ const LoginPage = () => {
 
       const data = await response.json();
 
+
       if (data.success) {
         await saveUserToAsyncStorage(data.data);
         setTimeout(() => {
@@ -177,8 +178,10 @@ const LoginPage = () => {
         }, 500);
       } else {
         setError(data.message || 'Login failed');
+        
       }
     } catch (err) {
+      console.log("🔥 LOGIN ERROR =>", err);
       setError('Login failed. Please try again.');
     } finally {
       setLoading(false);
@@ -222,7 +225,7 @@ const LoginPage = () => {
 
   return (
     <View className="flex-1 bg-white py-10">
-         <View className="flex-row items-center px-4 py-4 ">
+         <View className="flex-row items-center justify-between px-4 py-4">
             <TouchableOpacity
               onPress={() => router.push('/(auth)/onboarding')}
               className="p-2"
@@ -230,7 +233,19 @@ const LoginPage = () => {
               <ChevronLeft size={24} color="#374151" />
              
             </TouchableOpacity>
-           
+            
+            <TouchableOpacity
+    onPress={() =>
+    router.push({
+      pathname: "/(auth)/Registration",
+      params: { role }
+    })
+  }
+    className="px-4 py-2 rounded bg-green-600"
+  >
+    <Text className="text-white text-xs font-medium">Register</Text>
+  </TouchableOpacity>
+
           </View>
 
       <StatusBar barStyle="dark-content" />
@@ -426,41 +441,7 @@ const LoginPage = () => {
                     <Text className="text-xs text-slate-500 font-medium">
                       Don't have an account ?{' '}
                     </Text>
-                    <TouchableOpacity onPress={goToRegister}>
-      <View style={{ position: "relative" }}>
-        
-        {/* Text */}
-        <Text className="text-sm font-bold font-medium text-[#1FAD4E]">
-          Register Here
-        </Text>
-
-        {/* 🔴 Blinking Dot Top-Right */}
-        <View style={{ position: "absolute", top: -5, right: -12 }}>
-          <Animated.View
-            style={{
-              position: "absolute",
-              width: 10,
-              height: 10,
-              borderRadius: 7,
-              backgroundColor: "red",
-              opacity,
-              transform: [{ scale }],
-            }}
-          />
-          <View
-            style={{
-              width: 8,
-              height: 8,
-              borderRadius: 4,
-              backgroundColor: "red",
-              alignSelf: "center",
-              marginTop: 3,
-            }}
-          />
-        </View>
-
-      </View>
-    </TouchableOpacity>
+                  
                   </View>
 
                   <View className="flex-row justify-center items-center mt-1">
