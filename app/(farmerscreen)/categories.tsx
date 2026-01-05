@@ -199,7 +199,8 @@ const CategorySelectionPage: React.FC = () => {
       },
     });
   };
-
+console.log("selectedCategory",selectedCategory)
+console.log("selectedSubCategory",selectedSubCategory)
   const getImageUrl = (imagePath: string) => {
     if (!imagePath) return "https://via.placeholder.com/100";
     return `https://kisan.etpl.ai/uploads/${imagePath.replace(

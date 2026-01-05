@@ -5,31 +5,28 @@ import {
   Bell,
   ClipboardList,
   Leaf,
-  ShoppingBag,
   MapPin,
-  Search,
-  ShieldCheck,
-  ShoppingCart,
   Plus,
+  ShieldCheck,
+  ShoppingBag,
+  ShoppingCart,
   Star,
   Store,
-  Users,
+  Users
 } from "lucide-react-native";
 // import { router } from "expo-router";
 import { useRouter } from "expo-router";
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
-  View,
-  ActivityIndicator,
+  View
 } from "react-native";
 
-import { Marker } from "react-native-maps";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get("window");
 
@@ -414,7 +411,7 @@ const fetchUnreadCount = async () => {
               showsHorizontalScrollIndicator={false}
               className="px-4"
             >
-              {cropPhotosList.map((uri: string, index: number) => (
+              {cropPhotosList.slice(0, 4).map((uri: string, index: number) => (
                 <View
                   key={`crop-photo-${index}`}
                  className="w-28 mr-3 rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-50"

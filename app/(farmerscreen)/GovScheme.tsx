@@ -8,7 +8,7 @@ import { Linking, ScrollView, Text, TouchableOpacity, View } from "react-native"
 export default function GoSchemeScreen() {
   const handleWhatsApp = () => {
     // Replace with actual number if provided, using a placeholder for now
-    Linking.openURL('whatsapp://send?phone=919876543210&text=Hi, I want to know about Government Schemes.');
+    Linking.openURL('whatsapp://send?phone=918050806006&text=Hi, I want to know about Government Schemes.');
   };
 
   return (

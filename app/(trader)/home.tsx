@@ -192,9 +192,9 @@ import { useRouter } from "expo-router";
 import React, { JSX } from "react";
 import { FlatList, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import KisanHeader from "../(traderscreen)/kisanHeader";
 import renderCategoryItem from "../(traderscreen)/renderCategoryItem";
 import renderSliderItem from "../(traderscreen)/renderSliderItem";
-import KisanHeader from "../(traderscreen)/kisanHeader";
 
 const Home = () => {
   const router=useRouter()
@@ -354,11 +354,7 @@ const Home = () => {
 />
 
 
-     <View style={{marginBottom:100}} className="flex-row p-3 justify-center items-center">
-       <TouchableOpacity onPress={()=>router.push("/")} className="bg-green-500 p-2 px-5 border border-green-600 rounded-lg shadow-xl">
-         <Text className="text-white">View all</Text>
-       </TouchableOpacity>
-      </View>
+    
       </ScrollView>
 
     </SafeAreaView>

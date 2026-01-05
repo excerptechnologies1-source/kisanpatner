@@ -1,34 +1,28 @@
 
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import axios from 'axios';
+import {
+  Calendar,
+  ChevronLeft,
+  Plus,
+  RefreshCw
+} from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  TextInput,
-  Alert,
   ActivityIndicator,
+  FlatList,
   Modal,
-  Image,
   Platform,
   SafeAreaView,
-  FlatList,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import axios from 'axios';
-import * as ImagePicker from 'expo-image-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {
-  ChevronLeft,
-  Camera,
-  X,
-  Calendar,
-  Plus,
-  RefreshCw,
-} from 'lucide-react-native';
 import StageUpload from './StageUpload';
-import MyCrops from './MyCrops';
 
 
 interface Crop {
@@ -508,12 +502,12 @@ const CropManagement: React.FC = () => {
             <Text className="text-white font-medium text-base">My Crops</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => setShowAddNewCrop(true)}
             className="py-4 bg-emerald-500 rounded-lg items-center shadow-sm"
           >
             <Text className="text-white font-medium text-base">+ Add New Crop</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         {/* Current crops count preview */}
