@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl,
-  StyleSheet,
-} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import {
+  ChevronLeft
+} from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface PurchaseHistory {
   _id: string;
@@ -231,92 +234,100 @@ const NotificationScreen = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-gray-50">
         <ActivityIndicator size="large" color="#16a34a" />
-        <Text style={styles.loadingText}>Loading notifications...</Text>
+        <Text className="mt-4 text-base text-gray-500">Loading notifications...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+   <SafeAreaView className="bg-white flex-1">
       {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text style={styles.headerIcon}>🔔</Text>
-          <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>Notifications</Text>
-            <Text style={styles.headerSubtitle}>
-              {displayOrders.length} {displayOrders.length === 1 ? 'order' : 'orders'} pending
-            </Text>
-          </View>
-        </View>
+      <View className="flex-row items-center px-4 bg-white shadow-sm mb-4">
+        <TouchableOpacity
+          onPress={() => router.push("/(farmer)/home")}
+          className="p-2"
+        >
+          <ChevronLeft size={24} color="#374151" />
+        </TouchableOpacity>
+        <Text className="ml-3 text-xl font-medium text-gray-900">
+          Notifications
+        </Text>
       </View>
 
       <ScrollView
-        style={styles.scrollView}
+        className="flex-1"
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#16a34a']} />
         }
       >
         {displayOrders.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>🔔</Text>
-            <Text style={styles.emptyTitle}>No notifications</Text>
-            <Text style={styles.emptySubtitle}>You're all caught up!</Text>
+          <View className="items-center justify-center py-20 px-8">
+            <Text className="text-6xl mb-4 opacity-50">🔔</Text>
+            <Text className="text-xl font-semibold text-gray-900 mb-2">No notifications</Text>
+            <Text className="text-sm text-gray-500">You're all caught up!</Text>
           </View>
         ) : (
-          <View style={styles.notificationsContainer}>
+          <View className="p-3">
             {displayOrders.map((orderItem, index) => {
               const uniqueKey = `${orderItem.orderData._id}-${orderItem.productItem.productId}-${index}`;
 
               return (
                 <TouchableOpacity
                   key={uniqueKey}
-                  style={styles.notificationCard}
+                  className="bg-green-50 rounded-xl mb-2.5 overflow-hidden shadow-sm border border-green-200"
+                  style={{
+                    elevation: 2,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 3,
+                  }}
                   onPress={() => handleNotificationPress(orderItem)}
                   activeOpacity={0.7}
                 >
                   {/* Unread indicator dot */}
-                  <View style={styles.unreadDot} />
+                  <View className="absolute top-3 left-3 w-2 h-2 rounded-full bg-green-600 z-10" />
 
-                  <View style={styles.notificationContent}>
+                  <View className="flex-row p-3 pl-5 items-center">
                     {/* Product Image */}
                     <Image
                       source={{ uri: getImageUrl(orderItem.product.cropPhotos[0]) }}
-                      style={styles.productImage}
+                      className="w-15 h-15 rounded-lg mr-3"
                       resizeMode="cover"
                     />
 
-                    <View style={styles.notificationTextContainer}>
+                    <View className="flex-1 pr-2">
                       {/* Title */}
-                      <Text style={styles.notificationTitle}>
+                      <Text className="text-base font-medium text-gray-900 mb-1">
                         New Order: {orderItem.product.cropBriefDetails}
                       </Text>
 
                       {/* Details */}
-                      <Text style={styles.notificationMessage}>
-                        {orderItem.orderData.traderId} • {orderItem.productItem.quantity} {orderItem.product.unitMeasurement || 'units'} • Grade {orderItem.grade.grade}
+                      <Text className="text-xs font-medium text-gray-600 leading-5 mb-1.5">
+                        {orderItem.orderData.traderId} • {orderItem.productItem.quantity}{' '}
+                        {orderItem.product.unitMeasurement || 'units'} • Grade {orderItem.grade.grade}
                       </Text>
 
                       {/* Footer */}
-                      <View style={styles.notificationFooter}>
-                        <Text style={styles.notificationTime}>
+                      <View className="flex-row items-center flex-wrap">
+                        <Text className="text-xs text-gray-500">
                           {getTimeAgo(orderItem.orderData.createdAt)}
                         </Text>
-                        <Text style={styles.notificationDot}>•</Text>
-                        <Text style={styles.notificationAmount}>
+                        <Text className="text-xs text-gray-300 mx-1.5">•</Text>
+                        <Text className="text-xs text-green-600 font-semibold">
                           ₹{orderItem.productItem.totalAmount.toFixed(2)}
                         </Text>
-                        <Text style={styles.notificationDot}>•</Text>
-                        <Text style={styles.notificationOrderId}>
+                        <Text className="text-xs text-gray-300 mx-1.5">•</Text>
+                        <Text className="text-xs text-gray-500">
                           {orderItem.orderData.orderId}
                         </Text>
                       </View>
                     </View>
 
-                    <View style={styles.notificationArrow}>
-                      <Text style={styles.arrowIcon}>›</Text>
+                    <View className="justify-center pl-2">
+                      <Text className="text-2xl text-gray-300">›</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -325,164 +336,10 @@ const NotificationScreen = () => {
           </View>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#6b7280',
-  },
-  header: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerIcon: {
-    fontSize: 28,
-  },
-  headerTextContainer: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#111827',
-  },
-  headerSubtitle: {
-    fontSize: 13,
-    color: '#16a34a',
-    marginTop: 2,
-    fontWeight: '600',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 80,
-    paddingHorizontal: 32,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-    opacity: 0.5,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  notificationsContainer: {
-    padding: 12,
-  },
-  notificationCard: {
-    backgroundColor: '#f0fdf4',
-    borderRadius: 12,
-    marginBottom: 10,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    borderWidth: 1,
-    borderColor: '#bbf7d0',
-  },
-  unreadDot: {
-    position: 'absolute',
-    top: 12,
-    left: 12,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#16a34a',
-    zIndex: 1,
-  },
-  notificationContent: {
-    flexDirection: 'row',
-    padding: 12,
-    paddingLeft: 20,
-    alignItems: 'center',
-  },
-  productImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 12,
-  },
-  notificationTextContainer: {
-    flex: 1,
-    paddingRight: 8,
-  },
-  notificationTitle: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  notificationMessage: {
-    fontSize: 13,
-    color: '#4b5563',
-    lineHeight: 18,
-    marginBottom: 6,
-  },
-  notificationFooter: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
-  },
-  notificationTime: {
-    fontSize: 11,
-    color: '#6b7280',
-  },
-  notificationDot: {
-    fontSize: 11,
-    color: '#d1d5db',
-    marginHorizontal: 6,
-  },
-  notificationAmount: {
-    fontSize: 11,
-    color: '#16a34a',
-    fontWeight: '600',
-  },
-  notificationOrderId: {
-    fontSize: 11,
-    color: '#6b7280',
-  },
-  notificationArrow: {
-    justifyContent: 'center',
-    paddingLeft: 8,
-  },
-  arrowIcon: {
-    fontSize: 24,
-    color: '#d1d5db',
-  },
-});
+
 
 export default NotificationScreen;

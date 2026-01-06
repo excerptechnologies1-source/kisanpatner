@@ -8721,7 +8721,7 @@ const SellProductForm: React.FC = () => {
 
   return (
     <View className="flex-1 bg-gray-50">
-      <View className="flex-row items-center p-4 bg-white border-b-2 border-gray-200 mt-5">
+      <View className="flex-row items-center p-4 bg-white border-b-2 border-gray-200">
         <TouchableOpacity onPress={goBack} className="p-2 mr-2">
           <ChevronLeft size={24} color="#374151" />
         </TouchableOpacity>

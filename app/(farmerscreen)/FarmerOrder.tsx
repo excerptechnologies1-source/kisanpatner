@@ -1,418 +1,21 @@
-
-// import React, { useState, useEffect } from "react";
-// import {
-//   View,
-//   Text,
-//   ScrollView,
-//   TouchableOpacity,
-//   ActivityIndicator,
-//   RefreshControl,
-  
-//   Alert,
-// } from "react-native";
-// import AsyncStorage from "@react-native-async-storage/async-storage";
-// import { useNavigation } from "@react-navigation/native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-// import { router } from "expo-router";
-// import {
-//   ChevronLeft,
-// } from "lucide-react-native"
-
-// interface OrderData {
-//   _id: string;
-//   orderId: string;
-//   traderId: string;
-//   traderName: string;
-//   farmerId: string;
-//   productItems: {
-//     productId: string;
-//     farmerId: string;
-//     grade: string;
-//     quantity: number;
-//     pricePerUnit: number;
-//     totalAmount: number;
-//   }[];
-//   traderToAdminPayment: {
-//     totalAmount: number;
-//   };
-//   farmerAcceptedStatus: boolean;
-//   createdAt: string;
-// }
-
-// interface Commission {
-//   role: string;
-//   commissionPercentage: number;
-// }
-
-// const FarmerOrderAccept = () => {
-//   const navigation = useNavigation();
-//   const [orders, setOrders] = useState<OrderData[]>([]);
-//   const [allOrders, setAllOrders] = useState<OrderData[]>([]);
-//   const [showOnlyPending, setShowOnlyPending] = useState(true);
-//   const [loading, setLoading] = useState(true);
-//   const [refreshing, setRefreshing] = useState(false);
-//   const [commissionRate, setCommissionRate] = useState(0);
-//   const [accepting, setAccepting] = useState<string | null>(null);
-//   const [successMessage, setSuccessMessage] = useState("");
-
-//   useEffect(() => {
-//     fetchCommission();
-//     fetchOrders();
-//   }, []);
-
-//   useEffect(() => {
-//     if (showOnlyPending)
-//       setOrders(allOrders.filter((o) => !o.farmerAcceptedStatus));
-//     else setOrders(allOrders);
-//   }, [showOnlyPending, allOrders]);
-
-//   const fetchCommission = async () => {
-//     try {
-//       const res = await fetch("https://kisan.etpl.ai/api/commission/all");
-//       const data = await res.json();
-//       const farmer = data.find((c: Commission) => c.role === "FARMER");
-//       if (farmer) setCommissionRate(farmer.commissionPercentage);
-//     } catch (e) {
-//       console.log("commission error", e);
-//     }
-//   };
-
-//   const fetchOrders = async () => {
-//     try {
-//       setLoading(true);
-//       const farmerId = await AsyncStorage.getItem("farmerId");
-//       if (!farmerId) return;
-
-//       const res = await fetch(
-//         `https://kisan.etpl.ai/api/orders/farmer/${farmerId}`
-//       );
-//       const data = await res.json();
-
-//       let list: OrderData[] = [];
-//       if (data?.data) list = data.data;
-//       else if (Array.isArray(data)) list = data;
-//       else if (data?.orders) list = data.orders;
-
-//       setAllOrders(list);
-//     } catch (e) {
-//       Alert.alert("Error", "Failed to fetch orders");
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const onRefresh = async () => {
-//     setRefreshing(true);
-//     await fetchCommission();
-//     await fetchOrders();
-//     setRefreshing(false);
-//   };
-
-//   const calcCommission = (a: number) => (a * commissionRate) / 100;
-//   const calcNet = (a: number) => a - calcCommission(a);
-
-//   const handleAcceptOrder = async (order: OrderData) => {
-//     try {
-//       setAccepting(order._id);
-
-//       const farmerId = await AsyncStorage.getItem("farmerId");
-//       const farmerName = (await AsyncStorage.getItem("farmerName")) || "";
-//       const farmerMobile =
-//         (await AsyncStorage.getItem("farmerMobile")) || "";
-//       const farmerEmail =
-//         (await AsyncStorage.getItem("farmerEmail")) || "";
-
-//       const gross = order.traderToAdminPayment.totalAmount;
-//       const net = calcNet(gross);
-
-//       const productItems = order.productItems.map((i) => ({
-//         productId: i.productId,
-//         grade: i.grade,
-//         quantity: i.quantity,
-//       }));
-
-//       const res = await fetch(
-//         "https://kisan.etpl.ai/api/orders/farmer-accept",
-//         {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({
-//             farmerId,
-//             traderId: order.traderId,
-//             productItems,
-//             farmerName,
-//             farmerMobile,
-//             farmerEmail,
-//             totalFarmerAmount: net,
-//             commissionRate,
-//           }),
-//         }
-//       );
-
-//       const result = await res.json();
-
-//       if (result.success) {
-//         setSuccessMessage(`Order ${order.orderId} accepted successfully!`);
-//         setTimeout(() => {
-//           setSuccessMessage("");
-//           fetchOrders();
-//         }, 2500);
-//       } else Alert.alert("Error", result.message);
-//     } catch {
-//       Alert.alert("Error", "Failed to accept");
-//     } finally {
-//       setAccepting(null);
-//     }
-//   };
-
-//   if (loading && !refreshing)
-//     return (
-//       <View className="flex-1 justify-center items-center bg-gray-100">
-//         <ActivityIndicator size="large" color="#22c55e" />
-//         <Text className="mt-3 text-gray-500 text-base">
-//           Loading orders...
-//         </Text>
-//       </View>
-//     );
-
-//   return (
-    
-//     <SafeAreaView className="flex-1 bg-white">
-//       <View className="flex-row items-center px-4 py-4 bg-white border-b border-gray-200">
-//          <TouchableOpacity
-//            onPress={() => router.push("/(farmer)/home")}
-//            className="p-2"
-//          >
-//            <ChevronLeft size={24} color="#374151" />
-//          </TouchableOpacity>
-//          <Text className="ml-3 text-xl font-medium text-gray-900">Order</Text>
-//       </View>
-
-//       <ScrollView
-//         className="flex-1"
-//         showsVerticalScrollIndicator={false}
-//         refreshControl={
-//           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-//         }
-//       >
-//         {/* TABS */}
-//         <View className="flex-row px-5 py-4 bg-white space-x-3">
-//           <TouchableOpacity
-//             onPress={() => setShowOnlyPending(true)}
-//             className={`px-6 py-2 rounded-full ${
-//               showOnlyPending ? "bg-black" : "bg-transparent"
-//             }`}
-//           >
-//             <Text
-//               className={`text-sm font-medium ${
-//                 showOnlyPending ? "text-white" : "text-gray-500"
-//               }`}
-//             >
-//               Pending Orders
-//             </Text>
-//           </TouchableOpacity>
-
-//           <TouchableOpacity
-//             onPress={() => setShowOnlyPending(false)}
-//             className={`px-6 py-2 rounded-full ${
-//               !showOnlyPending ? "bg-black" : "bg-transparent"
-//             }`}
-//           >
-//             <Text
-//               className={`text-sm font-medium ${
-//                 !showOnlyPending ? "text-white" : "text-gray-500"
-//               }`}
-//             >
-//               Completed Orders
-//             </Text>
-//           </TouchableOpacity>
-//         </View>
-
-//         {/* SUCCESS */}
-//         {successMessage !== "" && (
-//           <View className="flex-row bg-green-100 mx-5 mt-4 p-4 rounded-xl items-center">
-//             <Text className="text-green-700 text-lg mr-2">✓</Text>
-//             <Text className="text-green-700 font-medium flex-1">
-//               {successMessage}
-//             </Text>
-//           </View>
-//         )}
-
-//         {/* ORDERS */}
-//         <View className="px-5 py-5">
-//           {orders.length === 0 ? (
-//             <View className="bg-white rounded-2xl py-16 items-center shadow">
-//               <Text className="text-7xl mb-3">📦</Text>
-//               <Text className="text-lg font-medium text-gray-800">
-//                 {showOnlyPending
-//                   ? "No pending orders"
-//                   : "No orders found"}
-//               </Text>
-//               <Text className="text-gray-500 text-sm">
-//                 {showOnlyPending
-//                   ? "Orders will appear here"
-//                   : "You have no orders yet"}
-//               </Text>
-//             </View>
-//           ) : (
-//             orders.map((order) => {
-//               const gross = order.traderToAdminPayment.totalAmount;
-//               const commission = calcCommission(gross);
-//               const net = calcNet(gross);
-
-//               return (
-//                 <View
-//                   key={order._id}
-//                   className="bg-white rounded-lg p-5 mb-4 border border-gray-200"
-//                 >
-//                   {/* HEADER */}
-//                   <View className="flex-row justify-between items-center mb-3">
-//                     <View className="flex-row items-center flex-1">
-//                       <View className="w-12 h-12 bg-blue-500 rounded-xl justify-center items-center mr-3">
-//                         <Text className="text-white font-medium">
-//                           {order.traderName.substring(0, 2).toUpperCase()}
-//                         </Text>
-//                       </View>
-
-//                       <View className="flex-1">
-//                         <Text className="font-medium text-base">
-//                           {order.farmerAcceptedStatus
-//                             ? "Order accepted"
-//                             : "Review order"}
-//                         </Text>
-
-//                         <Text className="text-gray-500 text-xs">
-//                           Delivery today by{" "}
-//                           {new Date(order.createdAt).toLocaleTimeString(
-//                             "en-IN",
-//                             { hour: "2-digit", minute: "2-digit" }
-//                           )}
-//                         </Text>
-//                       </View>
-//                     </View>
-
-                    
-//                   </View>
-
-//                   {/* MESSAGE */}
-//                   <Text className="text-gray-600 text-sm leading-5 mb-4">
-//                     {order.traderName} needs to confirm order details.
-//                     Review or chat with them.
-//                   </Text>
-
-
-//                   {/* PRODUCTS */}
-//                   {order.productItems.map((item, i) => (
-//                     <View
-//                       key={i}
-//                       className="flex-row items-center py-1"
-//                     >
-//                       <View className="w-10 h-10 bg-amber-100 rounded-xl justify-center items-center mr-3">
-//                         <Text className="text-xl">
-//                           {i === 0 ? "🥕" : i === 1 ? "🧅" : "🫚"}
-//                         </Text>
-//                       </View>
-
-//                       <View className="flex-1">
-//                         <Text className="font-medium">
-//                           Grade {item.grade}
-//                         </Text>
-//                         <Text className="text-gray-500 text-xs">
-//                           {item.quantity} units
-//                         </Text>
-//                       </View>
-//                     </View>
-//                   ))}
-
-//                   {/* SUMMARY */}
-//                   <View className="bg-gray-100 rounded-xl p-4 my-4">
-//                     <View className="flex-row justify-between mb-1">
-//                       <Text className="text-gray-500 text-sm">
-//                         Gross Amount
-//                       </Text>
-//                       <Text className="font-medium">
-//                         ₹{gross.toFixed(2)}
-//                       </Text>
-//                     </View>
-
-//                     <View className="flex-row justify-between mb-1">
-//                       <Text className="text-gray-500 text-sm">
-//                         Platform Fee ({commissionRate}%)
-//                       </Text>
-//                       <Text className="text-red-500 font-medium">
-//                         -₹{commission.toFixed(2)}
-//                       </Text>
-//                     </View>
-
-//                     <View className="h-px bg-gray-300 my-2" />
-
-//                     <View className="flex-row justify-between">
-//                       <Text className="font-medium">
-//                         You'll Receive
-//                       </Text>
-//                       <Text className="text-green-600 font-medium text-lg">
-//                         ₹{net.toFixed(2)}
-//                       </Text>
-//                     </View>
-//                   </View>
-
-//                   {/* ACCEPT BUTTON */}
-//                   {!order.farmerAcceptedStatus ? (
-//                     <TouchableOpacity
-//                       disabled={accepting === order._id}
-//                       onPress={() => handleAcceptOrder(order)}
-//                       className={`py-4 rounded-xl items-center ${
-//                         accepting === order._id
-//                           ? "bg-gray-400"
-//                           : "bg-green-500"
-//                       }`}
-//                     >
-//                       {accepting === order._id ? (
-//                         <ActivityIndicator color="#fff" />
-//                       ) : (
-//                         <Text className="text-white font-medium text-base">
-//                           Accept Order
-//                         </Text>
-//                       )}
-//                     </TouchableOpacity>
-//                   ) : (
-//                     <View className="bg-green-100 py-3 rounded-xl items-center">
-//                       <Text className="text-green-700 font-medium">
-//                         ✓ Already Accepted
-//                       </Text>
-//                     </View>
-//                   )}
-//                 </View>
-//               );
-//             })
-//           )}
-//         </View>
-//       </ScrollView>
-//     </SafeAreaView>
-//   );
-// };
-
-// export default FarmerOrderAccept;
-
-
-
-
-
-
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ActivityIndicator,
-  RefreshControl,
-  StyleSheet,
-  Dimensions,
-  Alert,
-} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from "expo-router";
+import { ChevronLeft } from 'lucide-react-native';
+import React, { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Image,
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Card, Divider } from 'react-native-paper';
+import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const { width } = Dimensions.get('window');
 
@@ -739,408 +342,261 @@ const FarmerOrderAccept = () => {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-gray-50">
         <ActivityIndicator size="large" color="#16a34a" />
-        <Text style={styles.loadingText}>Loading pending orders...</Text>
+        <Text className="mt-4 text-base text-gray-500">Loading pending orders...</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView 
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#16a34a']} />
-      }
+     <SafeAreaView 
+      className="flex-1 bg-white"
+     
     >
-      <View style={styles.header}>
-        <View style={styles.headerContent}>
-          <Text style={styles.headerIcon}>🛒</Text>
-          <View>
-            <Text style={styles.headerTitle}>Pending Orders</Text>
-            <Text style={styles.headerSubtitle}>Review and accept orders from traders</Text>
+
+
+      <View className="flex-row items-center bg-white px-4 py-4">
+              <TouchableOpacity
+                 onPress={() => router.push('/(farmer)/home')}
+                className="p-2"
+              >
+                <ChevronLeft size={24} color="#374151" />
+              </TouchableOpacity>
+              <View>
+            <Text className="text-2xl font-medium text-gray-800">Pending Orders</Text>
+            <Text className="text-sm text-gray-500">Review and accept orders</Text>
+          </View>
+
+          <View className="ml-auto bg-blue-50 px-3 py-1 rounded-full">
+            <Text className="text-sm font-medium text-blue-600">
+              {displayOrders.length} pending
+            </Text>
+          </View>
+            </View>
+
+      <View className="flex-1 bg-white">
+      <ScrollView 
+        className="flex-1"
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#10b981']} />
+        }
+      >
+        {/* Success Banner */}
+        {successMessage ? (
+          <View className="mx-4 mt-4 bg-green-50 border-l-4 border-green-500 p-3 rounded-r-lg">
+            <View className="flex-row items-center">
+              <Icon name="check-circle" size={20} color="#059669" />
+              <Text className="ml-2 text-sm font-medium text-green-800 flex-1">
+                {successMessage}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
+        {displayOrders.length === 0 ? (
+          <View className="flex-1 items-center justify-center py-16 px-8">
+            <View className="bg-gray-100 p-6 rounded-full mb-4">
+              <Icon name="package-variant" size={48} color="#9ca3af" />
+            </View>
+            <Text className="text-xl font-medium text-gray-700 mb-2">No pending orders</Text>
+            <Text className="text-sm text-gray-500 text-center">
+              Orders from traders will appear here for your review
+            </Text>
+            <TouchableOpacity 
+              className="mt-6 bg-green-500 px-6 py-2 rounded-lg"
+              onPress={onRefresh}
+            >
+              <Text className="text-white font-medium">Refresh</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View className="p-4 space-y-4">
+            {displayOrders.map((orderItem, index) => {
+              const grossAmount = orderItem.productItem.totalAmount;
+              const commission = calculateCommission(grossAmount);
+              const netAmount = calculateNetAmount(grossAmount);
+              const uniqueKey = `${orderItem.orderData._id}-${orderItem.productItem.productId}-${index}`;
+
+              return (
+                <Card key={uniqueKey} className="mb-3 ">
+                  {/* Card Header */}
+                  <Card.Content className="pb-0 bg-white">
+                    <View className="flex-row justify-between items-start mb-3">
+                      <View className="flex-1">
+                        <View className="flex-row items-center mb-1">
+                          <Icon name="store" size={16} color="#6b7280" />
+                          <Text className="ml-1 text-sm text-gray-600">
+                            {orderItem.orderData.traderName || orderItem.orderData.traderId}
+                          </Text>
+                        </View>
+                        <Text className="text-lg font-medium text-gray-800">
+                          {orderItem.product.cropBriefDetails}
+                        </Text>
+                        <View className="flex-row items-center mt-1">
+                          <Icon name="identifier" size={14} color="#6b7280" />
+                          <Text className="ml-1 text-xs text-gray-500">
+                            Order #{orderItem.orderData.orderId}
+                          </Text>
+                          <Text className="mx-2 text-gray-300">•</Text>
+                          <Icon name="calendar" size={14} color="#6b7280" />
+                          <Text className="ml-1 text-xs text-gray-500">
+                            {new Date(orderItem.orderData.createdAt).toLocaleDateString('en-IN')}
+                          </Text>
+                        </View>
+                      </View>
+                      <View className="bg-green-100 px-2 py-1 rounded">
+                        <Text className="text-xs font-medium text-green-800">
+                          Grade {orderItem.grade.grade}
+                        </Text>
+                      </View>
+                    </View>
+                  </Card.Content>
+
+                  <Divider />
+
+                  {/* Product Details */}
+                  <Card.Content className="py-3 bg-white">
+                    <View className="flex-row items-center">
+                      <Image
+                        source={{ uri: getImageUrl(orderItem.product.cropPhotos[0]) }}
+                        className="w-20 h-20 rounded-lg mr-3"
+                        resizeMode="cover"
+                      />
+                      <View className="flex-1">
+                        <View className="flex-row justify-between mb-2">
+                          <View>
+                            <Text className="text-xs text-gray-500">Quantity</Text>
+                            <Text className="text-sm font-medium text-gray-800">
+                              {orderItem.productItem.quantity} {orderItem.product.unitMeasurement || 'units'}
+                            </Text>
+                          </View>
+                          <View>
+                            <Text className="text-xs text-gray-500">Price/Unit</Text>
+                            <Text className="text-sm font-medium text-gray-800">
+                              ₹{orderItem.productItem.pricePerUnit.toFixed(2)}
+                            </Text>
+                          </View>
+                        </View>
+                        <View className="bg-gray-50 p-2 rounded">
+                          <View className="flex-row justify-between">
+                            <View className="flex-row items-center">
+                              <Icon name="currency-inr" size={14} color="#059669" />
+                              <Text className="ml-1 text-sm text-gray-700">Gross Amount</Text>
+                            </View>
+                            <Text className="text-sm font-medium text-gray-800">
+                              ₹{grossAmount.toFixed(2)}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+                  </Card.Content>
+
+                  <Divider />
+
+                  {/* Commission & Net Amount */}
+                  <Card.Content className="py-3 bg-white">
+                    <View className="space-y-2">
+                      <View className="flex-row justify-between items-center">
+                        <View className="flex-row items-center">
+                          <Icon name="percent" size={16} color="#ef4444" />
+                          <Text className="ml-2 text-sm text-gray-600">Platform Fee ({commissionRate}%)</Text>
+                        </View>
+                        <Text className="text-sm font-medium text-red-600">
+                          -₹{commission.toFixed(2)}
+                        </Text>
+                      </View>
+                      
+                      <View className="flex-row justify-between items-center pt-2 border-t border-gray-100">
+                        <View className="flex-row items-center">
+                          <Icon name="cash" size={18} color="#059669" />
+                          <Text className="ml-2 text-base font-medium text-gray-800">You'll Receive</Text>
+                        </View>
+                        <View className="bg-green-50 px-3 py-1 rounded">
+                          <Text className="text-lg font-medium text-green-700">
+                            ₹{netAmount.toFixed(2)}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </Card.Content>
+
+                  <Divider />
+
+                  {/* Action Button */}
+                  <Card.Content className="pt-3 bg-white">
+                    <TouchableOpacity
+                      className={`rounded-lg py-3 flex-row items-center justify-center ${
+                        accepting === uniqueKey ? 'bg-gray-400' : 'bg-green-600'
+                      }`}
+                      onPress={() => handleAcceptOrder(orderItem)}
+                      disabled={accepting === uniqueKey}
+                    >
+                      {accepting === uniqueKey ? (
+                        <>
+                          <ActivityIndicator size="small" color="#fff" />
+                          <Text className="ml-2 text-base font-medium text-white">
+                            Processing...
+                          </Text>
+                        </>
+                      ) : (
+                        <>
+                          <Icon name="check-circle" size={20} color="#fff" />
+                          <Text className="ml-2 text-base font-medium text-white">
+                            Accept Order
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+
+                    <View className="mt-3 bg-yellow-50 p-3 rounded-lg border-l-4 border-yellow-400">
+                      <View className="flex-row">
+                        <Icon name="information" size={16} color="#d97706" />
+                        <Text className="ml-2 text-xs text-yellow-800 flex-1">
+                          By accepting, you confirm this order. Payment will be processed after successful delivery.
+                        </Text>
+                      </View>
+                    </View>
+                  </Card.Content>
+                </Card>
+              );
+            })}
+          </View>
+        )}
+
+        {/* Bottom Padding */}
+        <View className="h-20" />
+      </ScrollView>
+
+      {/* Stats Bar (Optional) */}
+      {displayOrders.length > 0 && (
+        <View className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3">
+          <View className="flex-row justify-between items-center">
+            <View>
+              <Text className="text-sm text-gray-500">Total Pending</Text>
+              <Text className="text-lg font-medium text-gray-800">{displayOrders.length} orders</Text>
+            </View>
+            <View className="items-end">
+              <Text className="text-sm text-gray-500">Est. Total</Text>
+              <Text className="text-lg font-medium text-green-600">
+                ₹{displayOrders.reduce((sum, item) => sum + calculateNetAmount(item.productItem.totalAmount), 0).toFixed(2)}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-
-      {successMessage ? (
-        <View style={styles.successBanner}>
-          <Text style={styles.successIcon}>✓</Text>
-          <Text style={styles.successText}>{successMessage}</Text>
-        </View>
-      ) : null}
-
-      {displayOrders.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyIcon}>📦</Text>
-          <Text style={styles.emptyTitle}>No pending orders</Text>
-          <Text style={styles.emptySubtitle}>Orders from traders will appear here</Text>
-        </View>
-      ) : (
-        <View style={styles.ordersContainer}>
-          {displayOrders.map((orderItem, index) => {
-            const grossAmount = orderItem.productItem.totalAmount;
-            const commission = calculateCommission(grossAmount);
-            const netAmount = calculateNetAmount(grossAmount);
-            const uniqueKey = `${orderItem.orderData._id}-${orderItem.productItem.productId}-${index}`;
-
-            return (
-              <View key={uniqueKey} style={styles.orderCard}>
-                <View style={styles.orderHeader}>
-                  <View style={styles.orderHeaderLeft}>
-                    <Text style={styles.orderTitle}>{orderItem.product.cropBriefDetails}</Text>
-                    <Text style={styles.orderTrader}>From: {orderItem.orderData.traderId}</Text>
-                    <Text style={styles.orderIdText}>Order ID: {orderItem.orderData.orderId}</Text>
-                  </View>
-                  <View style={styles.orderHeaderRight}>
-                    <Text style={styles.orderDateLabel}>Order Date</Text>
-                    <Text style={styles.orderDate}>
-                      {new Date(orderItem.orderData.createdAt).toLocaleDateString('en-IN')}
-                    </Text>
-                  </View>
-                </View>
-
-                <View style={styles.orderBody}>
-                  <View style={styles.orderImageRow}>
-                    <Image
-                      source={{ uri: getImageUrl(orderItem.product.cropPhotos[0]) }}
-                      style={styles.orderImage}
-                      resizeMode="cover"
-                    />
-                    <View style={styles.orderDetails}>
-                      <View style={styles.detailRow}>
-                        <View style={styles.detailItem}>
-                          <Text style={styles.detailLabel}>Product ID</Text>
-                          <Text style={styles.detailValue}>{orderItem.product.productId}</Text>
-                        </View>
-                        <View style={styles.detailItem}>
-                          <Text style={styles.detailLabel}>Grade</Text>
-                          <Text style={styles.detailValueGreen}>{orderItem.grade.grade}</Text>
-                        </View>
-                      </View>
-                      <View style={styles.detailRow}>
-                        <View style={styles.detailItem}>
-                          <Text style={styles.detailLabel}>Quantity</Text>
-                          <Text style={styles.detailValue}>
-                            {orderItem.productItem.quantity} {orderItem.product.unitMeasurement || 'units'}
-                          </Text>
-                        </View>
-                        <View style={styles.detailItem}>
-                          <Text style={styles.detailLabel}>Price/unit</Text>
-                          <Text style={styles.detailValue}>
-                            ₹{orderItem.productItem.pricePerUnit.toFixed(2)}/{orderItem.product.unitMeasurement || 'unit'}
-                          </Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-
-                  <View style={styles.amountContainer}>
-                    <View style={styles.amountItem}>
-                      <Text style={styles.amountIcon}>📈</Text>
-                      <Text style={styles.amountLabel}>Gross Amount</Text>
-                      <Text style={styles.amountValue}>₹{grossAmount.toFixed(2)}</Text>
-                    </View>
-                    <View style={styles.amountItem}>
-                      <Text style={styles.amountIcon}>⚠️</Text>
-                      <Text style={styles.amountLabel}>Platform Fee ({commissionRate}%)</Text>
-                      <Text style={styles.amountValueRed}>-₹{commission.toFixed(2)}</Text>
-                    </View>
-                    <View style={styles.amountItem}>
-                      <Text style={styles.amountIcon}>✓</Text>
-                      <Text style={styles.amountLabel}>You'll Receive</Text>
-                      <Text style={styles.amountValueGreen}>₹{netAmount.toFixed(2)}</Text>
-                    </View>
-                  </View>
-
-                  <TouchableOpacity
-                    style={[
-                      styles.acceptButton,
-                      accepting === uniqueKey && styles.acceptButtonDisabled
-                    ]}
-                    onPress={() => handleAcceptOrder(orderItem)}
-                    disabled={accepting === uniqueKey}
-                  >
-                    {accepting === uniqueKey ? (
-                      <>
-                        <ActivityIndicator size="small" color="#fff" />
-                        <Text style={styles.acceptButtonText}>Processing...</Text>
-                      </>
-                    ) : (
-                      <>
-                        <Text style={styles.acceptButtonIcon}>✓</Text>
-                        <Text style={styles.acceptButtonText}>Accept Order</Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
-
-                  <View style={styles.noteContainer}>
-                    <Text style={styles.noteText}>
-                      <Text style={styles.noteBold}>Note:</Text> By accepting, you confirm the order. 
-                      Payment of ₹{netAmount.toFixed(2)} will be processed after delivery.
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            );
-          })}
-        </View>
       )}
-    </ScrollView>
+    </View>
+    </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
-  },
-  loadingText: {
-    marginTop: 16,
-    fontSize: 16,
-    color: '#6b7280',
-  },
-  header: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-  },
-  headerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  headerIcon: {
-    fontSize: 32,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#111827',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-    marginTop: 2,
-  },
-  successBanner: {
-    backgroundColor: '#d1fae5',
-    borderWidth: 1,
-    borderColor: '#6ee7b7',
-    borderRadius: 8,
-    padding: 16,
-    margin: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  successIcon: {
-    fontSize: 24,
-    color: '#16a34a',
-  },
-  successText: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#065f46',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 80,
-    paddingHorizontal: 32,
-    backgroundColor: '#fff',
-    margin: 16,
-    borderRadius: 12,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 8,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
-  },
-  ordersContainer: {
-    padding: 16,
-    gap: 16,
-  },
-  orderCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    marginBottom: 8,
-  },
-  orderHeader: {
-    backgroundColor: '#16a34a',
-    padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  orderHeaderLeft: {
-    flex: 1,
-  },
-  orderTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 4,
-  },
-  orderTrader: {
-    fontSize: 13,
-    color: '#d1fae5',
-    marginBottom: 4,
-  },
-  orderIdText: {
-    fontSize: 11,
-    color: '#d1fae5',
-  },
-  orderHeaderRight: {
-    alignItems: 'flex-end',
-  },
-  orderDateLabel: {
-    fontSize: 12,
-    color: '#d1fae5',
-    marginBottom: 2,
-  },
-  orderDate: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  orderBody: {
-    padding: 16,
-  },
-  orderImageRow: {
-    flexDirection: 'row',
-    gap: 16,
-    marginBottom: 20,
-  },
-  orderImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 8,
-  },
-  orderDetails: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  detailItem: {
-    flex: 1,
-  },
-  detailLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 4,
-  },
-  detailValue: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#111827',
-  },
-  detailValueGreen: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#16a34a',
-  },
-  amountContainer: {
-    backgroundColor: '#eff6ff',
-    borderRadius: 8,
-    padding: 16,
-    marginBottom: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  amountItem: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  amountIcon: {
-    fontSize: 20,
-    marginBottom: 8,
-  },
-  amountLabel: {
-    fontSize: 11,
-    color: '#6b7280',
-    marginBottom: 4,
-    textAlign: 'center',
-  },
-  amountValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#111827',
-  },
-  amountValueRed: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#dc2626',
-  },
-  amountValueGreen: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#16a34a',
-  },
-  acceptButton: {
-    backgroundColor: '#16a34a',
-    borderRadius: 8,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  acceptButtonDisabled: {
-    backgroundColor: '#9ca3af',
-  },
-  acceptButtonIcon: {
-    fontSize: 20,
-    color: '#fff',
-  },
-  acceptButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
-  },
-  noteContainer: {
-    backgroundColor: '#fef3c7',
-    borderRadius: 8,
-    padding: 12,
-  },
-  noteText: {
-    fontSize: 11,
-    color: '#92400e',
-    lineHeight: 16,
-  },
-  noteBold: {
-    fontWeight: 'bold',
-  },
-});
-
 export default FarmerOrderAccept;
+
+
+
+
+
 
 
 
