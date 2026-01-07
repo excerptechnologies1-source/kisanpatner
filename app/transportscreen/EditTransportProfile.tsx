@@ -1656,11 +1656,11 @@ const EditTransportProfile: React.FC = () => {
       <View className="bg-green-500 p-4 rounded-xl mb-5">
         <View className="flex-row justify-between">
           <View className="items-center">
-            <Text className="text-2xl font-bold text-white">{stats.rating} ⭐</Text>
+            <Text className="text-2xl font-medium text-white">{stats.rating} ⭐</Text>
             <Text className="text-white text-sm mt-1">Rating</Text>
           </View>
           <View className="items-center">
-            <Text className="text-2xl font-bold text-white">{stats.totalTrips}</Text>
+            <Text className="text-2xl font-medium text-white">{stats.totalTrips}</Text>
             <Text className="text-white text-sm mt-1">Total Trips</Text>
           </View>
         </View>
@@ -1670,7 +1670,7 @@ const EditTransportProfile: React.FC = () => {
       {error && (
         <View className="bg-red-100 border border-red-300 p-4 rounded-lg mb-5">
           <Text className="text-red-700 text-sm">
-            <Text className="font-bold">Error:</Text> {error}
+            <Text className="font-medium">Error:</Text> {error}
           </Text>
         </View>
       )}
@@ -1678,7 +1678,7 @@ const EditTransportProfile: React.FC = () => {
       {/* Validation Errors */}
       {validationErrors.length > 0 && (
         <View className="bg-amber-100 border border-amber-300 p-4 rounded-lg mb-5">
-          <Text className="text-amber-800 font-bold text-sm mb-2">
+          <Text className="text-amber-800 font-medium text-sm mb-2">
             Please fix the following errors:
           </Text>
           {validationErrors.map((error, index) => (
@@ -1689,7 +1689,7 @@ const EditTransportProfile: React.FC = () => {
 
       {/* Personal Information Section */}
       <View className="bg-white rounded-2xl p-5 mb-5 shadow-lg">
-        <Text className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200">
+        <Text className="text-xl font-medium text-gray-800 mb-5 pb-3 border-b border-gray-200">
           Personal Information
         </Text>
         
@@ -1815,7 +1815,7 @@ const EditTransportProfile: React.FC = () => {
 
       {/* Transport Information Section */}
       <View className="bg-white rounded-2xl p-5 mb-5 shadow-lg">
-        <Text className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200">
+        <Text className="text-xl font-medium text-gray-800 mb-5 pb-3 border-b border-gray-200">
           Transport Information
         </Text>
         
@@ -1837,7 +1837,7 @@ const EditTransportProfile: React.FC = () => {
                 >
                   <Text className={`text-sm ${
                     formData.transportInfo.vehicleType === type 
-                      ? 'text-white font-bold' 
+                      ? 'text-white font-medium' 
                       : 'text-gray-600'
                   }`}>
                     {type}
@@ -1883,7 +1883,7 @@ const EditTransportProfile: React.FC = () => {
                   >
                     <Text className={`text-xs ${
                       formData.transportInfo.vehicleCapacity.unit === unit 
-                        ? 'text-white font-bold' 
+                        ? 'text-white font-medium' 
                         : 'text-gray-600'
                     }`}>
                       {unit}
@@ -1895,7 +1895,7 @@ const EditTransportProfile: React.FC = () => {
           </View>
 
           <View className="w-full mb-4">
-            <Text className="text-lg font-bold text-gray-800 mb-3">Driver Information</Text>
+            <Text className="text-lg font-medium text-gray-800 mb-3">Driver Information</Text>
             <View className="flex-row flex-wrap justify-between">
               <View className="w-[48%] mb-4">
                 <Text className="text-sm font-medium text-gray-600 mb-2">
@@ -1939,7 +1939,7 @@ const EditTransportProfile: React.FC = () => {
 
       {/* Bank Details Section */}
       <View className="bg-white rounded-2xl p-5 mb-5 shadow-lg">
-        <Text className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200">
+        <Text className="text-xl font-medium text-gray-800 mb-5 pb-3 border-b border-gray-200">
           Bank Details
         </Text>
         
@@ -2018,7 +2018,7 @@ const EditTransportProfile: React.FC = () => {
 
       {/* Documents Section */}
       <View className="bg-white rounded-2xl p-5 mb-5 shadow-lg">
-        <Text className="text-xl font-bold text-gray-800 mb-5 pb-3 border-b border-gray-200">
+        <Text className="text-xl font-medium text-gray-800 mb-5 pb-3 border-b border-gray-200">
           Documents
         </Text>
         

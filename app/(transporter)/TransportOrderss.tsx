@@ -720,7 +720,7 @@
 //                   <DollarSign size={18} color="#718096" className="mr-3" />
 //                   <View>
 //                     <Text className="text-sm text-gray-500">Price</Text>
-//                     <Text className="text-base font-bold text-green-600">
+//                     <Text className="text-base font-medium text-green-600">
 //                       ₹{order.price.toLocaleString()}
 //                     </Text>
 //                   </View>
