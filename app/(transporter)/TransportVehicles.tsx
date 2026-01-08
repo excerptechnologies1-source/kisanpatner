@@ -3098,7 +3098,7 @@ const VehiclesPage: React.FC = () => {
           <View className="bg-white rounded-xl border border-slate-200 p-4 mb-5">
             <View className="flex-row items-center mb-3 pb-3 border-b border-gray-100">
               <Icon name={Icons.FaList} size={20} color="#5B5AF7" />
-              <Text className="ml-2 text-lg font-bold text-gray-800">Your Vehicles</Text>
+              <Text className="ml-2 text-lg font-medium text-gray-800">Your Vehicles</Text>
             </View>
             
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
@@ -3113,7 +3113,7 @@ const VehiclesPage: React.FC = () => {
                   }`}
                 >
                   <View className="flex-1">
-                    <Text className={`font-bold text-sm ${
+                    <Text className={`font-medium text-sm ${
                       currentVehicleIndex === index ? 'text-black' : 'text-gray-800'
                     }`}>
                       {vehicle.vehicleNumber}
@@ -3167,7 +3167,7 @@ const VehiclesPage: React.FC = () => {
         {error && (
           <View className="bg-red-50 p-4 rounded-xl mb-5 border border-red-200">
             <Text className="text-red-700 text-sm">
-              <Text className="font-bold">Error:</Text> {error}
+              <Text className="font-medium">Error:</Text> {error}
             </Text>
           </View>
         )}
@@ -3175,7 +3175,7 @@ const VehiclesPage: React.FC = () => {
         {/* Validation Errors */}
         {validationErrors.length > 0 && (
           <View className="bg-amber-50 p-4 rounded-xl mb-5 border border-amber-200">
-            <Text className="text-amber-800 font-bold text-sm mb-2">
+            <Text className="text-amber-800 font-medium text-sm mb-2">
               Please fix the following errors:
             </Text>
             {validationErrors.map((error, index) => (
@@ -3188,7 +3188,7 @@ const VehiclesPage: React.FC = () => {
         {vehicles.length === 0 && !showAddVehicleForm && (
           <View className="bg-white rounded-2xl p-8 items-center mb-5 shadow-lg">
             <Icon name={Icons.FaTruck} size={48} color="#ddd" />
-            <Text className="text-gray-600 text-lg font-bold mt-4">No Vehicles Added</Text>
+            <Text className="text-gray-600 text-lg font-medium mt-4">No Vehicles Added</Text>
             <Text className="text-gray-500 text-center mt-2 mb-6">
               You haven't added any vehicles yet. Click "Add Vehicle" to get started.
             </Text>
@@ -3230,7 +3230,7 @@ const VehiclesPage: React.FC = () => {
             <View className="bg-white rounded-lg p-5 mb-5 border border-slate-100">
               <View className="flex-row items-center mb-5 pb-4 border-b border-gray-100">
                 <Icon name={Icons.FaTruck} size={24} color="#5B5AF7" />
-                <Text className="ml-2 text-lg font-bold text-gray-800">
+                <Text className="ml-2 text-lg font-medium text-gray-800">
                   {showAddVehicleForm ? 'New Vehicle Details' : 'Vehicle Details'}
                 </Text>
               </View>
@@ -3314,7 +3314,7 @@ const VehiclesPage: React.FC = () => {
             <View className="bg-white rounded-lg p-5 mb-5 border border-slate-100">
               <View className="flex-row items-center mb-5 pb-4 border-b border-gray-100">
                 <Icon name={Icons.FaUser} size={24} color="#5B5AF7" />
-                <Text className="ml-2 text-lg font-bold text-gray-800">Driver Details</Text>
+                <Text className="ml-2 text-lg font-medium text-gray-800">Driver Details</Text>
               </View>
               
               <View className="space-y-4">
@@ -3376,7 +3376,7 @@ const VehiclesPage: React.FC = () => {
 
             {/* Vehicle Documents Section */}
             <View className="bg-white rounded-lg p-5 mb-5 border border-slate-100">
-              <Text className="text-lg font-bold text-gray-800 mb-5">Vehicle Documents</Text>
+              <Text className="text-lg font-medium text-gray-800 mb-5">Vehicle Documents</Text>
               
               <View className="space-y-5">
                 {documentFields.map(doc => {
@@ -3547,7 +3547,7 @@ const VehiclesPage: React.FC = () => {
         <View className="flex-1 bg-black/50 justify-center items-center p-5">
           <View className="bg-white p-5 rounded-2xl w-full max-w-[400px]">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-bold text-gray-800">Document</Text>
+              <Text className="text-lg font-medium text-gray-800">Document</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Icon name={Icons.FaTimesCircle} size={24} color="#666" />
               </TouchableOpacity>

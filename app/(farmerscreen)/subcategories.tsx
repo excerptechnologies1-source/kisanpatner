@@ -21,10 +21,8 @@ type SubItem = {
 
 const SAMPLE: SubItem[] = [
   { id: "1", label: "Leafy greens", avgPrice: "—", image: "https://images.pexels.com/photos/572897/pexels-photo-572897.jpeg?auto=compress&cs=tinysrgb&w=200" },
-  { id: "2", label: "Root vegetables", avgPrice: "—", image: "https://images.pexels.com/photos/1109979/pexels-photo-1109979.jpeg?auto=compress&cs=tinysrgb&w=200" },
-  { id: "3", label: "Nightshades", avgPrice: "—", image: "https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=200" },
-  { id: "4", label: "Cruciferous vegetables", avgPrice: "—", image: "https://images.pexels.com/photos/1435909/pexels-photo-1435909.jpeg?auto=compress&cs=tinysrgb&w=200" },
-  { id: "5", label: "Gourds", avgPrice: "—", image: "https://images.pexels.com/photos/65174/vegetables-gourd-luffa-vegetable-65174.jpeg?auto=compress&cs=tinysrgb&w=200" },
+  { id: "2", label: "Nightshades", avgPrice: "—", image: "https://images.pexels.com/photos/1437267/pexels-photo-1437267.jpeg?auto=compress&cs=tinysrgb&w=200" },
+  { id: "3", label: "Cruciferous vegetables", avgPrice: "—", image: "https://images.pexels.com/photos/1435909/pexels-photo-1435909.jpeg?auto=compress&cs=tinysrgb&w=200" },
 ];
 
 const Row: React.FC<{
@@ -68,12 +66,12 @@ const SubCategoryList: React.FC = () => {
 
   const onView = (item: SubItem) => {
     // navigate to details / list
-    router.push({ pathname: "/", params: { sub: item.label } });
+    router.push({ pathname: "/(farmer)/post", params: { sub: item.label } });
   };
 
   const onPost = (item: SubItem) => {
     // navigate to Add Crop form with category/sub info
-    router.push({ pathname: "/", params: { category: category || "Category", sub: item.label } });
+    router.push({ pathname: "/(farmer)/post", params: { category: category || "Category", sub: item.label } });
   };
 
   return (

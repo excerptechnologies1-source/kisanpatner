@@ -63,7 +63,7 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
 
                showAppAlert(
                 'Success 🎉',
-                'Registration Successful!',
+                'Attendance Successful!',
                 () => router.push('/(labour)/LabourListScreen')
                 );
           }

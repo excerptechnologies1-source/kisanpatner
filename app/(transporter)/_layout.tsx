@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, PlusCircle, User,Truck, UserCog,Car } from "lucide-react-native";
+import { Car, Home, Truck, User, UserCog } from "lucide-react-native";
 import React from "react";
 
 export default function TabLayout() {
@@ -26,7 +26,7 @@ export default function TabLayout() {
 
       {/* FARMER / TRADER AREA */}
       <Tabs.Screen
-        name="NewOrdersList"
+        name="TransportOrderss"
         options={{
           title: "OrderList",
           tabBarIcon: ({ color, size }) => (

@@ -1,33 +1,33 @@
+
+
 import {
   Banknote,
   Bell,
   ClipboardList,
   Leaf,
-  ShoppingBag,
   MapPin,
-  Search,
-  ShieldCheck,
-  ShoppingCart,
   Plus,
+  ShieldCheck,
+  ShoppingBag,
+  ShoppingCart,
   Star,
   Store,
-  Users,
+  Users
 } from "lucide-react-native";
 // import { router } from "expo-router";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   Image,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 
-import { Marker } from "react-native-maps";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width } = Dimensions.get("window");
 
 const banners = [
@@ -59,7 +59,7 @@ const categories = [
     id: "1",
     label: "Post Crop",
     icon: Plus,
-    route: "/(farmer)/post",
+    route: "/(farmerscreen)/categories",
   },
   {
     id: "2",
@@ -153,7 +153,98 @@ const showBadgeFor = ["1", "4"]; // My Crop (1), My Orders (4)
 
 const FarmerHomeScreen: React.FC = () => {
   const [activeBanner, setActiveBanner] = useState(0);
+  const [cropPhotosList, setCropPhotosList] = useState<string[]>([]);
+  const [isLoadingCropPhotos, setIsLoadingCropPhotos] = useState(false);
+  const [cropPhotosError, setCropPhotosError] = useState<string | null>(null);
   const router = useRouter();
+const [unreadCount, setUnreadCount] = useState(0);
+
+// Add this useEffect
+useEffect(() => {
+  fetchUnreadCount();
+  
+  // Refresh count when screen is focused (optional)
+  const interval = setInterval(fetchUnreadCount, 30000); // Every 30 seconds
+  return () => clearInterval(interval);
+}, []);
+
+const fetchUnreadCount = async () => {
+  try {
+    const farmerId = await AsyncStorage.getItem('farmerId');
+    if (!farmerId) return;
+
+    // Fetch pending orders
+    const response = await fetch(`https://kisan.etpl.ai/api/orders/farmer-pending/${farmerId}`);
+    if (response.ok) {
+      const data = await response.json();
+      const pendingOrders = data.orders || [];
+      
+      // Get read notifications from AsyncStorage
+      const readNotifs = await AsyncStorage.getItem('readNotifications');
+      const readIds = readNotifs ? JSON.parse(readNotifs) : [];
+      
+      // Count unread (orders not in readIds)
+      const unread = pendingOrders.filter((order: any) => !readIds.includes(order._id)).length;
+      setUnreadCount(unread);
+    }
+  } catch (error) {
+    console.error('Error fetching unread count:', error);
+  }
+};
+
+  // ✅ CORRECTED FETCH FUNCTION FOR YOUR API STRUCTURE
+  const fetchCropPhotos = async () => {
+    setIsLoadingCropPhotos(true);
+    setCropPhotosError(null);
+
+    try {
+      const response = await fetch('https://kisan.etpl.ai/product/all');
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const apiResponse = await response.json();
+      
+      
+      
+      // ✅ Extract cropPhotos from the API response structure
+      // API structure: { success: true, count: 10, data: [...products] }
+      if (apiResponse.success && apiResponse.data && Array.isArray(apiResponse.data)) {
+        // Collect all cropPhotos from all products
+        const allPhotos: string[] = [];
+        
+        apiResponse.data.forEach((product: any) => {
+          if (product.cropPhotos && Array.isArray(product.cropPhotos)) {
+            product.cropPhotos.forEach((photo: string) => {
+              // Convert relative paths to full URLs
+              // Handle both forward slash and backslash paths
+              const cleanPath = photo.replace(/\\/g, '/');
+              allPhotos.push(`https://kisan.etpl.ai/${cleanPath}`);
+            });
+          }
+        });
+        
+      
+        
+        setCropPhotosList(allPhotos);
+      } else {
+        throw new Error('Invalid API response structure');
+      }
+      
+    } catch (error) {
+      console.error('Error fetching crop photos:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setCropPhotosError(errorMessage);
+    } finally {
+      setIsLoadingCropPhotos(false);
+    }
+  };
+
+  // Call on component mount
+  useEffect(() => {
+    fetchCropPhotos();
+  }, []);
 
   const handleBannerScroll = (event: any) => {
     const slide = Math.round(event.nativeEvent.contentOffset.x / width);
@@ -161,6 +252,7 @@ const FarmerHomeScreen: React.FC = () => {
       setActiveBanner(slide);
     }
   };
+  
   const handleCategoryPress = (route: string) => {
     router.push(route as any);
   };
@@ -168,7 +260,7 @@ const FarmerHomeScreen: React.FC = () => {
   return (
     <View className="flex-1 bg-white">
       {/* TOP BAR */}
-      <View className="flex-row items-center justify-between px-4 pb-2 pt-5 mt-5 bg-white">
+      <View className="flex-row items-center justify-between px-4 pb-2 pt-5 mt-3 bg-white">
         {/* Left: Logo + App name */}
         <View className="flex-row items-center">
           <Image
@@ -194,25 +286,43 @@ const FarmerHomeScreen: React.FC = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-      className="w-9 h-9 rounded-full items-center justify-center me-2 border border-gray-300 relative"
-      activeOpacity={0.7}
-      onPress={() => router.push("/(farmerscreen)/FarmerOrder")}
-    >
-      <ShoppingCart size={18} color="#374151" />
-      {/* Cart item count badge - optional */}
-      <View className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 border border-white items-center justify-center">
-        <Text className="text-[10px] font-bold text-white">3</Text>
-      </View>
-    </TouchableOpacity>
+            className="w-9 h-9 rounded-full items-center justify-center me-2 border border-gray-300 relative"
+            activeOpacity={0.7}
+            onPress={() => router.push("/(farmerscreen)/FarmerOrder")}
+          >
+            <ShoppingCart size={18} color="#374151" />
+            {/* Cart item count badge - optional */}
+            <View className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 border border-white items-center justify-center">
+              <Text className="text-[10px] font-bold text-white">3</Text>
+            </View>
+          </TouchableOpacity>
 
           {/* Notification */}
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className="w-9 h-9 rounded-full items-center justify-center relative border border-gray-300"
             activeOpacity={0.7}
           >
             <Bell size={18} color="#374151" />
             <View className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#1FAD4E] border border-white" />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+                <TouchableOpacity
+  className="w-9 h-9 rounded-full items-center justify-center relative border border-gray-300"
+  activeOpacity={0.7}
+  onPress={() => {
+    router.push('/(farmerscreen)/Notification' as any);
+    // Refresh count after a delay
+    setTimeout(() => fetchUnreadCount(), 1000);
+  }}
+>
+  <Bell size={18} color="#374151" />
+  {unreadCount > 0 && (
+    <View className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 rounded-full bg-red-500 border border-white items-center justify-center px-1">
+      <Text className="text-[9px] font-bold text-white">
+        {unreadCount > 99 ? '99+' : unreadCount}
+      </Text>
+    </View>
+  )}
+</TouchableOpacity>
         </View>
       </View>
 
@@ -220,7 +330,6 @@ const FarmerHomeScreen: React.FC = () => {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        {/* BANNER SLIDER */}
         {/* BANNER SLIDER */}
         <View className="mb-2 mt-2">
           <ScrollView
@@ -276,35 +385,53 @@ const FarmerHomeScreen: React.FC = () => {
           </Text>
         </View>
 
-        {/* RECENT CROP CARDS */}
-        <View className="mb-3">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="px-4"
-          >
-            {recentCrops.slice(0, 4).map((item) => (
-              <View
-                key={item.id}
-                className="w-25 mr-3 p-1 rounded-lg bg-white border border-gray-100 shadow-sm overflow-hidden"
-              >
-                <Image
-                  source={{ uri: item.image }}
-                  className="w-full h-20 rounded-lg"
-                  resizeMode="cover"
-                />
-                <View className="p-2">
-                  <Text
-                    className="text-[11px] text-gray-800 font-subheading"
-                    numberOfLines={1}
-                  >
-                    {item.title}
-                  </Text>
+         {/* ✅ NEW CROP PHOTOS SECTION */}
+        {isLoadingCropPhotos ? (
+          <View className="px-5 mt-4 items-center py-8">
+            <ActivityIndicator size="small" color="#1FAD4E" />
+            <Text className="text-sm text-gray-500 mt-2">Loading crop photos...</Text>
+          </View>
+        ) : cropPhotosError ? (
+          <View className="px-5 mt-4 items-center py-8 bg-red-50 rounded-lg mx-5">
+            <Text className="text-sm text-red-600 text-center mb-2">
+              ⚠️ {cropPhotosError}
+            </Text>
+            <TouchableOpacity 
+              onPress={fetchCropPhotos}
+              className="bg-red-100 px-4 py-2 rounded-lg"
+            >
+              <Text className="text-sm text-red-700 font-medium">Retry</Text>
+            </TouchableOpacity>
+          </View>
+        ) : cropPhotosList.length > 0 ? (
+          <View className="mt-2 mb-3">
+        
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="px-4"
+            >
+              {cropPhotosList.slice(0, 4).map((uri: string, index: number) => (
+                <View
+                  key={`crop-photo-${index}`}
+                 className="w-28 mr-3 rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-50"
+style={{ aspectRatio: 1 }}
+
+                >
+                  <Image
+                    source={{ uri }}
+                    className="w-full h-full"
+                    resizeMode="cover"
+                  />
                 </View>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
+              ))}
+            </ScrollView>
+          </View>
+        ) : (
+          <View className="px-5 mt-4 items-center py-6">
+            <Text className="text-sm text-gray-400">No crop photos available</Text>
+          </View>
+        )}
 
         {/* CATEGORY TABS */}
         <View className="mb-4 px-3">
@@ -349,25 +476,6 @@ const FarmerHomeScreen: React.FC = () => {
             {/* Background gradient */}
             <View className="absolute inset-0 bg-gradient-to-br from-emerald-50 to-green-100 opacity-60" />
 
-            {/* FAKE MAP LINES */}
-            {/* <MapView
-              style={{ width: "100%", height: 250 }}
-              initialRegion={{
-                latitude: 12.9995192,
-                longitude: 77.6961841,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-            >
-              <Marker
-                coordinate={{
-                  latitude: 12.9995192,
-                  longitude: 77.6961841,
-                }}
-                title="Excerpt Technologies"
-              />
-            </MapView> */}
-
             {/* CENTER MAIN PIN */}
             <View className="flex-1 items-center justify-center">
               <View className="w-11 h-11 rounded-full bg-[#1FAD4E] items-center justify-center shadow-lg">
@@ -380,11 +488,14 @@ const FarmerHomeScreen: React.FC = () => {
             </View>
           </View>
         </View>
-      </ScrollView>
 
       
+
+      </ScrollView>
     </View>
   );
 };
 
 export default FarmerHomeScreen;
+
+

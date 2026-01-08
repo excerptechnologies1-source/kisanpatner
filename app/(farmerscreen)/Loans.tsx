@@ -1,13 +1,20 @@
 import { router } from "expo-router";
 import {
   ChevronLeft,
-  Phone
+  MessageCircle // WhatsApp-like icon
 } from 'lucide-react-native';
 import { Linking, ScrollView, Text, TouchableOpacity, View } from "react-native";
 
 export default function LoansScreen() {
-  const handleCall = () => {
-    Linking.openURL('tel:+919876543210');
+  const handleWhatsApp = () => {
+    // Replace with the actual phone number (without +)
+    const phoneNumber = "918050806006";
+    
+    // You can also add a pre-defined message
+    const message = "Hello, I need assistance with loans.";
+    
+    // Open WhatsApp with the phone number
+    Linking.openURL(`whatsapp://send?phone=${phoneNumber}&text=${encodeURIComponent(message)}`);
   };
 
   return (
@@ -26,23 +33,24 @@ export default function LoansScreen() {
 
       <View className="p-4 items-center justify-center flex-1 mt-10">
         <View className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 items-center w-full max-w-sm">
-          <View className="w-16 h-16 bg-blue-50 rounded-full items-center justify-center mb-4">
-            <Phone size={32} color="#2563eb" />
+          {/* WhatsApp icon with green background */}
+          <View className="w-16 h-16 bg-green-50 rounded-full items-center justify-center mb-4">
+            <MessageCircle size={32} color="#25D366" />
           </View>
           <Text className="text-xl font-medium text-gray-900 mb-2">Need a Loan?</Text>
           <Text className="text-gray-500 text-center mb-6">
-            For loan assistance and inquiries, please contact our support team directly.
+            For loan assistance and inquiries, please contact our support team on WhatsApp.
           </Text>
 
           <TouchableOpacity
-            onPress={handleCall}
-            className="bg-blue-600 px-6 py-3 rounded-xl flex-row items-center space-x-2 w-full justify-center"
+            onPress={handleWhatsApp}
+            className="bg-green-600 px-6 py-3 rounded-xl flex-row items-center space-x-2 w-full justify-center"
           >
-            <Phone size={20} color="white" />
-            <Text className="text-white font-medium text-lg ml-2">+91 98765 43210</Text>
+            <MessageCircle size={20} color="white" />
+            <Text className="text-white font-medium text-lg ml-2">Contact on WhatsApp</Text>
           </TouchableOpacity>
 
-          <Text className="text-gray-400 text-sm mt-4">Please Contact Us</Text>
+          <Text className="text-gray-400 text-sm mt-4">We'll respond as soon as possible</Text>
         </View>
       </View>
     </ScrollView>

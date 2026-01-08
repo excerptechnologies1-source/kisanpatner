@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { Home, PlusCircle, User } from "lucide-react-native";
+import { Home, Plus, User } from "lucide-react-native";
 import React from "react";
 
 export default function TabLayout() {
@@ -24,19 +24,8 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
         }}
       />
-
-      {/* FARMER / TRADER AREA */}
-      <Tabs.Screen
-        name="post"
-        options={{
-          title: "post",
-          tabBarIcon: ({ color, size }) => (
-            <PlusCircle color={color} size={size} />
-          ),
-        }}
-      />
-
-
+      
+   
 
       {/* PROFILE */}
       <Tabs.Screen

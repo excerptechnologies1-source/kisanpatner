@@ -10,6 +10,12 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from "expo-router";
+import {
+  ChevronLeft,
+} from "lucide-react-native"
+import { SafeAreaView } from "react-native-safe-area-context";
+import DotLoader from '@/components/DotLoader';
 
 interface PaymentRecord {
   _id: string;
@@ -60,6 +66,7 @@ const FarmerOrderHistory: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState('');
   const [farmerId, setFarmerId] = useState<string | null>(null);
+  
 
   useEffect(() => {
     loadFarmerIdAndFetch();
@@ -147,7 +154,7 @@ const FarmerOrderHistory: React.FC = () => {
   if (loading && !refreshing) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-100">
-        <ActivityIndicator size="large" color="#007bff" />
+        <DotLoader/>
         <Text className="mt-4 text-base text-gray-500">
           Loading order history...
         </Text>
@@ -176,26 +183,22 @@ const FarmerOrderHistory: React.FC = () => {
     /*  NOTE:
     This uses NativeWind Tailwind
     npm i nativewind tailwindcss
-*/
+*/<SafeAreaView className="flex-1 bg-white">
+  <View className="flex-row items-center px-4 py-4 bg-white border-b border-gray-200">
+         <TouchableOpacity
+           onPress={() => router.push("/(farmer)/home")}
+           className="p-2"
+         >
+           <ChevronLeft size={24} color="#374151" />
+         </TouchableOpacity>
+         <Text className="ml-3 text-xl font-medium text-gray-900">Order History</Text>
+      </View>
 
 <ScrollView
-  className="flex-1 bg-white"
   refreshControl={
     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
   }
 >
-
-  {/* -------- Breadcrumb + Header -------- */}
-  <View className="px-4 pt-5 pb-2">
-
-    <Text className="text-2xl font-medium text-gray-900 mt-2">
-      Order History
-    </Text>
-
-    <Text className="text-gray-500 mt-1 font-medium text-sm">
-      Check your past orders, delivery status & payment details
-    </Text>
-  </View>
 
   {/* -------- Order Cards -------- */}
   {orders.map(order => (
@@ -285,6 +288,7 @@ const FarmerOrderHistory: React.FC = () => {
 
 </ScrollView>
 
+</SafeAreaView>
   );
 };
 
