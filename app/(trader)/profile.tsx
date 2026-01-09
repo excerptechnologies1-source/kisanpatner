@@ -215,51 +215,7 @@ const TraderProfileScreen: React.FC = () => {
                         </View>
                     </View>
 
-                    {/* Wallet */}
-                    {/* <View className="mt-4 bg-emerald-50 rounded-lg p-3">
-                        <View className="flex-row items-center justify-between">
-                            <View>
-                                <Text className="text-xs text-gray-600 font-medium">
-                                    Wallet Balance
-                                </Text>
-                                <Text className="text-2xl text-emerald-700 mt-1 font-medium">
-                                    ₹ 0.00
-                                </Text>
-                            </View>
-                            <TouchableOpacity
-                                className="bg-emerald-700 px-3 py-2 rounded-md font-medium"
-                                onPress={() => {
-                                    Alert.alert("Coming Soon", "Transaction history is under development.");
-                                }}
-                            >
-                                <Text className="text-white text-sm font-medium">
-                                    View Transactions
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View className="flex-row gap-2 mt-3 space-x-3">
-                            <TouchableOpacity
-                                className="flex-1 bg-white border border-gray-200 rounded-lg py-3 items-center justify-center"
-                                onPress={() => router.push("/(traderscreen)/PostRequirement")}
-                            >
-                                <Plus size={18} color="#10B981" />
-                                <Text className="text-xs text-gray-700 mt-1 font-medium">
-                                    Post Requirement
-                                </Text>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity
-                                className="flex-1 bg-white border border-gray-200 rounded-lg py-3 items-center justify-center"
-                                onPress={() => router.push("/(traderscreen)/TraderOrder")}
-                            >
-                                <FileText size={18} color="#10B981" />
-                                <Text className="text-xs text-gray-700 mt-1 font-medium">
-                                    My Orders
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View> */}
+              
                 </View>
 
                 {/* Notifications */}

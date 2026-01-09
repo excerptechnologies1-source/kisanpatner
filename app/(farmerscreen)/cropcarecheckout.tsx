@@ -1,24 +1,19 @@
-
-
-
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 // import axios from 'axios';
 // import { useRouter } from 'expo-router';
-// import { ArrowLeft, CheckCircle, CreditCard, Home, MapPin, Phone } from 'lucide-react-native';
+// import { ArrowLeft, CheckCircle, CreditCard, Home, LogOut, MapPin, Phone, User as UserIcon } from 'lucide-react-native';
 // import React, { useEffect, useState } from 'react';
 // import {
-//     ActivityIndicator,
-//     Alert,
-//     Modal,
-//     ScrollView,
-//     StyleSheet,
-//     Text,
-//     TextInput,
-//     TouchableOpacity,
-//     View,
+//   ActivityIndicator,
+//   Alert,
+//   Modal,
+//   ScrollView,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   View,
 // } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
-// import CropcareOrders from './cropcareorders';
 
 // interface CartItem {
 //     _id?: string;
@@ -54,6 +49,7 @@
 //         post?: string;
 //     };
 //     role: string;
+//     farmerId?: string;
 // }
 
 // interface ShippingAddress {
@@ -82,7 +78,8 @@
 //     const [user, setUser] = useState<User | null>(null);
 //     const [loading, setLoading] = useState({
 //         cart: false,
-//         payment: false
+//         payment: false,
+//         auth: true
 //     });
 //     const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
 //     const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -99,6 +96,7 @@
 //     });
 //     const [useDefaultAddress, setUseDefaultAddress] = useState(true);
 //     const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'cod'>('razorpay');
+//     const [showLoginModal, setShowLoginModal] = useState(false);
 
 //     const CART_API_URL = 'https://kisan.etpl.ai/api/cropcare';
 
@@ -123,26 +121,41 @@
 //                     landmark: ''
 //                 });
 //             }
+//         } else {
+//             // Reset cart when user is not authenticated
+//             setCart({
+//                 items: [],
+//                 subtotal: 0,
+//                 gst: 0,
+//                 shipping: 0,
+//                 total: 0
+//             });
 //         }
 //     }, [user, useDefaultAddress]);
 
 //     const checkAuthStatus = async () => {
+//         setLoading(prev => ({ ...prev, auth: true }));
 //         try {
-//             const isLoggedIn = await AsyncStorage.getItem('isLoggedIn');
-//             const userRole = await AsyncStorage.getItem('role');
-//             const userData = await AsyncStorage.getItem('userData');
+//             // Check all required authentication items from farmer login
+//             const [userData, role, userId, farmerId] = await Promise.all([
+//                 AsyncStorage.getItem('userData'),
+//                 AsyncStorage.getItem('userRole'),
+//                 AsyncStorage.getItem('userId'),
+//                 AsyncStorage.getItem('farmerId'),
+//             ]);
 
-//             if (isLoggedIn === 'true' && userRole && userData) {
+//             console.log('Checkout Auth check:', { userData, role, userId, farmerId });
+
+//             if (userData && role && userId) {
 //                 try {
 //                     const parsedUserData = JSON.parse(userData);
-//                     const userId = await AsyncStorage.getItem('userId');
-//                     const phone = await AsyncStorage.getItem('phone');
-
-//                     setUser({
-//                         _id: userId || parsedUserData._id || parsedUserData.id || '',
+                    
+//                     const userObj: User = {
+//                         _id: userId,
+//                         role: role,
 //                         personalInfo: {
 //                             name: parsedUserData.personalInfo?.name || parsedUserData.name || 'User',
-//                             mobileNo: parsedUserData.mobileNo || phone || '',
+//                             mobileNo: parsedUserData.personalInfo?.mobileNo || parsedUserData.mobileNo || '',
 //                             address: parsedUserData.personalInfo?.address,
 //                             villageGramaPanchayat: parsedUserData.personalInfo?.villageGramaPanchayat,
 //                             pincode: parsedUserData.personalInfo?.pincode,
@@ -150,22 +163,57 @@
 //                             district: parsedUserData.personalInfo?.district,
 //                             taluk: parsedUserData.personalInfo?.taluk,
 //                             post: parsedUserData.personalInfo?.post
-//                         },
-//                         role: userRole
-//                     });
+//                         }
+//                     };
+
+//                     // Add farmerId if available
+//                     if (farmerId) {
+//                         userObj.farmerId = farmerId;
+//                     }
+
+//                     setUser(userObj);
+//                     setShowLoginModal(false);
+//                     console.log('Checkout User authenticated:', userObj);
 //                 } catch (error) {
 //                     console.error('Error parsing user data:', error);
-//                     showNotification('error', 'Please login again');
-//                     setTimeout(() => router.push('/(auth)/Login?role=farmer'), 1500);
+//                     setUser(null);
+//                     setShowLoginModal(true);
 //                 }
 //             } else {
-//                 showNotification('error', 'Please login to checkout');
-//                 setTimeout(() => router.push('/(auth)/Login?role=farmer'), 1500);
+//                 console.log('Checkout User not authenticated');
+//                 setUser(null);
+//                 setShowLoginModal(true);
 //             }
 //         } catch (error) {
 //             console.error('Error checking auth status:', error);
-//             showNotification('error', 'Please login again');
-//             setTimeout(() => router.push('/(auth)/Login?role=farmer'), 1500);
+//             setUser(null);
+//             setShowLoginModal(true);
+//         } finally {
+//             setLoading(prev => ({ ...prev, auth: false }));
+//         }
+//     };
+
+//     const handleLogin = () => {
+//         setShowLoginModal(false);
+//         router.push('/(auth)/Login?role=farmer');
+//     };
+
+//     const handleLogout = async () => {
+//         try {
+//             await AsyncStorage.clear();
+//             setUser(null);
+//             setCart({
+//                 items: [],
+//                 subtotal: 0,
+//                 gst: 0,
+//                 shipping: 0,
+//                 total: 0
+//             });
+//             setShowLoginModal(true);
+//             showNotification('success', 'You have been logged out successfully');
+//         } catch (err) {
+//             console.error('Logout error:', err);
+//             showNotification('error', 'Failed to logout');
 //         }
 //     };
 
@@ -174,8 +222,11 @@
 
 //         setLoading(prev => ({ ...prev, cart: true }));
 //         try {
-//             const userId = user._id;
-//             const response = await axios.get(`${CART_API_URL}/cart/${userId}`);
+//             // Use farmerId if available, otherwise use userId
+//             const idToUse = user.farmerId || user._id;
+//             console.log('Fetching cart for checkout with ID:', idToUse);
+            
+//             const response = await axios.get(`${CART_API_URL}/cart/${idToUse}`);
 
 //             if (response.data.success) {
 //                 const cartData = response.data.data;
@@ -185,10 +236,12 @@
 //                     showNotification('error', 'Your cart is empty');
 //                     setTimeout(() => router.push('/farmerscreen/cropcarecart'), 1500);
 //                 }
+//             } else {
+//                 showNotification('error', response.data.message || 'Failed to load cart');
 //             }
-//         } catch (error) {
+//         } catch (error: any) {
 //             console.error('Error fetching cart:', error);
-//             showNotification('error', 'Failed to load cart');
+//             showNotification('error', error.response?.data?.message || 'Failed to load cart');
 //         } finally {
 //             setLoading(prev => ({ ...prev, cart: false }));
 //         }
@@ -200,6 +253,11 @@
 //     };
 
 //     const validateShippingAddress = () => {
+//         if (!user) {
+//             setShowLoginModal(true);
+//             return false;
+//         }
+
 //         const requiredFields = ['name', 'mobileNo', 'address', 'pincode', 'state', 'district'];
 
 //         for (const field of requiredFields) {
@@ -223,7 +281,12 @@
 //     };
 
 //     const initiatePayment = async () => {
-//         if (!user || cart.items.length === 0) {
+//         if (!user) {
+//             setShowLoginModal(true);
+//             return;
+//         }
+
+//         if (cart.items.length === 0) {
 //             showNotification('error', 'Your cart is empty');
 //             return;
 //         }
@@ -244,9 +307,14 @@
 //         // For Razorpay payment
 //         setLoading(prev => ({ ...prev, payment: true }));
 //         try {
+//             // Use farmerId if available, otherwise use userId
+//             const idToUse = user.farmerId || user._id;
+            
 //             // Create Razorpay order
 //             const orderResponse = await axios.post(`https://kisan.etpl.ai/api/payment/create-order`, {
-//                 userId: user._id
+//                 userId: idToUse,
+//                 amount: cart.total,
+//                 currency: 'INR'
 //             });
 
 //             if (orderResponse.data.success) {
@@ -267,7 +335,9 @@
 //                                         razorpay_payment_id: 'simulated_payment_id_' + Date.now(),
 //                                         razorpay_signature: 'simulated_signature',
 //                                         shippingAddress: shippingAddress,
-//                                         paymentMethod: paymentMethod
+//                                         paymentMethod: paymentMethod,
+//                                         cartItems: cart.items,
+//                                         userId: idToUse
 //                                     });
 
 //                                     if (verifyResponse.data.success) {
@@ -276,17 +346,19 @@
 //                                             router.push('/farmerscreen/cropcareorders');
 //                                         }, 2000);
 //                                     } else {
-//                                         showNotification('error', 'Payment verification failed');
+//                                         showNotification('error', verifyResponse.data.message || 'Payment verification failed');
 //                                     }
-//                                 } catch (error) {
+//                                 } catch (error: any) {
 //                                     console.error('Payment verification error:', error);
-//                                     showNotification('error', 'Payment verification error');
+//                                     showNotification('error', error.response?.data?.message || 'Payment verification error');
 //                                 }
 //                             }
 //                         },
 //                         { text: 'Cancel', style: 'cancel' }
 //                     ]
 //                 );
+//             } else {
+//                 showNotification('error', orderResponse.data.message || 'Payment initialization failed');
 //             }
 //         } catch (error: any) {
 //             console.error('Error creating order:', error);
@@ -298,9 +370,9 @@
 
 //     const goBackToCart = () => {
 //         if (router.canGoBack()) {
-//             router.back();   // go back if possible
+//             router.back();
 //         } else {
-//             router.push("/farmerscreen/cropcarecart"); // force navigate to cart
+//             router.push("/farmerscreen/cropcarecart");
 //         }
 //     };
 
@@ -344,8 +416,17 @@
 //         }
 //     };
 
+//     if (loading.auth) {
+//         return (
+//             <View className="flex-1 justify-center items-center bg-[#f8f9fa]">
+//                 <ActivityIndicator size="large" color="#2c5f2d" />
+//                 <Text className="mt-3 text-base text-[#666] font-medium">Checking authentication...</Text>
+//             </View>
+//         );
+//     }
+
 //     return (
-//         <SafeAreaView style={styles.container} edges={['top']}>
+//         <SafeAreaView className="flex-1 bg-[#f8f9fa]" edges={['top']}>
 //             {/* Notification */}
 //             {notification && (
 //                 <Modal
@@ -354,700 +435,409 @@
 //                     animationType="slide"
 //                     onRequestClose={() => setNotification(null)}
 //                 >
-//                     <View style={styles.notificationContainer}>
+//                     <View className="absolute top-5 right-5 z-[1001]">
 //                         <View style={[
-//                             styles.notification,
-//                             { backgroundColor: notification.type === 'success' ? '#28a745' : '#ff4d4f' }
-//                         ]}>
-//                             <Text style={styles.notificationText}>{notification.message}</Text>
+//                             { elevation: 5 },
+//                             notification.type === 'success' ? { backgroundColor: '#28a745' } : { backgroundColor: '#ff4d4f' }
+//                         ]} className="p-[15px] rounded-lg shadow-sm">
+//                             <Text className="text-white font-medium">{notification.message}</Text>
 //                         </View>
 //                     </View>
 //                 </Modal>
 //             )}
 
 //             {/* Header */}
-//             <View style={styles.header}>
-//                 <View style={styles.headerContent}>
-//                     <View style={styles.headerRow}>
-//                         <Text style={styles.headerTitle}>🌾 Crop Care Checkout</Text>
-//                         {user && (
-//                             <View style={styles.userInfo}>
-//                                 <Text style={styles.userName}>👤 {user.personalInfo.name}</Text>
-//                                 <View style={styles.userRoleBadge}>
-//                                     <Text style={styles.userRoleText}>{user.role}</Text>
+//             <View className="bg-[#2c5f2d] py-5 shadow-sm elevation-3">
+//                 <View className="px-5">
+//                     <View className="flex-row justify-between items-center">
+//                         <Text className="text-2xl font-medium text-white">🌾 Crop Care Checkout</Text>
+//                         {user ? (
+//                             <View className="flex-row items-center gap-[15px]">
+//                                 <Text className="text-white text-base">👤 {user.personalInfo.name}</Text>
+//                                 <View className="flex-row items-center gap-2">
+//                                     <View className="bg-white/20 px-3 py-1 rounded-xl">
+//                                         <Text className="text-white text-sm">{user.role}</Text>
+//                                     </View>
+//                                     <TouchableOpacity onPress={handleLogout} className="flex-row items-center bg-white/15 px-2 py-1 rounded-lg gap-1">
+//                                         <LogOut size={12} color="white" />
+//                                         <Text className="text-[10px] text-white font-medium">Logout</Text>
+//                                     </TouchableOpacity>
 //                                 </View>
 //                             </View>
+//                         ) : (
+//                             <TouchableOpacity 
+//                                 className="flex-row items-center bg-white/15 px-4 py-2 rounded-lg gap-1.5"
+//                                 onPress={() => setShowLoginModal(true)}
+//                             >
+//                                 <UserIcon size={16} color="white" />
+//                                 <Text className="text-white text-sm font-medium">Tap to Login</Text>
+//                             </TouchableOpacity>
 //                         )}
 //                     </View>
 //                 </View>
 //             </View>
 
-//             <ScrollView style={styles.scrollView}>
-//                 <View style={styles.main}>
-//                     {/* Back to Cart */}
-//                     <TouchableOpacity
-//                         style={styles.backButton}
-//                         onPress={() => router.push("/farmerscreen/cropcarecart")}
-//                     >
-//                         <ArrowLeft size={20} color="#2c5f2d" />
-//                         <Text style={styles.backButtonText}>Back to Cart</Text>
-//                     </TouchableOpacity>
-
-//                     <Text style={styles.title}>Checkout</Text>
-
-//                     {loading.cart ? (
-//                         <View style={styles.loadingContainer}>
-//                             <ActivityIndicator size="large" color="#2c5f2d" />
-//                             <Text style={styles.loadingText}>Loading checkout...</Text>
+//             <ScrollView className="flex-1">
+//                 <View className="p-5">
+//                     {/* Show Login Prompt when not authenticated */}
+//                     {!user ? (
+//                         <View className="items-center justify-center py-[60px] px-5 mt-10">
+//                             <View className="w-[120px] h-[120px] rounded-[60px] bg-[#2c5f2d]/10 justify-center items-center mb-6">
+//                                 <Text className="text-[60px] text-[#2c5f2d]">🔒</Text>
+//                             </View>
+//                             <Text className="text-[22px] font-medium text-[#333] mb-3 text-center">Login Required</Text>
+//                             <Text className="text-base text-[#666] text-center mb-8 leading-[22px]">
+//                                 Please login to proceed with checkout
+//                             </Text>
+//                             <TouchableOpacity
+//                                 className="bg-[#2c5f2d] px-8 py-3.5 rounded-lg"
+//                                 onPress={() => setShowLoginModal(true)}
+//                             >
+//                                 <Text className="text-white text-base font-medium">Login Now</Text>
+//                             </TouchableOpacity>
 //                         </View>
 //                     ) : (
-//                         <View style={styles.content}>
-//                             {/* Left Section - Shipping & Payment */}
-//                             <View style={styles.leftSection}>
-//                                 {/* Shipping Address */}
-//                                 <View style={styles.section}>
-//                                     <View style={styles.sectionTitle}>
-//                                         <MapPin size={20} color="#333" />
-//                                         <Text style={styles.sectionTitleText}>Shipping Address</Text>
-//                                     </View>
+//                         <>
+//                             {/* Back to Cart */}
+//                             <TouchableOpacity
+//                                 className="flex-row items-center gap-2 mb-5"
+//                                 onPress={() => router.push("/farmerscreen/cropcarecart")}
+//                             >
+//                                 <ArrowLeft size={20} color="#2c5f2d" />
+//                                 <Text className="text-[#2c5f2d] font-medium text-base">Back to Cart</Text>
+//                             </TouchableOpacity>
 
-//                                     <View style={styles.addressToggle}>
-//                                         <Text style={styles.toggleLabel}>Use my default address</Text>
-//                                         <TouchableOpacity
-//                                             style={[
-//                                                 styles.toggleSwitch,
-//                                                 useDefaultAddress && styles.toggleSwitchActive
-//                                             ]}
-//                                             onPress={() => setUseDefaultAddress(!useDefaultAddress)}
-//                                         >
-//                                             <View style={[
-//                                                 styles.toggleKnob,
-//                                                 useDefaultAddress && styles.toggleKnobActive
-//                                             ]} />
-//                                         </TouchableOpacity>
-//                                     </View>
+//                             <Text className="text-[28px] font-medium text-[#333] mb-[30px]">Checkout</Text>
 
-//                                     {!useDefaultAddress ? (
-//                                         <View>
-//                                             <View style={styles.formGroup}>
-//                                                 <Text style={styles.label}>Full Name *</Text>
-//                                                 <TextInput
-//                                                     style={styles.input}
-//                                                     value={shippingAddress.name}
-//                                                     onChangeText={(value) => handleAddressChange('name', value)}
-//                                                     placeholder="Enter full name"
-//                                                 />
+//                             {loading.cart ? (
+//                                 <View className="items-center justify-center py-[60px] px-5">
+//                                     <ActivityIndicator size="large" color="#2c5f2d" />
+//                                     <Text className="mt-[15px] text-base text-[#666]">Loading checkout...</Text>
+//                                 </View>
+//                             ) : (
+//                                 <View className="gap-[30px]">
+//                                     {/* Left Section - Shipping & Payment */}
+//                                     <View className="bg-white rounded-xl p-5 shadow-sm elevation-2">
+//                                         {/* Shipping Address */}
+//                                         <View className="mb-[30px]">
+//                                             <View className="flex-row items-center gap-2.5 mb-5 pb-[15px] border-b-2 border-[#2c5f2d]">
+//                                                 <MapPin size={20} color="#333" />
+//                                                 <Text className="text-xl font-medium text-[#333]">Shipping Address</Text>
 //                                             </View>
 
-//                                             <View style={styles.formGroup}>
-//                                                 <Text style={styles.label}>Mobile Number *</Text>
-//                                                 <TextInput
-//                                                     style={styles.input}
-//                                                     value={shippingAddress.mobileNo}
-//                                                     onChangeText={(value) => handleAddressChange('mobileNo', value)}
-//                                                     placeholder="Enter 10-digit mobile number"
-//                                                     keyboardType="phone-pad"
-//                                                     maxLength={10}
-//                                                 />
-//                                             </View>
-
-//                                             <View style={styles.formGroup}>
-//                                                 <Text style={styles.label}>Address *</Text>
-//                                                 <TextInput
-//                                                     style={[styles.input, styles.textarea]}
-//                                                     value={shippingAddress.address}
-//                                                     onChangeText={(value) => handleAddressChange('address', value)}
-//                                                     placeholder="Enter complete address"
-//                                                     multiline
-//                                                     numberOfLines={3}
-//                                                 />
-//                                             </View>
-
-//                                             <View style={styles.formGroup}>
-//                                                 <Text style={styles.label}>Village / Grama Panchayath</Text>
-//                                                 <TextInput
-//                                                     style={styles.input}
-//                                                     value={shippingAddress.villageGramaPanchayat}
-//                                                     onChangeText={(value) => handleAddressChange('villageGramaPanchayat', value)}
-//                                                     placeholder="Enter village or grama panchayath"
-//                                                 />
-//                                             </View>
-
-//                                             <View style={styles.formGroup}>
-//                                                 <Text style={styles.label}>Pincode *</Text>
-//                                                 <TextInput
-//                                                     style={styles.input}
-//                                                     value={shippingAddress.pincode}
-//                                                     onChangeText={handlePincodeChange}
-//                                                     placeholder="Enter 6-digit pincode"
-//                                                     keyboardType="number-pad"
-//                                                     maxLength={6}
-//                                                 />
-//                                             </View>
-
-//                                             <View style={styles.row}>
-//                                                 <View style={[styles.formGroup, styles.halfWidth]}>
-//                                                     <Text style={styles.label}>State *</Text>
-//                                                     <TextInput
-//                                                         style={styles.input}
-//                                                         value={shippingAddress.state}
-//                                                         onChangeText={(value) => handleAddressChange('state', value)}
-//                                                         placeholder="Enter state"
+//                                             <View className="flex-row items-center gap-2.5 mb-5">
+//                                                 <Text className="text-sm text-[#666]">Use my default address</Text>
+//                                                 <TouchableOpacity
+//                                                     className={`w-[50px] h-6 rounded-3xl p-1 ${useDefaultAddress ? 'bg-[#2c5f2d]' : 'bg-[#ccc]'}`}
+//                                                     onPress={() => setUseDefaultAddress(!useDefaultAddress)}
+//                                                 >
+//                                                     <View
+//                                                         className={`w-4 h-4 bg-white rounded-full ${useDefaultAddress ? 'translate-x-[26px]' : ''}`}
 //                                                     />
-//                                                 </View>
-
-//                                                 <View style={[styles.formGroup, styles.halfWidth]}>
-//                                                     <Text style={styles.label}>District *</Text>
-//                                                     <TextInput
-//                                                         style={styles.input}
-//                                                         value={shippingAddress.district}
-//                                                         onChangeText={(value) => handleAddressChange('district', value)}
-//                                                         placeholder="Enter district"
-//                                                     />
-//                                                 </View>
+//                                                 </TouchableOpacity>
 //                                             </View>
 
-//                                             <View style={styles.row}>
-//                                                 <View style={[styles.formGroup, styles.halfWidth]}>
-//                                                     <Text style={styles.label}>Taluk</Text>
-//                                                     <TextInput
-//                                                         style={styles.input}
-//                                                         value={shippingAddress.taluk}
-//                                                         onChangeText={(value) => handleAddressChange('taluk', value)}
-//                                                         placeholder="Enter taluk"
-//                                                     />
-//                                                 </View>
+//                                             {!useDefaultAddress ? (
+//                                                 <View>
+//                                                     <View className="mb-5">
+//                                                         <Text className="text-sm font-medium text-[#333] mb-2">Full Name *</Text>
+//                                                         <TextInput
+//                                                             className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                             value={shippingAddress.name}
+//                                                             onChangeText={(value) => handleAddressChange('name', value)}
+//                                                             placeholder="Enter full name"
+//                                                         />
+//                                                     </View>
 
-//                                                 <View style={[styles.formGroup, styles.halfWidth]}>
-//                                                     <Text style={styles.label}>Post</Text>
-//                                                     <TextInput
-//                                                         style={styles.input}
-//                                                         value={shippingAddress.post}
-//                                                         onChangeText={(value) => handleAddressChange('post', value)}
-//                                                         placeholder="Enter post office"
-//                                                     />
-//                                                 </View>
-//                                             </View>
+//                                                     <View className="mb-5">
+//                                                         <Text className="text-sm font-medium text-[#333] mb-2">Mobile Number *</Text>
+//                                                         <TextInput
+//                                                             className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                             value={shippingAddress.mobileNo}
+//                                                             onChangeText={(value) => handleAddressChange('mobileNo', value)}
+//                                                             placeholder="Enter 10-digit mobile number"
+//                                                             keyboardType="phone-pad"
+//                                                             maxLength={10}
+//                                                         />
+//                                                     </View>
 
-//                                             <View style={styles.formGroup}>
-//                                                 <Text style={styles.label}>Landmark (Optional)</Text>
-//                                                 <TextInput
-//                                                     style={styles.input}
-//                                                     value={shippingAddress.landmark}
-//                                                     onChangeText={(value) => handleAddressChange('landmark', value)}
-//                                                     placeholder="Near temple, school, etc."
-//                                                 />
-//                                             </View>
-//                                         </View>
-//                                     ) : user?.personalInfo && (
-//                                         <View style={styles.defaultAddress}>
-//                                             <View style={styles.addressContent}>
-//                                                 <Home size={20} color="#2c5f2d" />
-//                                                 <View style={styles.addressDetails}>
-//                                                     <Text style={styles.addressName}>{user.personalInfo.name}</Text>
-//                                                     <Text style={styles.addressText}>{user.personalInfo.address}</Text>
-//                                                     <Text style={styles.addressText}>{user.personalInfo.villageGramaPanchayat}</Text>
-//                                                     <Text style={styles.addressText}>
-//                                                         {user.personalInfo.district}, {user.personalInfo.state} - {user.personalInfo.pincode}
-//                                                     </Text>
-//                                                     <View style={styles.phoneRow}>
-//                                                         <Phone size={14} color="#666" />
-//                                                         <Text style={styles.addressText}>{user.personalInfo.mobileNo}</Text>
+//                                                     <View className="mb-5">
+//                                                         <Text className="text-sm font-medium text-[#333] mb-2">Address *</Text>
+//                                                         <TextInput
+//                                                             className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white min-h-[100px] align-top"
+//                                                             value={shippingAddress.address}
+//                                                             onChangeText={(value) => handleAddressChange('address', value)}
+//                                                             placeholder="Enter complete address"
+//                                                             multiline
+//                                                             numberOfLines={3}
+//                                                             style={{ textAlignVertical: 'top' }}
+//                                                         />
+//                                                     </View>
+
+//                                                     <View className="mb-5">
+//                                                         <Text className="text-sm font-medium text-[#333] mb-2">Village / Grama Panchayath</Text>
+//                                                         <TextInput
+//                                                             className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                             value={shippingAddress.villageGramaPanchayat}
+//                                                             onChangeText={(value) => handleAddressChange('villageGramaPanchayat', value)}
+//                                                             placeholder="Enter village or grama panchayath"
+//                                                         />
+//                                                     </View>
+
+//                                                     <View className="mb-5">
+//                                                         <Text className="text-sm font-medium text-[#333] mb-2">Pincode *</Text>
+//                                                         <TextInput
+//                                                             className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                             value={shippingAddress.pincode}
+//                                                             onChangeText={handlePincodeChange}
+//                                                             placeholder="Enter 6-digit pincode"
+//                                                             keyboardType="number-pad"
+//                                                             maxLength={6}
+//                                                         />
+//                                                     </View>
+
+//                                                     <View className="flex-row gap-[15px]">
+//                                                         <View className="flex-1 mb-5">
+//                                                             <Text className="text-sm font-medium text-[#333] mb-2">State *</Text>
+//                                                             <TextInput
+//                                                                 className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                                 value={shippingAddress.state}
+//                                                                 onChangeText={(value) => handleAddressChange('state', value)}
+//                                                                 placeholder="Enter state"
+//                                                             />
+//                                                         </View>
+
+//                                                         <View className="flex-1 mb-5">
+//                                                             <Text className="text-sm font-medium text-[#333] mb-2">District *</Text>
+//                                                             <TextInput
+//                                                                 className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                                 value={shippingAddress.district}
+//                                                                 onChangeText={(value) => handleAddressChange('district', value)}
+//                                                                 placeholder="Enter district"
+//                                                             />
+//                                                         </View>
+//                                                     </View>
+
+//                                                     <View className="flex-row gap-[15px]">
+//                                                         <View className="flex-1 mb-5">
+//                                                             <Text className="text-sm font-medium text-[#333] mb-2">Taluk</Text>
+//                                                             <TextInput
+//                                                                 className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                                 value={shippingAddress.taluk}
+//                                                                 onChangeText={(value) => handleAddressChange('taluk', value)}
+//                                                                 placeholder="Enter taluk"
+//                                                             />
+//                                                         </View>
+
+//                                                         <View className="flex-1 mb-5">
+//                                                             <Text className="text-sm font-medium text-[#333] mb-2">Post</Text>
+//                                                             <TextInput
+//                                                                 className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                                 value={shippingAddress.post}
+//                                                                 onChangeText={(value) => handleAddressChange('post', value)}
+//                                                                 placeholder="Enter post office"
+//                                                             />
+//                                                         </View>
+//                                                     </View>
+
+//                                                     <View className="mb-5">
+//                                                         <Text className="text-sm font-medium text-[#333] mb-2">Landmark (Optional)</Text>
+//                                                         <TextInput
+//                                                             className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
+//                                                             value={shippingAddress.landmark}
+//                                                             onChangeText={(value) => handleAddressChange('landmark', value)}
+//                                                             placeholder="Near temple, school, etc."
+//                                                         />
 //                                                     </View>
 //                                                 </View>
-//                                             </View>
+//                                             ) : user?.personalInfo && (
+//                                                 <View className="p-5 bg-[#f0fff4] rounded-lg border border-[#2c5f2d]">
+//                                                     <View className="flex-row items-start gap-[15px]">
+//                                                         <Home size={20} color="#2c5f2d" />
+//                                                         <View className="flex-1">
+//                                                             <Text className="text-base font-medium text-[#333] mb-2.5">{user.personalInfo.name}</Text>
+//                                                             <Text className="text-sm text-[#666] mb-1">{user.personalInfo.address}</Text>
+//                                                             <Text className="text-sm text-[#666] mb-1">{user.personalInfo.villageGramaPanchayat}</Text>
+//                                                             <Text className="text-sm text-[#666] mb-1">
+//                                                                 {user.personalInfo.district}, {user.personalInfo.state} - {user.personalInfo.pincode}
+//                                                             </Text>
+//                                                             <View className="flex-row items-center gap-[5px]">
+//                                                                 <Phone size={14} color="#666" />
+//                                                                 <Text className="text-sm text-[#666] mb-1">{user.personalInfo.mobileNo}</Text>
+//                                                             </View>
+//                                                         </View>
+//                                                     </View>
+//                                                 </View>
+//                                             )}
 //                                         </View>
-//                                     )}
-//                                 </View>
 
-//                                 {/* Payment Method */}
-//                                 <View style={[styles.section, styles.paymentMethods]}>
-//                                     <View style={styles.sectionTitle}>
-//                                         <CreditCard size={20} color="#333" />
-//                                         <Text style={styles.sectionTitleText}>Payment Method</Text>
+//                                         {/* Payment Method */}
+//                                         <View className="mt-[30px] mb-7">
+//                                             <View className="flex-row items-center gap-2.5 mb-5 pb-[15px] border-b-2 border-[#2c5f2d]">
+//                                                 <CreditCard size={20} color="#333" />
+//                                                 <Text className="text-xl font-medium text-[#333]">Payment Method</Text>
+//                                             </View>
+
+//                                             <TouchableOpacity
+//                                                 className={`flex-row items-center gap-[15px] p-[15px] border-2 rounded-lg mb-[15px] ${
+//                                                     paymentMethod === 'razorpay' ? 'border-[#2c5f2d] bg-[#f0fff4]' : 'border-[#ddd]'
+//                                                 }`}
+//                                                 onPress={() => setPaymentMethod('razorpay')}
+//                                             >
+//                                                 <Text className="text-2xl">💳</Text>
+//                                                 <View className="flex-1">
+//                                                     <Text className="text-base font-medium text-[#333] mb-[5px]">Credit/Debit Card, UPI, NetBanking</Text>
+//                                                     <Text className="text-sm text-[#666]">
+//                                                         Pay securely with Razorpay. All major cards and UPI accepted.
+//                                                     </Text>
+//                                                 </View>
+//                                                 {paymentMethod === 'razorpay' && (
+//                                                     <CheckCircle size={20} color="#2c5f2d" />
+//                                                 )}
+//                                             </TouchableOpacity>
+
+//                                             <TouchableOpacity
+//                                                 className={`flex-row items-center gap-[15px] p-[15px] border-2 rounded-lg mb-[15px] ${
+//                                                     paymentMethod === 'cod' ? 'border-[#2c5f2d] bg-[#f0fff4]' : 'border-[#ddd]'
+//                                                 }`}
+//                                                 onPress={() => setPaymentMethod('cod')}
+//                                             >
+//                                                 <Text className="text-2xl">💰</Text>
+//                                                 <View className="flex-1">
+//                                                     <Text className="text-base font-medium text-[#333] mb-[5px]">Cash on Delivery</Text>
+//                                                     <Text className="text-sm text-[#666]">
+//                                                         Pay when you receive your order. Available for all locations.
+//                                                     </Text>
+//                                                 </View>
+//                                                 {paymentMethod === 'cod' && (
+//                                                     <CheckCircle size={20} color="#2c5f2d" />
+//                                                 )}
+//                                             </TouchableOpacity>
+//                                         </View>
 //                                     </View>
 
-//                                     <TouchableOpacity
-//                                         style={[
-//                                             styles.paymentOption,
-//                                             paymentMethod === 'razorpay' && styles.paymentOptionSelected
-//                                         ]}
-//                                         onPress={() => setPaymentMethod('razorpay')}
-//                                     >
-//                                         <Text style={styles.paymentIcon}>💳</Text>
-//                                         <View style={styles.paymentInfo}>
-//                                             <Text style={styles.paymentTitle}>Credit/Debit Card, UPI, NetBanking</Text>
-//                                             <Text style={styles.paymentDescription}>
-//                                                 Pay securely with Razorpay. All major cards and UPI accepted.
+//                                     {/* Right Section - Order Summary */}
+//                                     <View className="bg-white rounded-xl p-5 shadow-sm elevation-2">
+//                                         <View className="flex-row items-center gap-2.5 mb-5 pb-[15px] border-b-2 border-[#2c5f2d]">
+//                                             <Text className="text-xl font-medium text-[#333]">Order Summary</Text>
+//                                         </View>
+
+//                                         {/* Order Items */}
+//                                         <View className="mb-5">
+//                                             {cart.items.map((item) => (
+//                                                 <View key={item._id} className="flex-row justify-between items-center py-[15px] border-b border-[#eaeaea]">
+//                                                     <View className="flex-1">
+//                                                         <Text className="text-sm text-[#333]">{item.seedName}</Text>
+//                                                         <Text className="text-xs text-[#999] mt-0.5">{item.productName}</Text>
+//                                                     </View>
+//                                                     <Text className="text-sm text-[#666] mr-[15px]">
+//                                                         x{item.quantity}
+//                                                     </Text>
+//                                                     <Text className="text-sm font-medium text-[#333] min-w-[80px] text-right">
+//                                                         ₹{(item.seedPrice * item.quantity).toFixed(2)}
+//                                                     </Text>
+//                                                 </View>
+//                                             ))}
+//                                         </View>
+
+//                                         {/* Order Summary */}
+//                                         <View className="flex-row justify-between mb-[15px]">
+//                                             <Text className="text-base text-[#666]">Subtotal</Text>
+//                                             <Text className="text-base text-[#666]">₹{cart.subtotal.toFixed(2)}</Text>
+//                                         </View>
+
+//                                         <View className="flex-row justify-between mb-[15px]">
+//                                             <Text className="text-base text-[#666]">GST (18%)</Text>
+//                                             <Text className="text-base text-[#666]">₹{cart.gst.toFixed(2)}</Text>
+//                                         </View>
+
+//                                         <View className="flex-row justify-between mb-[15px]">
+//                                             <Text className="text-base text-[#666]">Shipping</Text>
+//                                             <Text className="text-base text-[#666]">
+//                                                 {cart.shipping === 0 ? 'FREE' : `₹${cart.shipping.toFixed(2)}`}
 //                                             </Text>
 //                                         </View>
-//                                         {paymentMethod === 'razorpay' && (
-//                                             <CheckCircle size={20} color="#2c5f2d" />
-//                                         )}
-//                                     </TouchableOpacity>
 
-//                                     <TouchableOpacity
-//                                         style={[
-//                                             styles.paymentOption,
-//                                             paymentMethod === 'cod' && styles.paymentOptionSelected
-//                                         ]}
-//                                         onPress={() => setPaymentMethod('cod')}
-//                                     >
-//                                         <Text style={styles.paymentIcon}>💰</Text>
-//                                         <View style={styles.paymentInfo}>
-//                                             <Text style={styles.paymentTitle}>Cash on Delivery</Text>
-//                                             <Text style={styles.paymentDescription}>
-//                                                 Pay when you receive your order. Available for all locations.
-//                                             </Text>
+//                                         <View className="flex-row justify-between mt-5 pt-5 border-t-2 border-[#eaeaea]">
+//                                             <Text className="text-lg font-medium text-[#333]">Total</Text>
+//                                             <Text className="text-lg font-medium text-[#333]">₹{cart.total.toFixed(2)}</Text>
 //                                         </View>
-//                                         {paymentMethod === 'cod' && (
-//                                             <CheckCircle size={20} color="#2c5f2d" />
-//                                         )}
-//                                     </TouchableOpacity>
-//                                 </View>
-//                             </View>
 
-//                             {/* Right Section - Order Summary */}
-//                             <View style={styles.rightSection}>
-//                                 <View style={styles.sectionTitle}>
-//                                     <Text style={styles.sectionTitleText}>Order Summary</Text>
-//                                 </View>
+//                                         {/* Place Order Button */}
+//                                         <TouchableOpacity
+//                                             className={`w-full p-4 rounded-lg items-center justify-center mt-[25px] ${
+//                                                 loading.payment || cart.items.length === 0 ? 'bg-[#ccc]' : 'bg-[#2c5f2d]'
+//                                             }`}
+//                                             onPress={initiatePayment}
+//                                             disabled={loading.payment || cart.items.length === 0}
+//                                         >
+//                                             {loading.payment ? (
+//                                                 <ActivityIndicator color="white" />
+//                                             ) : (
+//                                                 <Text className="text-lg font-medium text-white">
+//                                                     {paymentMethod === 'cod'
+//                                                         ? 'Place Order (Cash on Delivery)'
+//                                                         : 'Pay & Place Order'}
+//                                                 </Text>
+//                                             )}
+//                                         </TouchableOpacity>
 
-//                                 {/* Order Items */}
-//                                 <View style={styles.orderItems}>
-//                                     {cart.items.map((item) => (
-//                                         <View key={item._id} style={styles.orderItem}>
-//                                             <View style={styles.orderItemName}>
-//                                                 <Text style={styles.orderItemMainText}>{item.seedName}</Text>
-//                                                 <Text style={styles.orderItemSubText}>{item.productName}</Text>
-//                                             </View>
-//                                             <Text style={styles.orderItemQuantity}>
-//                                                 x{item.quantity}
-//                                             </Text>
-//                                             <Text style={styles.orderItemPrice}>
-//                                                 ₹{(item.seedPrice * item.quantity).toFixed(2)}
-//                                             </Text>
+//                                         {/* Security Note */}
+//                                         <View className="mt-[15px] p-2.5 bg-[#fff9f0] rounded-md">
+//                                             <Text className="text-xs text-[#666] text-center">🔒 Your payment is secure and encrypted</Text>
 //                                         </View>
-//                                     ))}
+//                                     </View>
 //                                 </View>
-
-//                                 {/* Order Summary */}
-//                                 <View style={styles.summaryRow}>
-//                                     <Text style={styles.summaryLabel}>Subtotal</Text>
-//                                     <Text style={styles.summaryValue}>₹{cart.subtotal.toFixed(2)}</Text>
-//                                 </View>
-
-//                                 <View style={styles.summaryRow}>
-//                                     <Text style={styles.summaryLabel}>GST (18%)</Text>
-//                                     <Text style={styles.summaryValue}>₹{cart.gst.toFixed(2)}</Text>
-//                                 </View>
-
-//                                 <View style={styles.summaryRow}>
-//                                     <Text style={styles.summaryLabel}>Shipping</Text>
-//                                     <Text style={styles.summaryValue}>
-//                                         {cart.shipping === 0 ? 'FREE' : `₹${cart.shipping.toFixed(2)}`}
-//                                     </Text>
-//                                 </View>
-
-//                                 <View style={styles.summaryTotal}>
-//                                     <Text style={styles.summaryTotalLabel}>Total</Text>
-//                                     <Text style={styles.summaryTotalValue}>₹{cart.total.toFixed(2)}</Text>
-//                                 </View>
-
-//                                 {/* Place Order Button */}
-//                                 <TouchableOpacity
-//                                     style={[
-//                                         styles.placeOrderButton,
-//                                         (loading.payment || cart.items.length === 0) && styles.placeOrderButtonDisabled
-//                                     ]}
-//                                     onPress={initiatePayment}
-//                                     disabled={loading.payment || cart.items.length === 0}
-//                                 >
-//                                     {loading.payment ? (
-//                                         <ActivityIndicator color="white" />
-//                                     ) : (
-//                                         <Text style={styles.placeOrderButtonText}>
-//                                             {paymentMethod === 'cod'
-//                                                 ? 'Place Order (Cash on Delivery)'
-//                                                 : 'Pay & Place Order'}
-//                                         </Text>
-//                                     )}
-//                                 </TouchableOpacity>
-
-//                                 {/* Security Note */}
-//                                 <View style={styles.securityNote}>
-//                                     <Text style={styles.securityNoteText}>🔒 Your payment is secure and encrypted</Text>
-//                                 </View>
-//                             </View>
-//                         </View>
+//                             )}
+//                         </>
 //                     )}
 //                 </View>
 //             </ScrollView>
-//             <CropcareOrders />
+
+//             {/* Login Modal */}
+//             <Modal
+//                 visible={showLoginModal}
+//                 transparent={true}
+//                 animationType="slide"
+//                 onRequestClose={() => setShowLoginModal(false)}
+//             >
+//                 <View className="flex-1 bg-black/50 justify-center items-center">
+//                     <View className="bg-white rounded-2xl p-6 w-[80%] items-center">
+//                         <Text className="text-5xl mb-4 text-[#2c5f2d]">🔒</Text>
+//                         <Text className="text-xl font-medium text-[#333] mb-2 text-center">Login Required</Text>
+//                         <Text className="text-base text-[#666] text-center mb-6 leading-[22px]">
+//                             You need to login to proceed with checkout
+//                         </Text>
+//                         <View className="flex-row justify-between w-full gap-3">
+//                             <TouchableOpacity
+//                                 className="flex-1 py-3 rounded-lg items-center bg-[#e0e0e0]"
+//                                 onPress={() => {
+//                                     setShowLoginModal(false);
+//                                     router.back();
+//                                 }}
+//                             >
+//                                 <Text className="text-[#333] font-medium text-base">Cancel</Text>
+//                             </TouchableOpacity>
+//                             <TouchableOpacity
+//                                 className="flex-1 py-3 rounded-lg items-center bg-[#2c5f2d]"
+//                                 onPress={handleLogin}
+//                             >
+//                                 <Text className="text-white font-medium text-base">Login</Text>
+//                             </TouchableOpacity>
+//                         </View>
+//                     </View>
+//                 </View>
+//             </Modal>
+          
 //         </SafeAreaView>
 
 //     );
 // };
 
-// const styles = StyleSheet.create({
-//     container: {
-//         flex: 1,
-//         backgroundColor: '#f8f9fa',
-//     },
-//     scrollView: {
-//         flex: 1,
-//     },
-//     header: {
-//         backgroundColor: '#2c5f2d',
-//         paddingVertical: 20,
-//         shadowColor: '#000',
-//         shadowOffset: { width: 0, height: 2 },
-//         shadowOpacity: 0.1,
-//         shadowRadius: 10,
-//         elevation: 3,
-//     },
-//     headerContent: {
-//         paddingHorizontal: 20,
-//     },
-//     headerRow: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         alignItems: 'center',
-//     },
-//     headerTitle: {
-//         fontSize: 24,
-//         fontWeight: 'bold',
-//         color: 'white',
-//     },
-//     userInfo: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         gap: 15,
-//     },
-//     userName: {
-//         color: 'white',
-//         fontSize: 16,
-//     },
-//     userRoleBadge: {
-//         backgroundColor: 'rgba(255,255,255,0.2)',
-//         paddingHorizontal: 12,
-//         paddingVertical: 4,
-//         borderRadius: 12,
-//     },
-//     userRoleText: {
-//         color: 'white',
-//         fontSize: 14,
-//     },
-//     main: {
-//         padding: 20,
-//     },
-//     backButton: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         gap: 8,
-//         marginBottom: 20,
-//     },
-//     backButtonText: {
-//         color: '#2c5f2d',
-//         fontWeight: 'bold',
-//         fontSize: 16,
-//     },
-//     title: {
-//         fontSize: 28,
-//         fontWeight: 'bold',
-//         color: '#333',
-//         marginBottom: 30,
-//     },
-//     loadingContainer: {
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//         paddingVertical: 60,
-//         paddingHorizontal: 20,
-//     },
-//     loadingText: {
-//         marginTop: 15,
-//         fontSize: 16,
-//         color: '#666',
-//     },
-//     content: {
-//         gap: 30,
-//     },
-//     leftSection: {
-//         backgroundColor: 'white',
-//         borderRadius: 12,
-//         padding: 20,
-//         shadowColor: '#000',
-//         shadowOffset: { width: 0, height: 4 },
-//         shadowOpacity: 0.05,
-//         shadowRadius: 12,
-//         elevation: 2,
-//     },
-//     rightSection: {
-//         backgroundColor: 'white',
-//         borderRadius: 12,
-//         padding: 20,
-//         shadowColor: '#000',
-//         shadowOffset: { width: 0, height: 4 },
-//         shadowOpacity: 0.05,
-//         shadowRadius: 12,
-//         elevation: 2,
-//     },
-//     section: {
-//         marginBottom: 30,
-//     },
-//     sectionTitle: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         gap: 10,
-//         marginBottom: 20,
-//         paddingBottom: 15,
-//         borderBottomWidth: 2,
-//         borderBottomColor: '#2c5f2d',
-//     },
-//     sectionTitleText: {
-//         fontSize: 20,
-//         fontWeight: 'bold',
-//         color: '#333',
-//     },
-//     addressToggle: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         gap: 10,
-//         marginBottom: 20,
-//     },
-//     toggleLabel: {
-//         fontSize: 14,
-//         color: '#666',
-//     },
-//     toggleSwitch: {
-//         width: 50,
-//         height: 24,
-//         backgroundColor: '#ccc',
-//         borderRadius: 24,
-//         padding: 4,
-//     },
-//     toggleSwitchActive: {
-//         backgroundColor: '#2c5f2d',
-//     },
-//     toggleKnob: {
-//         width: 16,
-//         height: 16,
-//         backgroundColor: 'white',
-//         borderRadius: 8,
-//     },
-//     toggleKnobActive: {
-//         transform: [{ translateX: 26 }],
-//     },
-//     formGroup: {
-//         marginBottom: 20,
-//     },
-//     label: {
-//         fontSize: 14,
-//         fontWeight: '500',
-//         color: '#333',
-//         marginBottom: 8,
-//     },
-//     input: {
-//         width: '100%',
-//         padding: 12,
-//         borderWidth: 1,
-//         borderColor: '#ddd',
-//         borderRadius: 8,
-//         fontSize: 14,
-//         color: '#333',
-//         backgroundColor: '#fff',
-//     },
-//     textarea: {
-//         minHeight: 100,
-//         textAlignVertical: 'top',
-//     },
-//     row: {
-//         flexDirection: 'row',
-//         gap: 15,
-//     },
-//     halfWidth: {
-//         flex: 1,
-//     },
-//     defaultAddress: {
-//         padding: 20,
-//         backgroundColor: '#f0fff4',
-//         borderRadius: 8,
-//         borderWidth: 1,
-//         borderColor: '#2c5f2d',
-//     },
-//     addressContent: {
-//         flexDirection: 'row',
-//         alignItems: 'flex-start',
-//         gap: 15,
-//     },
-//     addressDetails: {
-//         flex: 1,
-//     },
-//     addressName: {
-//         fontSize: 16,
-//         fontWeight: 'bold',
-//         color: '#333',
-//         marginBottom: 10,
-//     },
-//     addressText: {
-//         fontSize: 14,
-//         color: '#666',
-//         marginBottom: 5,
-//     },
-//     phoneRow: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         gap: 5,
-//     },
-//     paymentMethods: {
-//         marginTop: 30,
-//     },
-//     paymentOption: {
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         gap: 15,
-//         padding: 15,
-//         borderWidth: 2,
-//         borderColor: '#ddd',
-//         borderRadius: 8,
-//         marginBottom: 15,
-//     },
-//     paymentOptionSelected: {
-//         borderColor: '#2c5f2d',
-//         backgroundColor: '#f0fff4',
-//     },
-//     paymentIcon: {
-//         fontSize: 24,
-//     },
-//     paymentInfo: {
-//         flex: 1,
-//     },
-//     paymentTitle: {
-//         fontSize: 16,
-//         fontWeight: 'bold',
-//         color: '#333',
-//         marginBottom: 5,
-//     },
-//     paymentDescription: {
-//         fontSize: 14,
-//         color: '#666',
-//     },
-//     orderItems: {
-//         marginBottom: 20,
-//     },
-//     orderItem: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         alignItems: 'center',
-//         paddingVertical: 15,
-//         borderBottomWidth: 1,
-//         borderBottomColor: '#eaeaea',
-//     },
-//     orderItemName: {
-//         flex: 1,
-//     },
-//     orderItemMainText: {
-//         fontSize: 14,
-//         color: '#333',
-//     },
-//     orderItemSubText: {
-//         fontSize: 12,
-//         color: '#999',
-//         marginTop: 2,
-//     },
-//     orderItemQuantity: {
-//         fontSize: 14,
-//         color: '#666',
-//         marginRight: 15,
-//     },
-//     orderItemPrice: {
-//         fontSize: 14,
-//         fontWeight: 'bold',
-//         color: '#333',
-//         minWidth: 80,
-//         textAlign: 'right',
-//     },
-//     summaryRow: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         marginBottom: 15,
-//     },
-//     summaryLabel: {
-//         fontSize: 16,
-//         color: '#666',
-//     },
-//     summaryValue: {
-//         fontSize: 16,
-//         color: '#666',
-//     },
-//     summaryTotal: {
-//         flexDirection: 'row',
-//         justifyContent: 'space-between',
-//         marginTop: 20,
-//         paddingTop: 20,
-//         borderTopWidth: 2,
-//         borderTopColor: '#eaeaea',
-//     },
-//     summaryTotalLabel: {
-//         fontSize: 18,
-//         fontWeight: 'bold',
-//         color: '#333',
-//     },
-//     summaryTotalValue: {
-//         fontSize: 18,
-//         fontWeight: 'bold',
-//         color: '#333',
-//     },
-//     placeOrderButton: {
-//         width: '100%',
-//         padding: 16,
-//         backgroundColor: '#2c5f2d',
-//         borderRadius: 8,
-//         alignItems: 'center',
-//         justifyContent: 'center',
-//         marginTop: 25,
-//     },
-//     placeOrderButtonDisabled: {
-//         backgroundColor: '#ccc',
-//     },
-//     placeOrderButtonText: {
-//         fontSize: 18,
-//         fontWeight: 'bold',
-//         color: 'white',
-//     },
-//     securityNote: {
-//         marginTop: 15,
-//         padding: 10,
-//         backgroundColor: '#fff9f0',
-//         borderRadius: 6,
-//     },
-//     securityNoteText: {
-//         fontSize: 12,
-//         color: '#666',
-//         textAlign: 'center',
-//     },
-//     notificationContainer: {
-//         position: 'absolute',
-//         top: 20,
-//         right: 20,
-//         zIndex: 1001,
-//     },
-//     notification: {
-//         padding: 15,
-//         borderRadius: 8,
-//         shadowColor: '#000',
-//         shadowOffset: { width: 0, height: 2 },
-//         shadowOpacity: 0.2,
-//         shadowRadius: 4,
-//         elevation: 5,
-//     },
-//     notificationText: {
-//         color: 'white',
-//         fontWeight: 'bold',
-//     },
-// });
-
 // export default CropcareCheckout;
+
+
+
 
 
 
@@ -1056,21 +846,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
-import { ArrowLeft, CheckCircle, CreditCard, Home, MapPin, Phone, User, LogOut } from 'lucide-react-native';
+import { ArrowLeft, CheckCircle, CreditCard, Home, LogOut, MapPin, Phone, User as UserIcon } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Alert,
     Modal,
     ScrollView,
-    StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
-    View,
+    View
 } from 'react-native';
+// ✅ FIXED IMPORT - Use default import for React Native Razorpay
+import RazorpayCheckout from 'react-native-razorpay';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import CropcareOrders from './cropcareorders';
 
 interface CartItem {
     _id?: string;
@@ -1179,7 +969,6 @@ const CropcareCheckout: React.FC = () => {
                 });
             }
         } else {
-            // Reset cart when user is not authenticated
             setCart({
                 items: [],
                 subtotal: 0,
@@ -1193,7 +982,6 @@ const CropcareCheckout: React.FC = () => {
     const checkAuthStatus = async () => {
         setLoading(prev => ({ ...prev, auth: true }));
         try {
-            // Check all required authentication items from farmer login
             const [userData, role, userId, farmerId] = await Promise.all([
                 AsyncStorage.getItem('userData'),
                 AsyncStorage.getItem('userRole'),
@@ -1223,7 +1011,6 @@ const CropcareCheckout: React.FC = () => {
                         }
                     };
 
-                    // Add farmerId if available
                     if (farmerId) {
                         userObj.farmerId = farmerId;
                     }
@@ -1279,7 +1066,6 @@ const CropcareCheckout: React.FC = () => {
 
         setLoading(prev => ({ ...prev, cart: true }));
         try {
-            // Use farmerId if available, otherwise use userId
             const idToUse = user.farmerId || user._id;
             console.log('Fetching cart for checkout with ID:', idToUse);
             
@@ -1291,7 +1077,7 @@ const CropcareCheckout: React.FC = () => {
                     setCart(cartData);
                 } else {
                     showNotification('error', 'Your cart is empty');
-                    setTimeout(() => router.push('/farmerscreen/cropcarecart'), 1500);
+                    setTimeout(() => router.push('/(farmerscreen)/cropcarecart'), 1500);
                 }
             } else {
                 showNotification('error', response.data.message || 'Failed to load cart');
@@ -1337,6 +1123,7 @@ const CropcareCheckout: React.FC = () => {
         return true;
     };
 
+    // ✅ FIXED RAZORPAY PAYMENT FUNCTION
     const initiatePayment = async () => {
         if (!user) {
             setShowLoginModal(true);
@@ -1352,75 +1139,150 @@ const CropcareCheckout: React.FC = () => {
             return;
         }
 
+        // ✅ Cash on Delivery Flow
         if (paymentMethod === 'cod') {
-            // For Cash on Delivery
-            showNotification('success', 'Order placed successfully! Cash on Delivery selected.');
-            setTimeout(() => {
-                router.push('/farmerscreen/cropcareorders');
-            }, 2000);
+            setLoading(prev => ({ ...prev, payment: true }));
+            try {
+                const idToUse = user.farmerId || user._id;
+                
+                const codOrderResponse = await axios.post(`https://kisan.etpl.ai/api/cropcare/orders`, {
+                    userId: idToUse,
+                    shippingAddress: shippingAddress,
+                    paymentMethod: 'cod',
+                    cartItems: cart.items,
+                    amount: cart.total,
+                    subtotal: cart.subtotal,
+                    gst: cart.gst,
+                    shipping: cart.shipping,
+                    total: cart.total
+                });
+
+                if (codOrderResponse.data.success) {
+                    showNotification('success', 'Order placed successfully! Cash on Delivery selected.');
+                    setTimeout(() => {
+                        router.push('/(farmerscreen)/cropcareorders');
+                    }, 2000);
+                } else {
+                    showNotification('error', codOrderResponse.data.message || 'Failed to place order');
+                }
+            } catch (error: any) {
+                console.error('COD order error:', error);
+                showNotification('error', error.response?.data?.message || 'Failed to place order');
+            } finally {
+                setLoading(prev => ({ ...prev, payment: false }));
+            }
             return;
         }
 
-        // For Razorpay payment
+        // ✅ RAZORPAY PAYMENT FLOW (FIXED WITH NULL CHECK)
         setLoading(prev => ({ ...prev, payment: true }));
         try {
-            // Use farmerId if available, otherwise use userId
+            // ✅ Check if Razorpay module is available
+            if (!RazorpayCheckout || typeof RazorpayCheckout.open !== 'function') {
+                Alert.alert(
+                    'Payment Unavailable',
+                    'Razorpay payment gateway is not available. Please use Cash on Delivery or contact support.',
+                    [
+                        { text: 'Use COD', onPress: () => setPaymentMethod('cod') },
+                        { text: 'Cancel', style: 'cancel' }
+                    ]
+                );
+                setLoading(prev => ({ ...prev, payment: false }));
+                return;
+            }
+
             const idToUse = user.farmerId || user._id;
             
-            // Create Razorpay order
+            // Step 1: Create Razorpay order on backend
             const orderResponse = await axios.post(`https://kisan.etpl.ai/api/payment/create-order`, {
                 userId: idToUse,
                 amount: cart.total,
                 currency: 'INR'
             });
 
-            if (orderResponse.data.success) {
-                const { orderId, amount, currency, key } = orderResponse.data.data;
-
-                // For Expo/React Native, you would use Razorpay's React Native SDK
-                // This is a simulated implementation
-                Alert.alert(
-                    'Payment Required',
-                    `Amount: ₹${(amount / 100).toFixed(2)}\n\nRazorpay payment gateway would open here.`,
-                    [
-                        {
-                            text: 'Simulate Payment',
-                            onPress: async () => {
-                                try {
-                                    const verifyResponse = await axios.post(`https://kisan.etpl.ai/api/payment/verify`, {
-                                        razorpay_order_id: orderId,
-                                        razorpay_payment_id: 'simulated_payment_id_' + Date.now(),
-                                        razorpay_signature: 'simulated_signature',
-                                        shippingAddress: shippingAddress,
-                                        paymentMethod: paymentMethod,
-                                        cartItems: cart.items,
-                                        userId: idToUse
-                                    });
-
-                                    if (verifyResponse.data.success) {
-                                        showNotification('success', 'Payment successful! Order placed.');
-                                        setTimeout(() => {
-                                            router.push('/farmerscreen/cropcareorders');
-                                        }, 2000);
-                                    } else {
-                                        showNotification('error', verifyResponse.data.message || 'Payment verification failed');
-                                    }
-                                } catch (error: any) {
-                                    console.error('Payment verification error:', error);
-                                    showNotification('error', error.response?.data?.message || 'Payment verification error');
-                                }
-                            }
-                        },
-                        { text: 'Cancel', style: 'cancel' }
-                    ]
-                );
-            } else {
+            if (!orderResponse.data.success) {
                 showNotification('error', orderResponse.data.message || 'Payment initialization failed');
+                setLoading(prev => ({ ...prev, payment: false }));
+                return;
             }
+
+            const { orderId, amount, currency, key } = orderResponse.data.data;
+
+            // Step 2: Prepare Razorpay options
+            const options = {
+                description: 'Crop Care Seeds & Products',
+                image: 'https://kisan.etpl.ai/logo.png',
+                currency: currency,
+                key: key,
+                amount: amount.toString(), // ✅ Ensure it's a string
+                order_id: orderId,
+                name: '🌾 Kisan Crop Care',
+                prefill: {
+                    email: '',
+                    contact: shippingAddress.mobileNo,
+                    name: shippingAddress.name
+                },
+                theme: {
+                    color: '#2c5f2d'
+                }
+            };
+
+            console.log('Opening Razorpay with options:', options);
+
+            // Step 3: Open Razorpay Checkout
+            RazorpayCheckout.open(options)
+                .then(async (data: any) => {
+                    // ✅ Payment Success
+                    console.log('✅ Payment Success:', data);
+                    
+                    try {
+                        const verifyResponse = await axios.post(`https://kisan.etpl.ai/api/payment/verify`, {
+                            razorpay_order_id: data.razorpay_order_id,
+                            razorpay_payment_id: data.razorpay_payment_id,
+                            razorpay_signature: data.razorpay_signature,
+                            shippingAddress: shippingAddress,
+                            paymentMethod: 'razorpay',
+                            cartItems: cart.items,
+                            userId: idToUse,
+                            subtotal: cart.subtotal,
+                            gst: cart.gst,
+                            shipping: cart.shipping,
+                            total: cart.total
+                        });
+
+                        if (verifyResponse.data.success) {
+                            showNotification('success', 'Payment successful! Order placed.');
+                            setTimeout(() => {
+                                router.push('/(farmerscreen)/cropcareorders');
+                            }, 2000);
+                        } else {
+                            showNotification('error', verifyResponse.data.message || 'Payment verification failed');
+                        }
+                    } catch (error: any) {
+                        console.error('Payment verification error:', error);
+                        showNotification('error', error.response?.data?.message || 'Payment verification failed');
+                    } finally {
+                        setLoading(prev => ({ ...prev, payment: false }));
+                    }
+                })
+                .catch((error: any) => {
+                    // ❌ Payment Failed/Cancelled
+                    console.log('❌ Payment Error:', error);
+                    
+                    setLoading(prev => ({ ...prev, payment: false }));
+                    
+                    if (error.code === 0) {
+                        showNotification('error', 'Payment cancelled by user');
+                    } else if (error.code === 2) {
+                        showNotification('error', 'Network error. Please check your connection.');
+                    } else {
+                        showNotification('error', error.description || 'Payment failed. Please try again.');
+                    }
+                });
+
         } catch (error: any) {
-            console.error('Error creating order:', error);
+            console.error('Error creating Razorpay order:', error);
             showNotification('error', error.response?.data?.message || 'Payment initialization failed');
-        } finally {
             setLoading(prev => ({ ...prev, payment: false }));
         }
     };
@@ -1429,7 +1291,7 @@ const CropcareCheckout: React.FC = () => {
         if (router.canGoBack()) {
             router.back();
         } else {
-            router.push("/farmerscreen/cropcarecart");
+            router.push("/(farmerscreen)/cropcarecart");
         }
     };
 
@@ -1475,15 +1337,15 @@ const CropcareCheckout: React.FC = () => {
 
     if (loading.auth) {
         return (
-            <View style={styles.loadingContainer}>
+            <View className="flex-1 justify-center items-center bg-[#f8f9fa]">
                 <ActivityIndicator size="large" color="#2c5f2d" />
-                <Text style={styles.loadingText}>Checking authentication...</Text>
+                <Text className="mt-3 text-base text-[#666] font-medium">Checking authentication...</Text>
             </View>
         );
     }
 
     return (
-        <SafeAreaView style={styles.container} edges={['top']}>
+        <SafeAreaView className="flex-1 bg-white" edges={['top']}>
             {/* Notification */}
             {notification && (
                 <Modal
@@ -1492,128 +1354,98 @@ const CropcareCheckout: React.FC = () => {
                     animationType="slide"
                     onRequestClose={() => setNotification(null)}
                 >
-                    <View style={styles.notificationContainer}>
+                    <View className="absolute top-5 right-5 z-[1001]">
                         <View style={[
-                            styles.notification,
-                            { backgroundColor: notification.type === 'success' ? '#28a745' : '#ff4d4f' }
-                        ]}>
-                            <Text style={styles.notificationText}>{notification.message}</Text>
+                            { elevation: 5 },
+                            notification.type === 'success' ? { backgroundColor: '#28a745' } : { backgroundColor: '#ff4d4f' }
+                        ]} className="p-[15px] rounded-lg shadow-sm">
+                            <Text className="text-white font-medium">{notification.message}</Text>
                         </View>
                     </View>
                 </Modal>
             )}
 
             {/* Header */}
-            <View style={styles.header}>
-                <View style={styles.headerContent}>
-                    <View style={styles.headerRow}>
-                        <Text style={styles.headerTitle}>🌾 Crop Care Checkout</Text>
-                        {user ? (
-                            <View style={styles.userInfo}>
-                                <Text style={styles.userName}>👤 {user.personalInfo.name}</Text>
-                                <View style={styles.userRoleContainer}>
-                                    <View style={styles.userRoleBadge}>
-                                        <Text style={styles.userRoleText}>{user.role}</Text>
-                                    </View>
-                                    <TouchableOpacity onPress={handleLogout} style={styles.logoutButtonSmall}>
-                                        <LogOut size={12} color="white" />
-                                        <Text style={styles.logoutTextSmall}>Logout</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            </View>
-                        ) : (
-                            <TouchableOpacity 
-                                style={styles.loginPromptHeader}
-                                onPress={() => setShowLoginModal(true)}
-                            >
-                                <User size={16} color="white" />
-                                <Text style={styles.loginTextHeader}>Tap to Login</Text>
-                            </TouchableOpacity>
-                        )}
+            <View className="bg-white py-5 shadow-sm elevation-3">
+                <View className="px-5">
+                    <View className="flex-row justify-between items-center">
+                        <Text className="text-2xl font-medium text-black">Crop Care Checkout</Text>
+                      
                     </View>
                 </View>
             </View>
 
-            <ScrollView style={styles.scrollView}>
-                <View style={styles.main}>
-                    {/* Show Login Prompt when not authenticated */}
+            <ScrollView className="flex-1">
+                <View className="p-5">
                     {!user ? (
-                        <View style={styles.loginPromptContainer}>
-                            <View style={styles.loginPromptIconContainer}>
-                                <Text style={styles.loginPromptIcon}>🔒</Text>
+                        <View className="items-center justify-center py-[60px] px-5 mt-10">
+                            <View className="w-[120px] h-[120px] rounded-[60px] bg-[#2c5f2d]/10 justify-center items-center mb-6">
+                                <Text className="text-[60px] text-[#2c5f2d]">🔒</Text>
                             </View>
-                            <Text style={styles.loginPromptTitle}>Login Required</Text>
-                            <Text style={styles.loginPromptDescription}>
+                            <Text className="text-[22px] font-medium text-[#333] mb-3 text-center">Login Required</Text>
+                            <Text className="text-base text-[#666] text-center mb-8 leading-[22px]">
                                 Please login to proceed with checkout
                             </Text>
                             <TouchableOpacity
-                                style={styles.loginButton}
+                                className="bg-[#2c5f2d] px-8 py-3.5 rounded-lg"
                                 onPress={() => setShowLoginModal(true)}
                             >
-                                <Text style={styles.loginButtonText}>Login Now</Text>
+                                <Text className="text-white text-base font-medium">Login Now</Text>
                             </TouchableOpacity>
                         </View>
                     ) : (
                         <>
-                            {/* Back to Cart */}
                             <TouchableOpacity
-                                style={styles.backButton}
-                                onPress={() => router.push("/farmerscreen/cropcarecart")}
+                                className="flex-row items-center gap-2 mb-5"
+                                onPress={() => router.push("/(farmerscreen)/cropcarecart")}
                             >
                                 <ArrowLeft size={20} color="#2c5f2d" />
-                                <Text style={styles.backButtonText}>Back to Cart</Text>
+                                <Text className="text-[#2c5f2d] font-medium text-base">Back to Cart</Text>
                             </TouchableOpacity>
 
-                            <Text style={styles.title}>Checkout</Text>
-
                             {loading.cart ? (
-                                <View style={styles.cartLoadingContainer}>
+                                <View className="items-center justify-center py-[60px] px-5">
                                     <ActivityIndicator size="large" color="#2c5f2d" />
-                                    <Text style={styles.cartLoadingText}>Loading checkout...</Text>
+                                    <Text className="mt-[15px] text-base text-[#666]">Loading checkout...</Text>
                                 </View>
                             ) : (
-                                <View style={styles.content}>
-                                    {/* Left Section - Shipping & Payment */}
-                                    <View style={styles.leftSection}>
-                                        {/* Shipping Address */}
-                                        <View style={styles.section}>
-                                            <View style={styles.sectionTitle}>
+                                <View className="gap-[30px]">
+                                    {/* Shipping Address Section */}
+                                    <View className="bg-white rounded-xl p-5 shadow-sm elevation-2">
+                                        <View className="mb-[30px]">
+                                            <View className="flex-row items-center gap-2.5 mb-5 pb-[15px] border-b-2 border-[#2c5f2d]">
                                                 <MapPin size={20} color="#333" />
-                                                <Text style={styles.sectionTitleText}>Shipping Address</Text>
+                                                <Text className="text-xl font-medium text-[#333]">Shipping Address</Text>
                                             </View>
 
-                                            <View style={styles.addressToggle}>
-                                                <Text style={styles.toggleLabel}>Use my default address</Text>
+                                            <View className="flex-row items-center gap-2.5 mb-5">
+                                                <Text className="text-sm text-[#666]">Use my default address</Text>
                                                 <TouchableOpacity
-                                                    style={[
-                                                        styles.toggleSwitch,
-                                                        useDefaultAddress && styles.toggleSwitchActive
-                                                    ]}
+                                                    className={`w-[50px] h-6 rounded-3xl p-1 ${useDefaultAddress ? 'bg-[#2c5f2d]' : 'bg-[#ccc]'}`}
                                                     onPress={() => setUseDefaultAddress(!useDefaultAddress)}
                                                 >
-                                                    <View style={[
-                                                        styles.toggleKnob,
-                                                        useDefaultAddress && styles.toggleKnobActive
-                                                    ]} />
+                                                    <View
+                                                        className={`w-4 h-4 bg-white rounded-full ${useDefaultAddress ? 'translate-x-[26px]' : ''}`}
+                                                    />
                                                 </TouchableOpacity>
                                             </View>
 
                                             {!useDefaultAddress ? (
                                                 <View>
-                                                    <View style={styles.formGroup}>
-                                                        <Text style={styles.label}>Full Name *</Text>
+                                                    <View className="mb-5">
+                                                        <Text className="text-sm font-medium text-[#333] mb-2">Full Name *</Text>
                                                         <TextInput
-                                                            style={styles.input}
+                                                            className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                             value={shippingAddress.name}
                                                             onChangeText={(value) => handleAddressChange('name', value)}
                                                             placeholder="Enter full name"
                                                         />
                                                     </View>
 
-                                                    <View style={styles.formGroup}>
-                                                        <Text style={styles.label}>Mobile Number *</Text>
+                                                    <View className="mb-5">
+                                                        <Text className="text-sm font-medium text-[#333] mb-2">Mobile Number *</Text>
                                                         <TextInput
-                                                            style={styles.input}
+                                                            className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                             value={shippingAddress.mobileNo}
                                                             onChangeText={(value) => handleAddressChange('mobileNo', value)}
                                                             placeholder="Enter 10-digit mobile number"
@@ -1622,32 +1454,33 @@ const CropcareCheckout: React.FC = () => {
                                                         />
                                                     </View>
 
-                                                    <View style={styles.formGroup}>
-                                                        <Text style={styles.label}>Address *</Text>
+                                                    <View className="mb-5">
+                                                        <Text className="text-sm font-medium text-[#333] mb-2">Address *</Text>
                                                         <TextInput
-                                                            style={[styles.input, styles.textarea]}
+                                                            className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white min-h-[100px] align-top"
                                                             value={shippingAddress.address}
                                                             onChangeText={(value) => handleAddressChange('address', value)}
                                                             placeholder="Enter complete address"
                                                             multiline
                                                             numberOfLines={3}
+                                                            style={{ textAlignVertical: 'top' }}
                                                         />
                                                     </View>
 
-                                                    <View style={styles.formGroup}>
-                                                        <Text style={styles.label}>Village / Grama Panchayath</Text>
+                                                    <View className="mb-5">
+                                                        <Text className="text-sm font-medium text-[#333] mb-2">Village / Grama Panchayath</Text>
                                                         <TextInput
-                                                            style={styles.input}
+                                                            className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                             value={shippingAddress.villageGramaPanchayat}
                                                             onChangeText={(value) => handleAddressChange('villageGramaPanchayat', value)}
                                                             placeholder="Enter village or grama panchayath"
                                                         />
                                                     </View>
 
-                                                    <View style={styles.formGroup}>
-                                                        <Text style={styles.label}>Pincode *</Text>
+                                                    <View className="mb-5">
+                                                        <Text className="text-sm font-medium text-[#333] mb-2">Pincode *</Text>
                                                         <TextInput
-                                                            style={styles.input}
+                                                            className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                             value={shippingAddress.pincode}
                                                             onChangeText={handlePincodeChange}
                                                             placeholder="Enter 6-digit pincode"
@@ -1656,21 +1489,21 @@ const CropcareCheckout: React.FC = () => {
                                                         />
                                                     </View>
 
-                                                    <View style={styles.row}>
-                                                        <View style={[styles.formGroup, styles.halfWidth]}>
-                                                            <Text style={styles.label}>State *</Text>
+                                                    <View className="flex-row gap-[15px]">
+                                                        <View className="flex-1 mb-5">
+                                                            <Text className="text-sm font-medium text-[#333] mb-2">State *</Text>
                                                             <TextInput
-                                                                style={styles.input}
+                                                                className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                                 value={shippingAddress.state}
                                                                 onChangeText={(value) => handleAddressChange('state', value)}
                                                                 placeholder="Enter state"
                                                             />
                                                         </View>
 
-                                                        <View style={[styles.formGroup, styles.halfWidth]}>
-                                                            <Text style={styles.label}>District *</Text>
+                                                        <View className="flex-1 mb-5">
+                                                            <Text className="text-sm font-medium text-[#333] mb-2">District *</Text>
                                                             <TextInput
-                                                                style={styles.input}
+                                                                className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                                 value={shippingAddress.district}
                                                                 onChangeText={(value) => handleAddressChange('district', value)}
                                                                 placeholder="Enter district"
@@ -1678,21 +1511,21 @@ const CropcareCheckout: React.FC = () => {
                                                         </View>
                                                     </View>
 
-                                                    <View style={styles.row}>
-                                                        <View style={[styles.formGroup, styles.halfWidth]}>
-                                                            <Text style={styles.label}>Taluk</Text>
+                                                    <View className="flex-row gap-[15px]">
+                                                        <View className="flex-1 mb-5">
+                                                            <Text className="text-sm font-medium text-[#333] mb-2">Taluk</Text>
                                                             <TextInput
-                                                                style={styles.input}
+                                                                className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                                 value={shippingAddress.taluk}
                                                                 onChangeText={(value) => handleAddressChange('taluk', value)}
                                                                 placeholder="Enter taluk"
                                                             />
                                                         </View>
 
-                                                        <View style={[styles.formGroup, styles.halfWidth]}>
-                                                            <Text style={styles.label}>Post</Text>
+                                                        <View className="flex-1 mb-5">
+                                                            <Text className="text-sm font-medium text-[#333] mb-2">Post</Text>
                                                             <TextInput
-                                                                style={styles.input}
+                                                                className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                                 value={shippingAddress.post}
                                                                 onChangeText={(value) => handleAddressChange('post', value)}
                                                                 placeholder="Enter post office"
@@ -1700,10 +1533,10 @@ const CropcareCheckout: React.FC = () => {
                                                         </View>
                                                     </View>
 
-                                                    <View style={styles.formGroup}>
-                                                        <Text style={styles.label}>Landmark (Optional)</Text>
+                                                    <View className="mb-5">
+                                                        <Text className="text-sm font-medium text-[#333] mb-2">Landmark (Optional)</Text>
                                                         <TextInput
-                                                            style={styles.input}
+                                                            className="w-full p-3 border border-[#ddd] rounded-lg text-sm text-[#333] bg-white"
                                                             value={shippingAddress.landmark}
                                                             onChangeText={(value) => handleAddressChange('landmark', value)}
                                                             placeholder="Near temple, school, etc."
@@ -1711,19 +1544,19 @@ const CropcareCheckout: React.FC = () => {
                                                     </View>
                                                 </View>
                                             ) : user?.personalInfo && (
-                                                <View style={styles.defaultAddress}>
-                                                    <View style={styles.addressContent}>
+                                                <View className="p-5 bg-white rounded-lg border border-[#2c5f2d]">
+                                                    <View className="flex-row items-start gap-[15px]">
                                                         <Home size={20} color="#2c5f2d" />
-                                                        <View style={styles.addressDetails}>
-                                                            <Text style={styles.addressName}>{user.personalInfo.name}</Text>
-                                                            <Text style={styles.addressText}>{user.personalInfo.address}</Text>
-                                                            <Text style={styles.addressText}>{user.personalInfo.villageGramaPanchayat}</Text>
-                                                            <Text style={styles.addressText}>
+                                                        <View className="flex-1">
+                                                            <Text className="text-base font-medium text-[#333] mb-2.5">{user.personalInfo.name}</Text>
+                                                            <Text className="text-sm text-[#666] mb-1">{user.personalInfo.address}</Text>
+                                                            <Text className="text-sm text-[#666] mb-1">{user.personalInfo.villageGramaPanchayat}</Text>
+                                                            <Text className="text-sm text-[#666] mb-1">
                                                                 {user.personalInfo.district}, {user.personalInfo.state} - {user.personalInfo.pincode}
                                                             </Text>
-                                                            <View style={styles.phoneRow}>
+                                                            <View className="flex-row items-center gap-[5px]">
                                                                 <Phone size={14} color="#666" />
-                                                                <Text style={styles.addressText}>{user.personalInfo.mobileNo}</Text>
+                                                                <Text className="text-sm text-[#666] mb-1">{user.personalInfo.mobileNo}</Text>
                                                             </View>
                                                         </View>
                                                     </View>
@@ -1732,23 +1565,22 @@ const CropcareCheckout: React.FC = () => {
                                         </View>
 
                                         {/* Payment Method */}
-                                        <View style={[styles.section, styles.paymentMethods]}>
-                                            <View style={styles.sectionTitle}>
+                                        <View className="mt-[30px] mb-7">
+                                            <View className="flex-row items-center gap-2.5 mb-5 pb-[15px] border-b-2 border-[#2c5f2d]">
                                                 <CreditCard size={20} color="#333" />
-                                                <Text style={styles.sectionTitleText}>Payment Method</Text>
+                                                <Text className="text-xl font-medium text-[#333]">Payment Method</Text>
                                             </View>
 
                                             <TouchableOpacity
-                                                style={[
-                                                    styles.paymentOption,
-                                                    paymentMethod === 'razorpay' && styles.paymentOptionSelected
-                                                ]}
+                                                className={`flex-row items-center gap-[15px] p-[15px] border rounded-lg mb-[15px] ${
+                                                    paymentMethod === 'razorpay' ? 'border-[#2c5f2d] bg-white' : 'border-[#ddd]'
+                                                }`}
                                                 onPress={() => setPaymentMethod('razorpay')}
                                             >
-                                                <Text style={styles.paymentIcon}>💳</Text>
-                                                <View style={styles.paymentInfo}>
-                                                    <Text style={styles.paymentTitle}>Credit/Debit Card, UPI, NetBanking</Text>
-                                                    <Text style={styles.paymentDescription}>
+                                                <Text className="text-2xl">💳</Text>
+                                                <View className="flex-1">
+                                                    <Text className="text-base font-medium text-[#333] mb-[5px]">Credit/Debit Card, UPI, NetBanking</Text>
+                                                    <Text className="text-sm text-[#666]">
                                                         Pay securely with Razorpay. All major cards and UPI accepted.
                                                     </Text>
                                                 </View>
@@ -1758,16 +1590,15 @@ const CropcareCheckout: React.FC = () => {
                                             </TouchableOpacity>
 
                                             <TouchableOpacity
-                                                style={[
-                                                    styles.paymentOption,
-                                                    paymentMethod === 'cod' && styles.paymentOptionSelected
-                                                ]}
+                                                className={`flex-row items-center gap-[15px] p-[15px] border rounded-lg mb-[15px] ${
+                                                    paymentMethod === 'cod' ? 'border-[#2c5f2d] bg-white' : 'border-[#ddd]'
+                                                }`}
                                                 onPress={() => setPaymentMethod('cod')}
                                             >
-                                                <Text style={styles.paymentIcon}>💰</Text>
-                                                <View style={styles.paymentInfo}>
-                                                    <Text style={styles.paymentTitle}>Cash on Delivery</Text>
-                                                    <Text style={styles.paymentDescription}>
+                                                <Text className="text-2xl">💰</Text>
+                                                <View className="flex-1">
+                                                    <Text className="text-base font-medium text-[#333] mb-[5px]">Cash on Delivery</Text>
+                                                    <Text className="text-sm text-[#666]">
                                                         Pay when you receive your order. Available for all locations.
                                                     </Text>
                                                 </View>
@@ -1778,66 +1609,62 @@ const CropcareCheckout: React.FC = () => {
                                         </View>
                                     </View>
 
-                                    {/* Right Section - Order Summary */}
-                                    <View style={styles.rightSection}>
-                                        <View style={styles.sectionTitle}>
-                                            <Text style={styles.sectionTitleText}>Order Summary</Text>
+                                    {/* Order Summary */}
+                                    <View className="bg-white rounded-xl p-5 shadow-sm elevation-2">
+                                        <View className="flex-row items-center gap-2.5 mb-5 pb-[15px] border-b-2 border-[#2c5f2d]">
+                                            <Text className="text-xl font-medium text-[#333]">Order Summary</Text>
                                         </View>
 
-                                        {/* Order Items */}
-                                        <View style={styles.orderItems}>
+                                        <View className="mb-5">
                                             {cart.items.map((item) => (
-                                                <View key={item._id} style={styles.orderItem}>
-                                                    <View style={styles.orderItemName}>
-                                                        <Text style={styles.orderItemMainText}>{item.seedName}</Text>
-                                                        <Text style={styles.orderItemSubText}>{item.productName}</Text>
+                                                <View key={item._id} className="flex-row justify-between items-center py-[15px] border-b border-[#eaeaea]">
+                                                    <View className="flex-1">
+                                                        <Text className="text-sm text-[#333]">{item.seedName}</Text>
+                                                        <Text className="text-xs text-[#999] mt-0.5">{item.productName}</Text>
                                                     </View>
-                                                    <Text style={styles.orderItemQuantity}>
+                                                    <Text className="text-sm text-[#666] mr-[15px]">
                                                         x{item.quantity}
                                                     </Text>
-                                                    <Text style={styles.orderItemPrice}>
+                                                    <Text className="text-sm font-medium text-[#333] min-w-[80px] text-right">
                                                         ₹{(item.seedPrice * item.quantity).toFixed(2)}
                                                     </Text>
                                                 </View>
                                             ))}
                                         </View>
 
-                                        {/* Order Summary */}
-                                        <View style={styles.summaryRow}>
-                                            <Text style={styles.summaryLabel}>Subtotal</Text>
-                                            <Text style={styles.summaryValue}>₹{cart.subtotal.toFixed(2)}</Text>
+                                        <View className="flex-row justify-between mb-[15px]">
+                                            <Text className="text-base text-[#666]">Subtotal</Text>
+                                            <Text className="text-base text-[#666]">₹{cart.subtotal.toFixed(2)}</Text>
                                         </View>
 
-                                        <View style={styles.summaryRow}>
-                                            <Text style={styles.summaryLabel}>GST (18%)</Text>
-                                            <Text style={styles.summaryValue}>₹{cart.gst.toFixed(2)}</Text>
+                                        <View className="flex-row justify-between mb-[15px]">
+                                            <Text className="text-base text-[#666]">GST (18%)</Text>
+                                            <Text className="text-base text-[#666]">₹{cart.gst.toFixed(2)}</Text>
                                         </View>
 
-                                        <View style={styles.summaryRow}>
-                                            <Text style={styles.summaryLabel}>Shipping</Text>
-                                            <Text style={styles.summaryValue}>
+                                        <View className="flex-row justify-between mb-[15px]">
+                                            <Text className="text-base text-[#666]">Shipping</Text>
+                                            <Text className="text-base text-[#666]">
                                                 {cart.shipping === 0 ? 'FREE' : `₹${cart.shipping.toFixed(2)}`}
                                             </Text>
                                         </View>
 
-                                        <View style={styles.summaryTotal}>
-                                            <Text style={styles.summaryTotalLabel}>Total</Text>
-                                            <Text style={styles.summaryTotalValue}>₹{cart.total.toFixed(2)}</Text>
+                                        <View className="flex-row justify-between mt-5 pt-5 border-t-2 border-[#eaeaea]">
+                                            <Text className="text-lg font-medium text-[#333]">Total</Text>
+                                            <Text className="text-lg font-medium text-[#333]">₹{cart.total.toFixed(2)}</Text>
                                         </View>
 
-                                        {/* Place Order Button */}
                                         <TouchableOpacity
-                                            style={[
-                                                styles.placeOrderButton,
-                                                (loading.payment || cart.items.length === 0) && styles.placeOrderButtonDisabled
-                                            ]}
-                                            onPress={() => router.push('/farmerscreen/cropcareorders')}
+                                            className={`w-full p-4 rounded-lg items-center justify-center mt-[25px] ${
+                                                loading.payment || cart.items.length === 0 ? 'bg-[#ccc]' : 'bg-[#2c5f2d]'
+                                            }`}
+                                            onPress={initiatePayment}
                                             disabled={loading.payment || cart.items.length === 0}
                                         >
                                             {loading.payment ? (
                                                 <ActivityIndicator color="white" />
                                             ) : (
-                                                <Text style={styles.placeOrderButtonText}>
+                                                <Text className="text-lg font-medium text-white">
                                                     {paymentMethod === 'cod'
                                                         ? 'Place Order (Cash on Delivery)'
                                                         : 'Pay & Place Order'}
@@ -1845,9 +1672,8 @@ const CropcareCheckout: React.FC = () => {
                                             )}
                                         </TouchableOpacity>
 
-                                        {/* Security Note */}
-                                        <View style={styles.securityNote}>
-                                            <Text style={styles.securityNoteText}>🔒 Your payment is secure and encrypted</Text>
+                                        <View className="mt-[15px] p-2.5 bg-[#fff9f0] rounded-md">
+                                            <Text className="text-xs text-[#666] text-center">🔒 Your payment is secure and encrypted</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -1864,540 +1690,35 @@ const CropcareCheckout: React.FC = () => {
                 animationType="slide"
                 onRequestClose={() => setShowLoginModal(false)}
             >
-                <View style={styles.loginModalOverlay}>
-                    <View style={styles.loginModalContent}>
-                        <Text style={styles.loginModalIcon}>🔒</Text>
-                        <Text style={styles.loginModalTitle}>Login Required</Text>
-                        <Text style={styles.loginModalText}>
+                <View className="flex-1 bg-black/50 justify-center items-center">
+                    <View className="bg-white rounded-2xl p-6 w-[80%] items-center">
+                        <Text className="text-5xl mb-4 text-[#2c5f2d]">🔒</Text>
+                        <Text className="text-xl font-medium text-[#333] mb-2 text-center">Login Required</Text>
+                        <Text className="text-base text-[#666] text-center mb-6 leading-[22px]">
                             You need to login to proceed with checkout
                         </Text>
-                        <View style={styles.loginModalButtons}>
+                        <View className="flex-row justify-between w-full gap-3">
                             <TouchableOpacity
-                                style={[styles.loginModalButton, styles.cancelButton]}
+                                className="flex-1 py-3 rounded-lg items-center bg-[#e0e0e0]"
                                 onPress={() => {
                                     setShowLoginModal(false);
                                     router.back();
                                 }}
                             >
-                                <Text style={styles.cancelButtonText}>Cancel</Text>
+                                <Text className="text-[#333] font-medium text-base">Cancel</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                                style={[styles.loginModalButton, styles.loginButton]}
+                                className="flex-1 py-3 rounded-lg items-center bg-[#2c5f2d]"
                                 onPress={handleLogin}
                             >
-                                <Text style={styles.loginButtonText}>Login</Text>
+                                <Text className="text-white font-medium text-base">Login</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
                 </View>
             </Modal>
-          
         </SafeAreaView>
-
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f8f9fa',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#f8f9fa',
-    },
-    loadingText: {
-        marginTop: 12,
-        fontSize: 16,
-        color: '#666',
-        fontWeight: '500',
-    },
-    scrollView: {
-        flex: 1,
-    },
-    header: {
-        backgroundColor: '#2c5f2d',
-        paddingVertical: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 10,
-        elevation: 3,
-    },
-    headerContent: {
-        paddingHorizontal: 20,
-    },
-    headerRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    headerTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    userInfo: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 15,
-    },
-    userName: {
-        color: 'white',
-        fontSize: 16,
-    },
-    userRoleContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-    },
-    userRoleBadge: {
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        paddingHorizontal: 12,
-        paddingVertical: 4,
-        borderRadius: 12,
-    },
-    userRoleText: {
-        color: 'white',
-        fontSize: 14,
-    },
-    logoutButtonSmall: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-        gap: 4,
-    },
-    logoutTextSmall: {
-        fontSize: 10,
-        color: 'white',
-        fontWeight: '600',
-    },
-    loginPromptHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 8,
-        gap: 6,
-    },
-    loginTextHeader: {
-        color: 'white',
-        fontSize: 14,
-        fontWeight: '600',
-    },
-    main: {
-        padding: 20,
-    },
-    loginPromptContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 60,
-        paddingHorizontal: 20,
-        marginTop: 40,
-    },
-    loginPromptIconContainer: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        backgroundColor: 'rgba(44, 95, 45, 0.1)',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginBottom: 24,
-    },
-    loginPromptIcon: {
-        fontSize: 60,
-        color: '#2c5f2d',
-    },
-    loginPromptTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 12,
-        textAlign: 'center',
-    },
-    loginPromptDescription: {
-        fontSize: 16,
-        color: '#666',
-        textAlign: 'center',
-        marginBottom: 32,
-        lineHeight: 22,
-    },
-    loginButton: {
-        backgroundColor: '#2c5f2d',
-        paddingHorizontal: 32,
-        paddingVertical: 14,
-        borderRadius: 8,
-    },
-    loginButtonText: {
-        color: 'white',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    backButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        marginBottom: 20,
-    },
-    backButtonText: {
-        color: '#2c5f2d',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 30,
-    },
-    cartLoadingContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 60,
-        paddingHorizontal: 20,
-    },
-    cartLoadingText: {
-        marginTop: 15,
-        fontSize: 16,
-        color: '#666',
-    },
-    content: {
-        gap: 30,
-    },
-    leftSection: {
-        backgroundColor: 'white',
-        borderRadius: 12,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
-        elevation: 2,
-    },
-    rightSection: {
-        backgroundColor: 'white',
-        borderRadius: 12,
-        padding: 20,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 12,
-        elevation: 2,
-    },
-    section: {
-        marginBottom: 30,
-    },
-    sectionTitle: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 20,
-        paddingBottom: 15,
-        borderBottomWidth: 2,
-        borderBottomColor: '#2c5f2d',
-    },
-    sectionTitleText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    addressToggle: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        marginBottom: 20,
-    },
-    toggleLabel: {
-        fontSize: 14,
-        color: '#666',
-    },
-    toggleSwitch: {
-        width: 50,
-        height: 24,
-        backgroundColor: '#ccc',
-        borderRadius: 24,
-        padding: 4,
-    },
-    toggleSwitchActive: {
-        backgroundColor: '#2c5f2d',
-    },
-    toggleKnob: {
-        width: 16,
-        height: 16,
-        backgroundColor: 'white',
-        borderRadius: 8,
-    },
-    toggleKnobActive: {
-        transform: [{ translateX: 26 }],
-    },
-    formGroup: {
-        marginBottom: 20,
-    },
-    label: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: '#333',
-        marginBottom: 8,
-    },
-    input: {
-        width: '100%',
-        padding: 12,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        fontSize: 14,
-        color: '#333',
-        backgroundColor: '#fff',
-    },
-    textarea: {
-        minHeight: 100,
-        textAlignVertical: 'top',
-    },
-    row: {
-        flexDirection: 'row',
-        gap: 15,
-    },
-    halfWidth: {
-        flex: 1,
-    },
-    defaultAddress: {
-        padding: 20,
-        backgroundColor: '#f0fff4',
-        borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#2c5f2d',
-    },
-    addressContent: {
-        flexDirection: 'row',
-        alignItems: 'flex-start',
-        gap: 15,
-    },
-    addressDetails: {
-        flex: 1,
-    },
-    addressName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 10,
-    },
-    addressText: {
-        fontSize: 14,
-        color: '#666',
-        marginBottom: 5,
-    },
-    phoneRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-    },
-    paymentMethods: {
-        marginTop: 30,
-    },
-    paymentOption: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 15,
-        padding: 15,
-        borderWidth: 2,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        marginBottom: 15,
-    },
-    paymentOptionSelected: {
-        borderColor: '#2c5f2d',
-        backgroundColor: '#f0fff4',
-    },
-    paymentIcon: {
-        fontSize: 24,
-    },
-    paymentInfo: {
-        flex: 1,
-    },
-    paymentTitle: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 5,
-    },
-    paymentDescription: {
-        fontSize: 14,
-        color: '#666',
-    },
-    orderItems: {
-        marginBottom: 20,
-    },
-    orderItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingVertical: 15,
-        borderBottomWidth: 1,
-        borderBottomColor: '#eaeaea',
-    },
-    orderItemName: {
-        flex: 1,
-    },
-    orderItemMainText: {
-        fontSize: 14,
-        color: '#333',
-    },
-    orderItemSubText: {
-        fontSize: 12,
-        color: '#999',
-        marginTop: 2,
-    },
-    orderItemQuantity: {
-        fontSize: 14,
-        color: '#666',
-        marginRight: 15,
-    },
-    orderItemPrice: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-        minWidth: 80,
-        textAlign: 'right',
-    },
-    summaryRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 15,
-    },
-    summaryLabel: {
-        fontSize: 16,
-        color: '#666',
-    },
-    summaryValue: {
-        fontSize: 16,
-        color: '#666',
-    },
-    summaryTotal: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
-        paddingTop: 20,
-        borderTopWidth: 2,
-        borderTopColor: '#eaeaea',
-    },
-    summaryTotalLabel: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    summaryTotalValue: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    placeOrderButton: {
-        width: '100%',
-        padding: 16,
-        backgroundColor: '#2c5f2d',
-        borderRadius: 8,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 25,
-    },
-    placeOrderButtonDisabled: {
-        backgroundColor: '#ccc',
-    },
-    placeOrderButtonText: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: 'white',
-    },
-    securityNote: {
-        marginTop: 15,
-        padding: 10,
-        backgroundColor: '#fff9f0',
-        borderRadius: 6,
-    },
-    securityNoteText: {
-        fontSize: 12,
-        color: '#666',
-        textAlign: 'center',
-    },
-    notificationContainer: {
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        zIndex: 1001,
-    },
-    notification: {
-        padding: 15,
-        borderRadius: 8,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 5,
-    },
-    notificationText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
-    loginModalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    loginModalContent: {
-        backgroundColor: 'white',
-        borderRadius: 16,
-        padding: 24,
-        width: '80%',
-        alignItems: 'center',
-    },
-    loginModalIcon: {
-        fontSize: 48,
-        marginBottom: 16,
-        color: '#2c5f2d',
-    },
-    loginModalTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
-        textAlign: 'center',
-    },
-    loginModalText: {
-        fontSize: 16,
-        color: '#666',
-        textAlign: 'center',
-        marginBottom: 24,
-        lineHeight: 22,
-    },
-    loginModalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        gap: 12,
-    },
-    loginModalButton: {
-        flex: 1,
-        paddingVertical: 12,
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    cancelButton: {
-        backgroundColor: '#e0e0e0',
-    },
-    cancelButtonText: {
-        color: '#333',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    loginButton: {
-        backgroundColor: '#2c5f2d',
-    },
-});
 
 export default CropcareCheckout;

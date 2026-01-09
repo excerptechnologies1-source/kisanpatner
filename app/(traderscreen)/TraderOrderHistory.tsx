@@ -2190,27 +2190,537 @@
 
 
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import { router } from "expo-router";
+// import AsyncStorage from '@react-native-async-storage/async-storage';
+// import axios from 'axios';
+// import { router } from "expo-router";
+// import {
+//   AlertCircle,
+//   ChevronLeft,
+//   ChevronRight
+// } from 'lucide-react-native';
+// import React, { useEffect, useState } from 'react';
+// import {
+//   ActivityIndicator,
+//   Alert,
+//   Modal,
+//   ScrollView,
+//   Text,
+//   TextInput,
+//   TouchableOpacity,
+//   View,
+// } from 'react-native';
+// import RazorpayCheckout from 'react-native-razorpay';
+// import { SafeAreaView } from "react-native-safe-area-context";
+
+// const RAZORPAY_KEY_ID = 'rzp_test_qUmhUFElBiSNIs';
+
+// interface PaymentRecord {
+//   _id: string;
+//   amount: number;
+//   paidDate: string;
+//   razorpayPaymentId?: string;
+// }
+
+// interface TraderToAdminPayment {
+//   totalAmount: number;
+//   paidAmount: number;
+//   remainingAmount: number;
+//   paymentStatus: 'pending' | 'partial' | 'paid';
+//   paymentHistory: PaymentRecord[];
+// }
+
+// interface ProductItem {
+//   _id: string;
+//   productId: string;
+//   farmerId: string;
+//   grade: string;
+//   quantity: number;
+//   pricePerUnit: number;
+//   deliveryDate?: string;
+//   totalAmount: number;
+// }
+
+// interface Order {
+//   _id: string;
+//   orderId: string;
+//   traderId: string;
+//   traderName: string;
+//   farmerId: string;
+//   farmerName?: string;
+//   farmerMobile?: string;
+//   productItems: ProductItem[];
+//   traderToAdminPayment: TraderToAdminPayment;
+//   orderStatus: string;
+//   transporterStatus: string;
+//   createdAt: string;
+//   updatedAt: string;
+// }
+
+// interface PaymentModalState {
+//   visible: boolean;
+//   orderId: string;
+//   maxAmount: number;
+//   amount: number;
+// }
+
+// const TraderOrderHistory: React.FC = () => {
+//   const [orders, setOrders] = useState<Order[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState('');
+//   const [processingPayment, setProcessingPayment] = useState<string | null>(null);
+
+//   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
+
+//   const [paymentModal, setPaymentModal] = useState<PaymentModalState>({
+//     visible: false,
+//     orderId: '',
+//     maxAmount: 0,
+//     amount: 0,
+//   });
+
+//   const [traderInfo, setTraderInfo] = useState({
+//     id: '',
+//     name: '',
+//     mobile: '',
+//     email: '',
+//   });
+
+//   const toggleExpand = (orderId: string) => {
+//     setExpandedOrders(prev =>
+//       prev.includes(orderId)
+//         ? prev.filter(id => id !== orderId)
+//         : [...prev, orderId]
+//     );
+//   };
+
+//   useEffect(() => {
+//     fetchTraderInfo();
+//   }, []);
+
+//   const fetchTraderInfo = async () => {
+//     try {
+//       const [id, name, mobile, email] = await Promise.all([
+//         AsyncStorage.getItem('traderId'),
+//         AsyncStorage.getItem('userName'),
+//         AsyncStorage.getItem('userMobile'),
+//         AsyncStorage.getItem('userEmail'),
+//       ]);
+
+//       if (!id) {
+//         setError('Trader ID not found. Please login again.');
+//         setLoading(false);
+//         return;
+//       }
+
+//       setTraderInfo({
+//         id,
+//         name: name || '',
+//         mobile: mobile || '',
+//         email: email || '',
+//       });
+
+//       fetchOrderHistory(id);
+//     } catch (err) {
+//       setError('Failed to load trader information');
+//       setLoading(false);
+//     }
+//   };
+
+//   const fetchOrderHistory = async (traderId: string) => {
+//     try {
+//       setLoading(true);
+//       const response = await axios.get(
+//         `https://kisan.etpl.ai/api/orders/history/trader/${traderId}`
+//       );
+
+//       if (response.data.success) {
+//         setOrders(response.data.data);
+//       }
+//       setError('');
+//     } catch (err: any) {
+//       setError(err.response?.data?.message || 'Failed to fetch order history');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const openPaymentModal = (order: Order) => {
+//     setPaymentModal({
+//       visible: true,
+//       orderId: order.orderId,
+//       maxAmount: order.traderToAdminPayment.remainingAmount,
+//       amount: order.traderToAdminPayment.remainingAmount,
+//     });
+//   };
+
+//   const closePaymentModal = () => {
+//     setPaymentModal({
+//       visible: false,
+//       orderId: '',
+//       maxAmount: 0,
+//       amount: 0,
+//     });
+//   };
+
+//   const handlePayment = async () => {
+//     const { orderId, amount, maxAmount } = paymentModal;
+//     const order = orders.find(o => o.orderId === orderId);
+
+//     if (!order) return Alert.alert('Error', 'Order not found');
+//     if (!amount || amount <= 0) return Alert.alert('Error', 'Enter valid amount');
+//     if (amount > maxAmount) return Alert.alert('Error', 'Amount exceeds remaining');
+
+//     try {
+//       setProcessingPayment(orderId);
+//       closePaymentModal();
+
+//       const orderResponse = await axios.post(
+//         'https://kisan.etpl.ai/api/orders/history/create-trader-payment',
+//         {
+//           orderId,
+//           amount,
+//           traderId: traderInfo.id,
+//         }
+//       );
+
+//       const { razorpayOrderId } = orderResponse.data;
+
+//       RazorpayCheckout.open({
+//         description: `Payment for Order #${orderId}`,
+//         currency: 'INR',
+//         key: RAZORPAY_KEY_ID,
+//         amount: Math.round(amount * 100),
+//         name: 'Kisan Platform',
+//         order_id: razorpayOrderId,
+//         prefill: traderInfo,
+//         theme: { color: '#059669' },
+//       })
+//         .then(async (data: any) => {
+//           await axios.post(
+//             'https://kisan.etpl.ai/api/orders/history/verify-trader-payment',
+//             {
+//               ...data,
+//               orderId,
+//               amount,
+//               traderId: traderInfo.id,
+//             }
+//           );
+
+//           Alert.alert(
+//             'Payment Successful!',
+//             `₹${amount} paid successfully`,
+//             [{ text: 'OK', onPress: () => fetchOrderHistory(traderInfo.id) }]
+//           );
+//         })
+//         .catch(() => Alert.alert('Payment Cancelled'));
+
+//     } catch (error: any) {
+//       Alert.alert('Payment Failed', 'Try again');
+//     } finally {
+//       setProcessingPayment(null);
+//     }
+//   };
+
+//   const getStatusBadgeStyle = (status: string) => {
+//     const map: any = {
+//       pending: 'bg-yellow-100 border-yellow-400 text-yellow-800',
+//       processing: 'bg-blue-100 border-blue-400 text-blue-800',
+//       in_transit: 'bg-purple-100 border-purple-400 text-purple-800',
+//       completed: 'bg-green-100 border-green-400 text-green-800',
+//       cancelled: 'bg-red-100 border-red-400 text-red-800',
+//       partial: 'bg-orange-100 border-orange-400 text-orange-800',
+//       paid: 'bg-green-100 border-green-400 text-green-800',
+//     };
+//     return map[status] || 'bg-gray-100 border-gray-400 text-gray-800';
+//   };
+
+//   const formatDate = (d: string) =>
+//     new Date(d).toLocaleString('en-IN', {
+//       year: 'numeric',
+//       month: 'short',
+//       day: 'numeric',
+//       hour: '2-digit',
+//       minute: '2-digit',
+//     });
+
+//   const formatCurrency = (a: number) =>
+//     new Intl.NumberFormat('en-IN', {
+//       style: 'currency',
+//       currency: 'INR',
+//     }).format(a);
+
+//   const calculateOrderTotal = (order: Order) =>
+//     order.productItems.reduce((s, i) => s + i.totalAmount, 0);
+
+//   if (loading)
+//     return (
+//       <View className="flex-1 justify-center items-center bg-gray-50">
+//         <ActivityIndicator size="large" color="#0d6efd" />
+//         <Text className="mt-2 text-gray-600">Loading orders...</Text>
+//       </View>
+//     );
+
+//   if (error)
+//     return (
+//       <View className="flex-1 justify-center items-center bg-gray-50 p-4">
+//         <AlertCircle size={50} color="red" />
+//         <Text className="text-red-600 mt-3 font-medium">{error}</Text>
+
+//         <TouchableOpacity
+//           onPress={fetchTraderInfo}
+//           className="mt-4 px-6 py-3 bg-blue-600 rounded-lg"
+//         >
+//           <Text className="text-white font-medium">Retry</Text>
+//         </TouchableOpacity>
+//       </View>
+//     );
+
+//   return (
+//      <SafeAreaView className="flex-1 bg-white">
+//       <View className="flex-row items-center px-4 py-4 bg-white shadow-sm">
+//         <TouchableOpacity
+//           onPress={() => router.push("/(trader)/home")}
+//           className="p-2"
+//         >
+//           <ChevronLeft size={24} color="#374151" />
+//         </TouchableOpacity>
+//         <Text className="ml-3 text-xl font-medium text-gray-900">
+//           My Order History
+//         </Text>
+//       </View>
+//     <ScrollView className="flex-1 bg-gray-50">
+//       <View className="p-4">
+//         {orders.map(order => {
+//           const isExpanded = expandedOrders.includes(order.orderId);
+
+//           return (
+//             <View
+//               key={order._id}
+//               className="bg-white rounded-lg border border-gray-200 shadow-sm mb-6"
+//             >
+//               {/* Header */}
+//               <View className="bg-white p-4 rounded-lg">
+//                 <View className="flex-row justify-between items-center">
+//                   <View >
+//                     <Text className="font-medium text-xs text-white bg-green-600 p-2 rounded-lg">
+//                       Order #{order.orderId}
+//                     </Text>
+//                     <Text className="mt-1 text-sm">
+//                       {formatDate(order.createdAt)}
+//                     </Text>
+//                   </View>
+
+//                   <View
+//                     className={`px-3 py-1 rounded-full border ${getStatusBadgeStyle(
+//                       order.orderStatus
+//                     )}`}
+//                   >
+//                     <Text className="font-semibold text-xs">
+//                       {order.orderStatus.toUpperCase()}
+//                     </Text>
+//                   </View>
+//                 </View>
+//               </View>
+
+//               {/* Summary */}
+//               <View className="p-4">
+//                 <View className="flex-row justify-between mb-2">
+//                   <Text className="text-gray-600 font-medium">Farmer</Text>
+//                   <Text className="text-gray-800 font-medium">
+//                     {order.farmerName || '-'}
+//                   </Text>
+//                 </View>
+
+//                 <View className="flex-row justify-between mb-2">
+//                   <Text className="text-gray-600 font-medium">Transport</Text>
+//                   <Text className="font-medium">
+//                     {order.transporterStatus.toUpperCase()}
+//                   </Text>
+//                 </View>
+
+//                 <View className="flex-row justify-between">
+//                   <Text className="text-gray-600 font-medium">Amount</Text>
+//                   <Text className="text-blue-600 font-medium">
+//                     {formatCurrency(calculateOrderTotal(order))}
+//                   </Text>
+//                 </View>
+
+//                 {/* Toggle */}
+//                 <TouchableOpacity
+//                   onPress={() => toggleExpand(order.orderId)}
+//                   className="mt-4 flex-row justify-center items-center py-2 rounded-lg border border-gray-300 active:bg-gray-100"
+//                 >
+//                   <Text className="font-medium text-gray-700">
+//                     {isExpanded ? 'Hide Details' : 'View Details'}
+//                   </Text>
+//                   <ChevronRight
+//                     size={18}
+//                     color="#374151"
+//                     style={{
+//                       transform: [{ rotate: isExpanded ? '90deg' : '0deg' }],
+//                       marginLeft: 4,
+//                     }}
+//                   />
+//                 </TouchableOpacity>
+//               </View>
+
+//               {/* Expanded Details */}
+//               {isExpanded && (
+//                 <View className="p-4 border-t border-gray-200">
+
+//                   {/* Farmer */}
+//                   <View className="mb-4">
+//                     <Text className="text-gray-500 font-medium mb-2">
+//                       Farmer Information
+//                     </Text>
+//                     <View className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+//                       <Text className="font-medium text-gray-800">
+//                         Name: {order.farmerName || '-'}
+//                       </Text>
+//                       <Text className="text-gray-700">
+//                         Mobile: {order.farmerMobile || '-'}
+//                       </Text>
+//                       <Text className="text-gray-700">
+//                         Farmer ID: {order.farmerId}
+//                       </Text>
+//                     </View>
+//                   </View>
+
+//                   {/* Products */}
+//                   <View className="mb-4">
+//                     <Text className="text-gray-500 font-medium mb-2">
+//                       Products
+//                     </Text>
+
+//                     <ScrollView horizontal>
+//                       <View className="flex-row">
+//                         {order.productItems.map(item => (
+//                           <View
+//                             key={item._id}
+//                             className="bg-gray-50 border border-gray-200 rounded-lg p-4 mr-3"
+//                             style={{ width: 260 }}
+//                           >
+//                             <Text className="font-medium text-gray-800">
+//                               Product: {item.productId}
+//                             </Text>
+//                             <Text className="text-gray-700">
+//                               Grade: {item.grade}
+//                             </Text>
+//                             <Text className="text-gray-700">
+//                               Qty: {item.quantity}
+//                             </Text>
+//                             <Text className="font-medium text-blue-700">
+//                               {formatCurrency(item.totalAmount)}
+//                             </Text>
+//                           </View>
+//                         ))}
+//                       </View>
+//                     </ScrollView>
+//                   </View>
+
+//                   {/* Payment */}
+//                   <View>
+//                     <Text className="text-gray-500 font-medium mb-2">
+//                       Payment
+//                     </Text>
+
+//                     <View className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+//                       <Text>Total: {formatCurrency(order.traderToAdminPayment.totalAmount)}</Text>
+//                       <Text className="text-green-700">
+//                         Paid: {formatCurrency(order.traderToAdminPayment.paidAmount)}
+//                       </Text>
+//                       <Text className="text-red-700">
+//                         Remaining: {formatCurrency(order.traderToAdminPayment.remainingAmount)}
+//                       </Text>
+
+//                       {order.traderToAdminPayment.remainingAmount > 0 && (
+//                         <TouchableOpacity
+//                           onPress={() => openPaymentModal(order)}
+//                           className="mt-3 bg-blue-600 py-3 rounded-lg"
+//                         >
+//                           <Text className="text-white font-medium text-center">
+//                             Make Payment
+//                           </Text>
+//                         </TouchableOpacity>
+//                       )}
+//                     </View>
+//                   </View>
+//                 </View>
+//               )}
+//             </View>
+//           );
+//         })}
+//       </View>
+
+//       {/* Payment Modal */}
+//       <Modal visible={paymentModal.visible} transparent animationType="slide">
+//         <View className="flex-1 bg-black/50 justify-center items-center p-4">
+//           <View className="bg-white p-6 rounded-lg w-full max-w-md">
+//             <Text className="text-xl font-medium mb-3">Make Payment</Text>
+//             <Text>Order #{paymentModal.orderId}</Text>
+//             <Text className="text-gray-600 mb-2">
+//               Max: {formatCurrency(paymentModal.maxAmount)}
+//             </Text>
+
+//             <TextInput
+//               value={paymentModal.amount.toString()}
+//               keyboardType="decimal-pad"
+//               className="border border-gray-300 rounded-lg px-4 py-3 mb-4"
+//               onChangeText={t =>
+//                 setPaymentModal(p => ({
+//                   ...p,
+//                   amount: Math.min(parseFloat(t) || 0, p.maxAmount),
+//                 }))
+//               }
+//             />
+
+//             <View className="flex-row gap-3">
+//               <TouchableOpacity
+//                 onPress={closePaymentModal}
+//                 className="flex-1 border border-gray-300 py-3 rounded-lg"
+//               >
+//                 <Text className="text-center font-medium">Cancel</Text>
+//               </TouchableOpacity>
+
+//               <TouchableOpacity
+//                 onPress={handlePayment}
+//                 className="flex-1 bg-blue-600 py-3 rounded-lg"
+//               >
+//                 <Text className="text-center text-white font-medium">
+//                   Pay ₹{paymentModal.amount}
+//                 </Text>
+//               </TouchableOpacity>
+//             </View>
+//           </View>
+//         </View>
+//       </Modal>
+//     </ScrollView>
+//     </SafeAreaView>
+//   );
+// };
+
+// export default TraderOrderHistory;
+
+
+
+
+import React, { useState, useEffect } from 'react';
 import {
-  AlertCircle,
-  ChevronLeft,
-  ChevronRight
-} from 'lucide-react-native';
-import React, { useEffect, useState } from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  Modal,
-  ScrollView,
+  View,
   Text,
+  ScrollView,
+  ActivityIndicator,
   TextInput,
   TouchableOpacity,
-  View,
+  Alert,
+  Modal,
 } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import RazorpayCheckout from 'react-native-razorpay';
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react-native';
+import { router } from 'expo-router';
 
 const RAZORPAY_KEY_ID = 'rzp_test_qUmhUFElBiSNIs';
 
@@ -2219,6 +2729,7 @@ interface PaymentRecord {
   amount: number;
   paidDate: string;
   razorpayPaymentId?: string;
+  razorpayOrderId?: string;
 }
 
 interface TraderToAdminPayment {
@@ -2260,7 +2771,7 @@ interface PaymentModalState {
   visible: boolean;
   orderId: string;
   maxAmount: number;
-  amount: number;
+  amount: string;
 }
 
 const TraderOrderHistory: React.FC = () => {
@@ -2268,14 +2779,13 @@ const TraderOrderHistory: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [processingPayment, setProcessingPayment] = useState<string | null>(null);
-
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
 
   const [paymentModal, setPaymentModal] = useState<PaymentModalState>({
     visible: false,
     orderId: '',
     maxAmount: 0,
-    amount: 0,
+    amount: '0',
   });
 
   const [traderInfo, setTraderInfo] = useState({
@@ -2284,14 +2794,6 @@ const TraderOrderHistory: React.FC = () => {
     mobile: '',
     email: '',
   });
-
-  const toggleExpand = (orderId: string) => {
-    setExpandedOrders(prev =>
-      prev.includes(orderId)
-        ? prev.filter(id => id !== orderId)
-        : [...prev, orderId]
-    );
-  };
 
   useEffect(() => {
     fetchTraderInfo();
@@ -2344,12 +2846,20 @@ const TraderOrderHistory: React.FC = () => {
     }
   };
 
+  const toggleExpand = (orderId: string) => {
+    setExpandedOrders(prev =>
+      prev.includes(orderId)
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
   const openPaymentModal = (order: Order) => {
     setPaymentModal({
       visible: true,
       orderId: order.orderId,
       maxAmount: order.traderToAdminPayment.remainingAmount,
-      amount: order.traderToAdminPayment.remainingAmount,
+      amount: order.traderToAdminPayment.remainingAmount.toString(),
     });
   };
 
@@ -2358,80 +2868,209 @@ const TraderOrderHistory: React.FC = () => {
       visible: false,
       orderId: '',
       maxAmount: 0,
-      amount: 0,
+      amount: '0',
     });
   };
 
-  const handlePayment = async () => {
-    const { orderId, amount, maxAmount } = paymentModal;
-    const order = orders.find(o => o.orderId === orderId);
+  // const handlePayment = async () => {
+  //   const { orderId, amount, maxAmount } = paymentModal;
+  //   const order = orders.find(o => o.orderId === orderId);
+  //   const amountNum = parseFloat(amount);
 
-    if (!order) return Alert.alert('Error', 'Order not found');
-    if (!amount || amount <= 0) return Alert.alert('Error', 'Enter valid amount');
-    if (amount > maxAmount) return Alert.alert('Error', 'Amount exceeds remaining');
+  //   if (!order) return Alert.alert('Error', 'Order not found');
+  //   if (!amountNum || amountNum <= 0) return Alert.alert('Error', 'Enter valid amount');
+  //   if (amountNum > maxAmount) return Alert.alert('Error', 'Amount exceeds remaining');
 
-    try {
-      setProcessingPayment(orderId);
-      closePaymentModal();
+  //   try {
+  //     setProcessingPayment(orderId);
+  //     closePaymentModal();
 
-      const orderResponse = await axios.post(
-        'https://kisan.etpl.ai/api/orders/history/create-trader-payment',
-        {
-          orderId,
-          amount,
-          traderId: traderInfo.id,
-        }
-      );
+  //     const orderResponse = await axios.post(
+  //       'https://kisan.etpl.ai/api/orders/history/create-trader-payment',
+  //       {
+  //         orderId,
+  //         amount: amountNum,
+  //         traderId: traderInfo.id,
+  //       }
+  //     );
 
-      const { razorpayOrderId } = orderResponse.data;
+  //     const { razorpayOrderId } = orderResponse.data;
 
-      RazorpayCheckout.open({
-        description: `Payment for Order #${orderId}`,
-        currency: 'INR',
-        key: RAZORPAY_KEY_ID,
-        amount: Math.round(amount * 100),
-        name: 'Kisan Platform',
-        order_id: razorpayOrderId,
-        prefill: traderInfo,
-        theme: { color: '#059669' },
-      })
-        .then(async (data: any) => {
-          await axios.post(
+  //     RazorpayCheckout.open({
+  //       description: `Payment for Order #${orderId}`,
+  //       currency: 'INR',
+  //       key: RAZORPAY_KEY_ID,
+  //       amount: Math.round(amountNum * 100),
+  //       name: 'Kisan Platform',
+  //       order_id: razorpayOrderId,
+  //       prefill: traderInfo,
+  //       theme: { color: '#059669' },
+  //     })
+  //       .then(async (data: any) => {
+  //         await axios.post(
+  //           'https://kisan.etpl.ai/api/orders/history/verify-trader-payment',
+  //           {
+  //             ...data,
+  //             orderId,
+  //             amount: amountNum,
+  //             traderId: traderInfo.id,
+  //           }
+  //         );
+
+  //         Alert.alert(
+  //           'Payment Successful!',
+  //           `₹${amountNum} paid successfully`,
+  //           [{ text: 'OK', onPress: () => fetchOrderHistory(traderInfo.id) }]
+  //         );
+  //       })
+  //       .catch(() => Alert.alert('Payment Cancelled'));
+
+  //   } catch (error: any) {
+  //     Alert.alert('Payment Failed', 'Try again');
+  //   } finally {
+  //     setProcessingPayment(null);
+  //   }
+  // };
+const handlePayment = async () => {
+  const { orderId, amount, maxAmount } = paymentModal;
+  const order = orders.find(o => o.orderId === orderId);
+  const amountNum = parseFloat(amount);
+
+  if (!order) return Alert.alert('Error', 'Order not found');
+  if (!amountNum || amountNum <= 0) return Alert.alert('Error', 'Enter valid amount');
+  if (amountNum > maxAmount) return Alert.alert('Error', 'Amount exceeds remaining');
+
+  try {
+    setProcessingPayment(orderId);
+    closePaymentModal();
+
+    // Create Razorpay order
+    const orderResponse = await axios.post(
+      'https://kisan.etpl.ai/api/orders/history/create-trader-payment',
+      {
+        orderId,
+        amount: amountNum,
+        traderId: traderInfo.id,
+      }
+    );
+
+    const { data: razorpayOrder, key_id } = orderResponse.data;
+
+    // Razorpay options
+    const options = {
+      description: `Payment for Order #${orderId}`,
+      currency: 'INR',
+      key: key_id,
+      amount: razorpayOrder.amount,
+      name: 'Kisan Platform',
+      order_id: razorpayOrder.id,
+      prefill: {
+        name: traderInfo.name,
+        contact: traderInfo.mobile,
+        email: traderInfo.email,
+      },
+      theme: { color: '#059669' },
+    };
+
+    // Open Razorpay
+    RazorpayCheckout.open(options)
+      .then(async (data: any) => {
+        // Payment successful
+        console.log('Razorpay Success Response:', data);
+
+        try {
+          // Verify payment with backend - FIXED FIELD NAMES
+          const verifyResponse = await axios.post(
             'https://kisan.etpl.ai/api/orders/history/verify-trader-payment',
             {
-              ...data,
-              orderId,
-              amount,
-              traderId: traderInfo.id,
+              orderId: orderId,
+              razorpayOrderId: data.razorpay_order_id,
+              razorpayPaymentId: data.razorpay_payment_id,
+              razorpaySignature: data.razorpay_signature,
+              amount: amountNum,
             }
           );
 
+          console.log('Verification Response:', verifyResponse.data);
+
+          if (verifyResponse.data.success) {
+            Alert.alert(
+              'Payment Successful!',
+              `₹${amountNum.toFixed(2)} paid successfully for Order #${orderId}`,
+              [
+                { 
+                  text: 'OK', 
+                  onPress: () => {
+                    setProcessingPayment(null);
+                    fetchOrderHistory(traderInfo.id);
+                  }
+                }
+              ]
+            );
+          } else {
+            throw new Error('Payment verification failed');
+          }
+        } catch (verifyError: any) {
+          console.error('Verification Error:', verifyError);
+          setProcessingPayment(null);
           Alert.alert(
-            'Payment Successful!',
-            `₹${amount} paid successfully`,
-            [{ text: 'OK', onPress: () => fetchOrderHistory(traderInfo.id) }]
+            'Verification Failed',
+            verifyError.response?.data?.message || 'Payment verification failed. Please contact support.',
+            [{ text: 'OK' }]
           );
-        })
-        .catch(() => Alert.alert('Payment Cancelled'));
+        }
+      })
+      .catch((error: any) => {
+        // Payment cancelled or failed
+        console.log('Razorpay Error/Cancellation:', error);
+        setProcessingPayment(null);
 
-    } catch (error: any) {
-      Alert.alert('Payment Failed', 'Try again');
-    } finally {
-      setProcessingPayment(null);
-    }
-  };
+        // Check if it's a user cancellation or an actual error
+        if (error.code === 0) {
+          // User cancelled the payment
+          Alert.alert(
+            'Payment Cancelled',
+            'You have cancelled the payment process.',
+            [{ text: 'OK' }]
+          );
+        } else if (error.code === 2) {
+          // Payment failed
+          Alert.alert(
+            'Payment Failed',
+            error.description || 'Payment could not be processed. Please try again.',
+            [{ text: 'OK' }]
+          );
+        } else {
+          // Other errors
+          Alert.alert(
+            'Payment Error',
+            error.description || 'An error occurred during payment. Please try again.',
+            [{ text: 'OK' }]
+          );
+        }
+      });
 
-  const getStatusBadgeStyle = (status: string) => {
+  } catch (error: any) {
+    console.error('Payment Initiation Error:', error);
+    setProcessingPayment(null);
+    Alert.alert(
+      'Payment Failed',
+      error.response?.data?.message || 'Failed to initiate payment. Please try again.',
+      [{ text: 'OK' }]
+    );
+  }
+};
+  const getStatusBadgeClass = (status: string) => {
     const map: any = {
-      pending: 'bg-yellow-100 border-yellow-400 text-yellow-800',
-      processing: 'bg-blue-100 border-blue-400 text-blue-800',
-      in_transit: 'bg-purple-100 border-purple-400 text-purple-800',
-      completed: 'bg-green-100 border-green-400 text-green-800',
-      cancelled: 'bg-red-100 border-red-400 text-red-800',
-      partial: 'bg-orange-100 border-orange-400 text-orange-800',
-      paid: 'bg-green-100 border-green-400 text-green-800',
+      pending: { bg: 'bg-yellow-100', border: 'border-yellow-400', text: 'text-yellow-800' },
+      processing: { bg: 'bg-blue-100', border: 'border-blue-400', text: 'text-blue-800' },
+      in_transit: { bg: 'bg-purple-100', border: 'border-purple-400', text: 'text-purple-800' },
+      completed: { bg: 'bg-green-100', border: 'border-green-400', text: 'text-green-800' },
+      cancelled: { bg: 'bg-red-100', border: 'border-red-400', text: 'text-red-800' },
+      partial: { bg: 'bg-orange-100', border: 'border-orange-400', text: 'text-orange-800' },
+      paid: { bg: 'bg-green-100', border: 'border-green-400', text: 'text-green-800' },
     };
-    return map[status] || 'bg-gray-100 border-gray-400 text-gray-800';
+    return map[status] || { bg: 'bg-gray-100', border: 'border-gray-400', text: 'text-gray-800' };
   };
 
   const formatDate = (d: string) =>
@@ -2452,20 +3091,20 @@ const TraderOrderHistory: React.FC = () => {
   const calculateOrderTotal = (order: Order) =>
     order.productItems.reduce((s, i) => s + i.totalAmount, 0);
 
-  if (loading)
+  if (loading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
-        <ActivityIndicator size="large" color="#0d6efd" />
+        <ActivityIndicator size="large" color="#059669" />
         <Text className="mt-2 text-gray-600">Loading orders...</Text>
       </View>
     );
+  }
 
-  if (error)
+  if (error) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50 p-4">
         <AlertCircle size={50} color="red" />
         <Text className="text-red-600 mt-3 font-medium">{error}</Text>
-
         <TouchableOpacity
           onPress={fetchTraderInfo}
           className="mt-4 px-6 py-3 bg-blue-600 rounded-lg"
@@ -2474,9 +3113,10 @@ const TraderOrderHistory: React.FC = () => {
         </TouchableOpacity>
       </View>
     );
+  }
 
   return (
-     <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white">
       <View className="flex-row items-center px-4 py-4 bg-white shadow-sm">
         <TouchableOpacity
           onPress={() => router.push("/(trader)/home")}
@@ -2488,190 +3128,262 @@ const TraderOrderHistory: React.FC = () => {
           My Order History
         </Text>
       </View>
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="p-4">
-        {orders.map(order => {
-          const isExpanded = expandedOrders.includes(order.orderId);
 
-          return (
-            <View
-              key={order._id}
-              className="bg-white rounded-lg border border-gray-200 shadow-sm mb-6"
-            >
-              {/* Header */}
-              <View className="bg-white p-4 rounded-lg">
-                <View className="flex-row justify-between items-center">
-                  <View >
-                    <Text className="font-medium text-xs text-white bg-green-600 p-2 rounded-lg">
-                      Order #{order.orderId}
-                    </Text>
-                    <Text className="mt-1 text-sm">
-                      {formatDate(order.createdAt)}
-                    </Text>
-                  </View>
+      <ScrollView className="flex-1 bg-gray-50">
+        <View className="p-4">
+          {orders.length === 0 ? (
+            <View className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <Text className="text-blue-800">No orders found</Text>
+            </View>
+          ) : (
+            orders.map(order => {
+              const isExpanded = expandedOrders.includes(order.orderId);
+              const badgeStyle = getStatusBadgeClass(order.orderStatus);
 
-                  <View
-                    className={`px-3 py-1 rounded-full border ${getStatusBadgeStyle(
-                      order.orderStatus
-                    )}`}
-                  >
-                    <Text className="font-semibold text-xs">
-                      {order.orderStatus.toUpperCase()}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-
-              {/* Summary */}
-              <View className="p-4">
-                <View className="flex-row justify-between mb-2">
-                  <Text className="text-gray-600 font-medium">Farmer</Text>
-                  <Text className="text-gray-800 font-medium">
-                    {order.farmerName || '-'}
-                  </Text>
-                </View>
-
-                <View className="flex-row justify-between mb-2">
-                  <Text className="text-gray-600 font-medium">Transport</Text>
-                  <Text className="font-medium">
-                    {order.transporterStatus.toUpperCase()}
-                  </Text>
-                </View>
-
-                <View className="flex-row justify-between">
-                  <Text className="text-gray-600 font-medium">Amount</Text>
-                  <Text className="text-blue-600 font-medium">
-                    {formatCurrency(calculateOrderTotal(order))}
-                  </Text>
-                </View>
-
-                {/* Toggle */}
-                <TouchableOpacity
-                  onPress={() => toggleExpand(order.orderId)}
-                  className="mt-4 flex-row justify-center items-center py-2 rounded-lg border border-gray-300 active:bg-gray-100"
+              return (
+                <View
+                  key={order._id}
+                  className="bg-white rounded-lg border border-gray-200 shadow-sm mb-6"
                 >
-                  <Text className="font-medium text-gray-700">
-                    {isExpanded ? 'Hide Details' : 'View Details'}
-                  </Text>
-                  <ChevronRight
-                    size={18}
-                    color="#374151"
-                    style={{
-                      transform: [{ rotate: isExpanded ? '90deg' : '0deg' }],
-                      marginLeft: 4,
-                    }}
-                  />
-                </TouchableOpacity>
-              </View>
+                  {/* Header */}
+                  <View className="bg-white p-4 rounded-t-lg">
+                    <View className="flex-row justify-between items-center">
+                      <View>
+                        <Text className="font-medium text-xs text-white bg-green-600 p-2 rounded-lg">
+                          Order #{order.orderId}
+                        </Text>
+                        <Text className="mt-1 text-sm text-gray-600">
+                          {formatDate(order.createdAt)}
+                        </Text>
+                      </View>
 
-              {/* Expanded Details */}
-              {isExpanded && (
-                <View className="p-4 border-t border-gray-200">
-
-                  {/* Farmer */}
-                  <View className="mb-4">
-                    <Text className="text-gray-500 font-medium mb-2">
-                      Farmer Information
-                    </Text>
-                    <View className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                      <Text className="font-medium text-gray-800">
-                        Name: {order.farmerName || '-'}
-                      </Text>
-                      <Text className="text-gray-700">
-                        Mobile: {order.farmerMobile || '-'}
-                      </Text>
-                      <Text className="text-gray-700">
-                        Farmer ID: {order.farmerId}
-                      </Text>
+                      <View className={`px-3 py-1 rounded-full border ${badgeStyle.bg} ${badgeStyle.border}`}>
+                        <Text className={`font-semibold text-xs ${badgeStyle.text}`}>
+                          {order.orderStatus.toUpperCase()}
+                        </Text>
+                      </View>
                     </View>
                   </View>
 
-                  {/* Products */}
-                  <View className="mb-4">
-                    <Text className="text-gray-500 font-medium mb-2">
-                      Products
-                    </Text>
+                  {/* Summary */}
+                  <View className="p-4">
+                    <View className="flex-row justify-between mb-2">
+                      <Text className="text-gray-600 font-medium">Farmer</Text>
+                      <Text className="text-gray-800 font-medium">
+                        {order.farmerName || '-'}
+                      </Text>
+                    </View>
 
-                    <ScrollView horizontal>
-                      <View className="flex-row">
-                        {order.productItems.map(item => (
-                          <View
-                            key={item._id}
-                            className="bg-gray-50 border border-gray-200 rounded-lg p-4 mr-3"
-                            style={{ width: 260 }}
-                          >
-                            <Text className="font-medium text-gray-800">
-                              Product: {item.productId}
-                            </Text>
-                            <Text className="text-gray-700">
-                              Grade: {item.grade}
-                            </Text>
-                            <Text className="text-gray-700">
-                              Qty: {item.quantity}
-                            </Text>
-                            <Text className="font-medium text-blue-700">
-                              {formatCurrency(item.totalAmount)}
+                    <View className="flex-row justify-between mb-2">
+                      <Text className="text-gray-600 font-medium">Transport</Text>
+                      <Text className="font-medium text-gray-800">
+                        {order.transporterStatus.toUpperCase()}
+                      </Text>
+                    </View>
+
+                    <View className="flex-row justify-between">
+                      <Text className="text-gray-600 font-medium">Amount</Text>
+                      <Text className="text-blue-600 font-medium">
+                        {formatCurrency(calculateOrderTotal(order))}
+                      </Text>
+                    </View>
+
+                    {/* Toggle */}
+                    <TouchableOpacity
+                      onPress={() => toggleExpand(order.orderId)}
+                      className="mt-4 flex-row justify-center items-center py-2 rounded-lg border border-gray-300 active:bg-gray-100"
+                    >
+                      <Text className="font-medium text-gray-700">
+                        {isExpanded ? 'Hide Details' : 'View Details'}
+                      </Text>
+                      <ChevronRight
+                        size={18}
+                        color="#374151"
+                        style={{
+                          transform: [{ rotate: isExpanded ? '90deg' : '0deg' }],
+                          marginLeft: 4,
+                        }}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
+                  {/* Expanded Details */}
+                  {isExpanded && (
+                    <View className="p-4 border-t border-gray-200">
+                      {/* Farmer Info */}
+                      <View className="mb-4">
+                        <Text className="text-gray-500 font-medium mb-2">
+                          Farmer Information
+                        </Text>
+                        <View className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                          <Text className="font-medium text-gray-800">
+                            Name: {order.farmerName || '-'}
+                          </Text>
+                          <Text className="text-gray-700">
+                            Mobile: {order.farmerMobile || '-'}
+                          </Text>
+                          <Text className="text-gray-700">
+                            Farmer ID: {order.farmerId}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {/* Products */}
+                      <View className="mb-4">
+                        <Text className="text-gray-500 font-medium mb-2">
+                          Products
+                        </Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                          <View className="flex-row">
+                            {order.productItems.map(item => (
+                              <View
+                                key={item._id}
+                                className="bg-gray-50 border border-gray-200 rounded-lg p-4 mr-3"
+                                style={{ width: 260 }}
+                              >
+                                <Text className="font-medium text-gray-800">
+                                  Product: {item.productId}
+                                </Text>
+                                <Text className="text-gray-700">
+                                  Grade: {item.grade}
+                                </Text>
+                                <Text className="text-gray-700">
+                                  Qty: {item.quantity}
+                                </Text>
+                                <Text className="text-gray-700">
+                                  Price/Unit: {formatCurrency(item.pricePerUnit)}
+                                </Text>
+                                <Text className="font-medium text-blue-700 mt-1">
+                                  Total: {formatCurrency(item.totalAmount)}
+                                </Text>
+                                {item.deliveryDate && (
+                                  <Text className="text-gray-600 text-xs mt-1">
+                                    Delivery: {formatDate(item.deliveryDate)}
+                                  </Text>
+                                )}
+                              </View>
+                            ))}
+                          </View>
+                        </ScrollView>
+                      </View>
+
+                      {/* Payment Details */}
+                      <View className="mb-4">
+                        <Text className="text-gray-500 font-medium mb-2">
+                          Payment Details
+                        </Text>
+                        <View className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                          <View className="flex-row justify-between mb-2">
+                            <Text className="text-gray-700">Total:</Text>
+                            <Text className="font-medium">
+                              {formatCurrency(order.traderToAdminPayment.totalAmount)}
                             </Text>
                           </View>
-                        ))}
+                          <View className="flex-row justify-between mb-2">
+                            <Text className="text-green-700">Paid:</Text>
+                            <Text className="font-medium text-green-700">
+                              {formatCurrency(order.traderToAdminPayment.paidAmount)}
+                            </Text>
+                          </View>
+                          <View className="flex-row justify-between mb-2">
+                            <Text className="text-red-700">Remaining:</Text>
+                            <Text className="font-medium text-red-700">
+                              {formatCurrency(order.traderToAdminPayment.remainingAmount)}
+                            </Text>
+                          </View>
+                          <View className="flex-row justify-between items-center">
+                            <Text className="text-gray-700">Status:</Text>
+                            <View className={`px-3 py-1 rounded-full ${getStatusBadgeClass(order.traderToAdminPayment.paymentStatus).bg}`}>
+                              <Text className={`font-semibold text-xs ${getStatusBadgeClass(order.traderToAdminPayment.paymentStatus).text}`}>
+                                {order.traderToAdminPayment.paymentStatus.toUpperCase()}
+                              </Text>
+                            </View>
+                          </View>
+
+                          {order.traderToAdminPayment.remainingAmount > 0 && (
+                            <TouchableOpacity
+                              onPress={() => openPaymentModal(order)}
+                              disabled={processingPayment === order.orderId}
+                              className={`mt-3 py-3 rounded-lg ${processingPayment === order.orderId ? 'bg-gray-400' : 'bg-blue-600'}`}
+                            >
+                              {processingPayment === order.orderId ? (
+                                <View className="flex-row justify-center items-center">
+                                  <ActivityIndicator size="small" color="#fff" />
+                                  <Text className="text-white font-medium ml-2">Processing...</Text>
+                                </View>
+                              ) : (
+                                <Text className="text-white font-medium text-center">
+                                  Make Payment
+                                </Text>
+                              )}
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       </View>
-                    </ScrollView>
-                  </View>
 
-                  {/* Payment */}
-                  <View>
-                    <Text className="text-gray-500 font-medium mb-2">
-                      Payment
-                    </Text>
-
-                    <View className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
-                      <Text>Total: {formatCurrency(order.traderToAdminPayment.totalAmount)}</Text>
-                      <Text className="text-green-700">
-                        Paid: {formatCurrency(order.traderToAdminPayment.paidAmount)}
-                      </Text>
-                      <Text className="text-red-700">
-                        Remaining: {formatCurrency(order.traderToAdminPayment.remainingAmount)}
-                      </Text>
-
-                      {order.traderToAdminPayment.remainingAmount > 0 && (
-                        <TouchableOpacity
-                          onPress={() => openPaymentModal(order)}
-                          className="mt-3 bg-blue-600 py-3 rounded-lg"
-                        >
-                          <Text className="text-white font-medium text-center">
-                            Make Payment
-                          </Text>
-                        </TouchableOpacity>
-                      )}
+                      {/* Payment History */}
+                      <View>
+                        <Text className="text-gray-500 font-medium mb-2">
+                          Payment History
+                        </Text>
+                        {order.traderToAdminPayment.paymentHistory.length === 0 ? (
+                          <View className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                            <Text className="text-gray-600 text-center">No payments made yet</Text>
+                          </View>
+                        ) : (
+                          order.traderToAdminPayment.paymentHistory.map(payment => (
+                            <View
+                              key={payment._id}
+                              className="bg-white border border-gray-200 p-3 rounded-lg mb-2"
+                            >
+                              <View className="flex-row justify-between mb-1">
+                                <Text className="font-medium text-green-700">
+                                  {formatCurrency(payment.amount)}
+                                </Text>
+                                <Text className="text-gray-600 text-sm">
+                                  {formatDate(payment.paidDate)}
+                                </Text>
+                              </View>
+                              {payment.razorpayPaymentId && (
+                                <Text className="text-gray-500 text-xs">
+                                  Payment ID: {payment.razorpayPaymentId}
+                                </Text>
+                              )}
+                            </View>
+                          ))
+                        )}
+                      </View>
                     </View>
-                  </View>
+                  )}
                 </View>
-              )}
-            </View>
-          );
-        })}
-      </View>
+              );
+            })
+          )}
+        </View>
+      </ScrollView>
 
       {/* Payment Modal */}
       <Modal visible={paymentModal.visible} transparent animationType="slide">
         <View className="flex-1 bg-black/50 justify-center items-center p-4">
           <View className="bg-white p-6 rounded-lg w-full max-w-md">
             <Text className="text-xl font-medium mb-3">Make Payment</Text>
-            <Text>Order #{paymentModal.orderId}</Text>
-            <Text className="text-gray-600 mb-2">
+            <Text className="text-gray-800 mb-1">Order #{paymentModal.orderId}</Text>
+            <Text className="text-gray-600 mb-4">
               Max: {formatCurrency(paymentModal.maxAmount)}
             </Text>
 
             <TextInput
-              value={paymentModal.amount.toString()}
+              value={paymentModal.amount}
               keyboardType="decimal-pad"
-              className="border border-gray-300 rounded-lg px-4 py-3 mb-4"
-              onChangeText={t =>
+              className="border border-gray-300 rounded-lg px-4 py-3 mb-4 text-base"
+              placeholder="Enter amount"
+              onChangeText={t => {
+                const num = parseFloat(t) || 0;
                 setPaymentModal(p => ({
                   ...p,
-                  amount: Math.min(parseFloat(t) || 0, p.maxAmount),
-                }))
-              }
+                  amount: Math.min(num, p.maxAmount).toString(),
+                }));
+              }}
             />
 
             <View className="flex-row gap-3">
@@ -2679,7 +3391,7 @@ const TraderOrderHistory: React.FC = () => {
                 onPress={closePaymentModal}
                 className="flex-1 border border-gray-300 py-3 rounded-lg"
               >
-                <Text className="text-center font-medium">Cancel</Text>
+                <Text className="text-center font-medium text-gray-700">Cancel</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -2694,7 +3406,6 @@ const TraderOrderHistory: React.FC = () => {
           </View>
         </View>
       </Modal>
-    </ScrollView>
     </SafeAreaView>
   );
 };

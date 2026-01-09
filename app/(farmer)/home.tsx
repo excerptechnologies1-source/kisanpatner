@@ -418,11 +418,13 @@ const fetchUnreadCount = async () => {
 style={{ aspectRatio: 1 }}
 
                 >
+                  <TouchableOpacity onPress={() => router.push('/(farmerscreen)/AllCrops')}>
                   <Image
                     source={{ uri }}
                     className="w-full h-full"
                     resizeMode="cover"
                   />
+                  </TouchableOpacity>
                 </View>
               ))}
             </ScrollView>

@@ -1250,7 +1250,7 @@
 // //                     </Text>
 // //                   </View>
 
-// //                   <Text className="text-lg font-bold text-[#333] mb-2">Recommended Products</Text>
+// //                   <Text className="text-lg font-medium text-[#333] mb-2">Recommended Products</Text>
 // //                 </View>
 // //               }
 // //               ListEmptyComponent={<Text className="text-center text-gray-400 mt-8 text-base">No products found.</Text>}
@@ -2133,7 +2133,7 @@
 //                     </Text>
 //                   </View>
 
-//                   <Text className="text-lg font-bold text-[#333] mb-2">Recommended Products</Text>
+//                   <Text className="text-lg font-medium text-[#333] mb-2">Recommended Products</Text>
 //                   <Text className="text-sm text-gray-500 mb-4">
 //                     Found {filteredProducts.length} product(s)
 //                   </Text>
@@ -2224,9 +2224,9 @@ import {
   Check,
   ChevronRight,
   Leaf,
-  LogOut,
-  ShoppingCart
+  LogOut, ShoppingBag, ShoppingCart
 } from "lucide-react-native";
+
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -2714,7 +2714,8 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
             )}
           </View>
         </View>
-
+        
+        <View className="flex-row items-center">
         <View className="flex-row items-center">
           {user && (
             <TouchableOpacity
@@ -2730,6 +2731,17 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
             </TouchableOpacity>
           )}
         </View>
+
+       <View className="flex-row items-center">
+  <TouchableOpacity
+    className="mr-4 relative"
+    onPress={() => router.push("/(farmerscreen)/cropcareorders")}
+  >
+    <ShoppingBag size={24} color="#016c17ff" />
+  </TouchableOpacity>
+      </View>
+      </View>
+        
       </View>
     </View>
   );
@@ -2821,6 +2833,7 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
     const shouldShowProductImage = productImageUrl && isValidImageUrl(item.image);
     
     return (
+      <>
       <View className="bg-white rounded-2xl mb-4 shadow-sm elevation-[2] border border-black/5 overflow-hidden">
         <View className="flex-row justify-between items-center p-4">
           <View className="flex-row items-center flex-1">
@@ -2861,9 +2874,15 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
             </View>
           )}
 
-          {/* Recommended Seeds */}
-          <View className="mt-4">
-            <Text className="text-[13px] font-medium text-gray-400 mb-2 uppercase">Recommended Seeds / Solutions</Text>
+          
+        </View>
+        
+      </View>
+       
+
+       {/* Recommended Seeds */}
+          <View className="px-4 pb-4 border-gray-100">
+            <Text className="text-[13px] font-medium text-gray-900 mb-2 uppercase">Recommended Seeds / Solutions</Text>
             {item.recommendedSeeds && item.recommendedSeeds.length > 0 ? (
               item.recommendedSeeds.map((seed, idx) => {
                 const seedImageUrl = getImageUrl(seed.image);
@@ -2916,8 +2935,7 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
               <Text className="text-center text-gray-400 text-sm italic">No recommendations available.</Text>
             )}
           </View>
-        </View>
-      </View>
+      </>
     );
   };
 
@@ -3018,28 +3036,10 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
               showsVerticalScrollIndicator={false}
               ListHeaderComponent={
                 <View className="mb-5 mt-2">
-                  <Text className="text-[22px] font-medium text-[#1a1a1a]">Diseases & Solutions</Text>
-                  <Text className="text-sm text-gray-500 mt-1 mb-4">{selectedSubCategory?.name}</Text>
+                  <Text className="text-[22px] font-medium text-red-600">Diseases <Text className="text-[22px] font-medium text-black">& </Text><Text className="text-[22px] font-medium text-green-800">Solutions</Text></Text>
+                  <Text className="text-sm text-green-800 mt-1 mb-4">{selectedSubCategory?.name}</Text>
 
-                  {/* Video Demo Section */}
-                  <View className="w-full h-48 bg-black/90 rounded-xl overflow-hidden justify-center items-center mb-6 relative shadow-sm elevation-4">
-                    <Image
-                      source={{ uri: "https://img.freepik.com/free-photo/smart-farming-with-iot-futuristic-agriculture-concept_53876-124627.jpg" }}
-                      className="absolute w-full h-full opacity-60"
-                      resizeMode="cover"
-                      onError={() => console.log('Demo image failed to load')}
-                    />
-                    <View className="w-16 h-16 bg-white/20 rounded-full justify-center items-center backdrop-blur-sm border border-white/30">
-                      <View className="w-12 h-12 bg-[#2c5f2d] rounded-full justify-center items-center pl-1">
-                        <Leaf size={24} color="#fff" fill="#fff" />
-                      </View>
-                    </View>
-                    <Text className="text-white font-medium mt-3 bg-black/40 px-3 py-1 rounded-full text-xs">
-                      Watch Demo: How to treat {selectedSubCategory?.name}
-                    </Text>
-                  </View>
-
-                  <Text className="text-lg font-bold text-[#333] mb-2">Recommended Products</Text>
+                  <Text className="text-lg font-medium text-gray-700 mb-2 uppercase mb-2 text-base">Recommended Products</Text>
                   <Text className="text-sm text-gray-500 mb-4">
                     Found {filteredProducts.length} product(s)
                   </Text>

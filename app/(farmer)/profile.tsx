@@ -375,7 +375,7 @@ const showAppAlert = (title: string, message: string, action?: () => void) => {
   message={alertMessage}
   onClose={() => {
     setShowAlert(false);
-    if (alertAction) alertAction();   // optional navigation callback
+    if (alertAction) alertAction();  
   }}
 />
 
