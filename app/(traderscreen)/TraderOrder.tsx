@@ -1103,6 +1103,7 @@
 
 
 
+
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -1151,6 +1152,7 @@ interface Purchase {
   paidAmount?: number;
   remainingAmount?: number;
   quantityType?: 'bulk' | 'custom';
+    gradePhotos?: string[];  
 }
 
 interface Commission {
@@ -1510,14 +1512,27 @@ const TraderOrders: React.FC = () => {
                 >
                   <View className="flex-row p-4">
                     {/* Product Image */}
-                    <Image
+                    {/* <Image
                       source={{
                         uri:
                           item.product.cropPhotos?.[0] ||
                           'https://via.placeholder.com/80',
                       }}
                       className="w-20 h-20 rounded-lg"
-                    />
+                    /> */}
+
+                    {/* Product Image - REPLACE THIS SECTION */}
+<Image
+  source={{
+    uri:
+      item.gradePhotos?.[0] 
+        ? `https://kisan.etpl.ai/${item.gradePhotos[0]}`
+        : item.product.cropPhotos?.[0]
+        ? `https://kisan.etpl.ai/${item.product.cropPhotos[0]}`
+        : 'https://via.placeholder.com/80',
+  }}
+  className="w-20 h-20 rounded-lg"
+/>
 
                     {/* Product Details */}
                     <View className="flex-1 ml-4">
@@ -1548,7 +1563,7 @@ const TraderOrders: React.FC = () => {
                               onPress={() =>
                                 updateQuantity(
                                   item._id,
-                                  item.product._id,
+                                  item.product.productId,
                                   item.gradeId,
                                   item.quantity,
                                   -1
@@ -1565,7 +1580,7 @@ const TraderOrders: React.FC = () => {
                               onPress={() =>
                                 updateQuantity(
                                   item._id,
-                                  item.product._id,
+                                  item.product.productId,
                                   item.gradeId,
                                   item.quantity,
                                   1
@@ -1589,11 +1604,20 @@ const TraderOrders: React.FC = () => {
                       )}
 
                       {/* Amount */}
-                      <View className="mt-3">
+                      {/* <View className="mt-3">
                         <Text className="text-green-600 font-bold text-lg">
                           ₹{item.totalAmount.toFixed(2)}
                         </Text>
-                      </View>
+                      </View> */}
+                      {/* Amount - REPLACE THIS SECTION */}
+<View className="mt-3">
+  <Text className="text-gray-600 text-xs">
+    ₹{item.pricePerUnit?.toFixed(2) || (item.totalAmount / item.quantity).toFixed(2)}/{item.product.unitMeasurement}
+  </Text>
+  <Text className="text-green-600 font-bold text-lg">
+    Total: ₹{item.totalAmount.toFixed(2)}
+  </Text>
+</View>
 
                       {/* Date */}
                       <Text className="text-gray-500 text-xs mt-1">

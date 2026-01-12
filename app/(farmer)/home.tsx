@@ -194,52 +194,90 @@ const fetchUnreadCount = async () => {
 
   // ✅ CORRECTED FETCH FUNCTION FOR YOUR API STRUCTURE
   const fetchCropPhotos = async () => {
-    setIsLoadingCropPhotos(true);
-    setCropPhotosError(null);
+  setIsLoadingCropPhotos(true);
+  setCropPhotosError(null);
 
-    try {
-      const response = await fetch('https://kisan.etpl.ai/product/all');
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const apiResponse = await response.json();
-      
-      
-      
-      // ✅ Extract cropPhotos from the API response structure
-      // API structure: { success: true, count: 10, data: [...products] }
-      if (apiResponse.success && apiResponse.data && Array.isArray(apiResponse.data)) {
-        // Collect all cropPhotos from all products
-        const allPhotos: string[] = [];
-        
-        apiResponse.data.forEach((product: any) => {
-          if (product.cropPhotos && Array.isArray(product.cropPhotos)) {
-            product.cropPhotos.forEach((photo: string) => {
-              // Convert relative paths to full URLs
-              // Handle both forward slash and backslash paths
-              const cleanPath = photo.replace(/\\/g, '/');
-              allPhotos.push(`https://kisan.etpl.ai/${cleanPath}`);
-            });
-          }
-        });
-        
-      
-        
-        setCropPhotosList(allPhotos);
-      } else {
-        throw new Error('Invalid API response structure');
-      }
-      
-    } catch (error) {
-      console.error('Error fetching crop photos:', error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      setCropPhotosError(errorMessage);
-    } finally {
-      setIsLoadingCropPhotos(false);
+  try {
+    // 1️⃣ Get farmerId from AsyncStorage
+    const farmerId = await AsyncStorage.getItem('farmerId');
+    if (!farmerId) {
+      throw new Error('Farmer not logged in');
     }
-  };
+
+    // 2️⃣ Call API
+    const response = await fetch(
+      `https://kisan.etpl.ai/product/by-farmer/${farmerId}`
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const apiResponse = await response.json();
+
+    if (!Array.isArray(apiResponse.data) || apiResponse.data.length === 0) {
+      setCropPhotosList([]);
+      return;
+    }
+
+    // 3️⃣ Filter products by farmerId (SAFETY CHECK)
+    const farmerProducts = apiResponse.data.filter(
+      (product: any) => product.farmerId === farmerId
+    );
+
+    if (farmerProducts.length === 0) {
+      setCropPhotosList([]);
+      return;
+    }
+
+    // 4️⃣ Find latest updated product
+    const latestProduct = farmerProducts.reduce(
+      (latest: any, current: any) => {
+        if (!latest) return current;
+
+        const latestTime = Date.parse(latest.updatedAt);
+        const currentTime = Date.parse(current.updatedAt);
+
+        return currentTime > latestTime ? current : latest;
+      },
+      null
+    );
+
+    // 5️⃣ Extract gradePhotos from gradePrices
+    if (
+      !latestProduct ||
+      !Array.isArray(latestProduct.gradePrices) ||
+      latestProduct.gradePrices.length === 0
+    ) {
+      setCropPhotosList([]);
+      return;
+    }
+
+    // 6️⃣ Collect ALL gradePhotos
+    const gradePhotos: string[] = [];
+
+    latestProduct.gradePrices.forEach((grade: any) => {
+      if (Array.isArray(grade.gradePhotos)) {
+        grade.gradePhotos.forEach((photo: string) => {
+          const cleanPath = photo.replace(/\\/g, '/');
+          gradePhotos.push(`https://kisan.etpl.ai/${cleanPath}`);
+        });
+      }
+    });
+
+    // 7️⃣ Update UI
+    setCropPhotosList(gradePhotos);
+
+  } catch (error) {
+    console.error('Grade photo fetch error:', error);
+    setCropPhotosError(
+      error instanceof Error ? error.message : 'Something went wrong'
+    );
+  } finally {
+    setIsLoadingCropPhotos(false);
+  }
+};
+
 
   // Call on component mount
   useEffect(() => {
@@ -293,7 +331,7 @@ const fetchUnreadCount = async () => {
             <ShoppingCart size={18} color="#374151" />
             {/* Cart item count badge - optional */}
             <View className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 border border-white items-center justify-center">
-              <Text className="text-[10px] font-bold text-white">3</Text>
+              <Text className="text-[10px] font-medium text-white">3</Text>
             </View>
           </TouchableOpacity>
 
@@ -317,7 +355,7 @@ const fetchUnreadCount = async () => {
   <Bell size={18} color="#374151" />
   {unreadCount > 0 && (
     <View className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 rounded-full bg-red-500 border border-white items-center justify-center px-1">
-      <Text className="text-[9px] font-bold text-white">
+      <Text className="text-[9px] font-medium text-white">
         {unreadCount > 99 ? '99+' : unreadCount}
       </Text>
     </View>
@@ -415,7 +453,7 @@ const fetchUnreadCount = async () => {
                 <View
                   key={`crop-photo-${index}`}
                  className="w-28 mr-3 rounded-lg overflow-hidden border border-gray-200 shadow-sm bg-gray-50"
-style={{ aspectRatio: 1 }}
+                 style={{ aspectRatio: 1 }}
 
                 >
                   <TouchableOpacity onPress={() => router.push('/(farmerscreen)/AllCrops')}>

@@ -164,7 +164,7 @@ const TraderProfileScreen: React.FC = () => {
                 <View className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200">
                     <View className="flex-row items-center">
                         <View className="w-14 h-14 rounded-full mr-3 bg-[#68D75D] items-center justify-center">
-                            <Text className="text-white text-2xl font-bold">
+                            <Text className="text-white text-2xl font-medium">
                                 {traderData?.name?.charAt(0).toUpperCase() || "T"}
                             </Text>
                         </View>

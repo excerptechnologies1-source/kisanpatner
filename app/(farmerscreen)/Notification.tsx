@@ -754,6 +754,8 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
+import { router } from "expo-router";
+import { ChevronLeft } from "lucide-react-native";
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -765,6 +767,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Notification {
   _id: string;
@@ -941,12 +944,18 @@ const FarmerNotifications: React.FC = () => {
   }
 
   return (
-    <View className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50">
 
       {/* Header */}
-      <View className="bg-white pt-4 pb-4 px-5 border-b border-gray-100 shadow-sm">
-        <View className="flex-row items-center justify-between mb-2">
-          <Text className="text-3xl font-medium text-gray-900">Notifications</Text>
+      <View className="bg-white pt-3 pb-4 px-5 border-b border-gray-100 shadow-sm">
+        <View className="flex-row">
+          <TouchableOpacity
+                      onPress={() => router.back()}
+                      className="p-2 mr-2"
+                    >
+                      <ChevronLeft size={24} color="#374151" />
+                    </TouchableOpacity>
+          <Text className="text-2xl font-medium text-gray-900">Notifications</Text>
           {unreadCount > 0 && (
             <View className="bg-emerald-500 px-3 py-1.5 rounded-full">
               <Text className="text-white text-sm font-medium">{unreadCount} New</Text>
@@ -1099,7 +1108,7 @@ const FarmerNotifications: React.FC = () => {
                   )}
                 </View>
 
-                {notification.status === 'pending' && (
+                {/* {notification.status === 'pending' && (
                   <TouchableOpacity
                     className="bg-emerald-500 py-2.5 px-4 rounded-lg mt-2 active:bg-emerald-600"
                     onPress={(e) => {
@@ -1109,14 +1118,14 @@ const FarmerNotifications: React.FC = () => {
                   >
                     <Text className="text-white text-sm font-medium text-center">View & Respond →</Text>
                   </TouchableOpacity>
-                )}
+                )} */}
               </View>
             </TouchableOpacity>
           ))
         )}
         <View className="h-4" />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 

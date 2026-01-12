@@ -35,6 +35,14 @@ export default function TabLayout() {
         }}
       />
 
+        <Tabs.Screen
+        name="MarketDelivery"
+        options={{
+          title: "MarketDelivery",
+          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+        }}
+      />
+
       {/* PROFILE */}
       <Tabs.Screen
         name="TransportOrders"
@@ -43,6 +51,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color, size }) => <Car color={color} size={size} />,
         }}
       />
+
  <Tabs.Screen
         name="TransportVehicles"
         options={{
@@ -58,13 +67,7 @@ export default function TabLayout() {
         }}
       />
       
-       <Tabs.Screen
-        name="MarketDelivery"
-        options={{
-          title: "MarketDelivery",
-          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
-        }}
-      />
+     
       
     </Tabs>
   );

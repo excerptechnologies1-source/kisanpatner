@@ -414,7 +414,7 @@ const KisanHeader: React.FC = () => {
             </View>
 
             {/* Notification */}
-            <TouchableOpacity onPress={() => router.push('/(trader)/TraderNotifications')} className="p-2 relative">
+            <TouchableOpacity onPress={() => router.push('/(traderscreen)/TraderNotifications')} className="p-2 relative">
               <Ionicons name="notifications-outline" size={28} color="white" />
               <View className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border border-white items-center justify-center">
                 <Text className="text-white text-[10px] font-medium">3</Text>

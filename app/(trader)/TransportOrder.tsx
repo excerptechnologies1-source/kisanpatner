@@ -242,7 +242,7 @@ const TraderTransport: React.FC = () => {
           <TouchableOpacity onPress={() => router.back()} className="mr-3">
             <Ionicons name="arrow-back" size={24} color="#374151" />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-800">🧑‍💼 My Transport Orders</Text>
+          <Text className="text-xl font-medium text-gray-800">🧑‍💼 My Transport Orders</Text>
         </View>
         <TouchableOpacity
           onPress={() => traderId && loadOrders()}
@@ -275,13 +275,13 @@ const TraderTransport: React.FC = () => {
                 <View className="flex-row justify-between items-center p-4 border-b border-gray-100">
                   <View className="flex-1">
                     <Text className="text-sm text-gray-500">Order</Text>
-                    <Text className="text-lg font-bold text-blue-600">{order.orderId}</Text>
+                    <Text className="text-lg font-medium text-blue-600">{order.orderId}</Text>
                   </View>
                   <View 
                     className="px-3 py-1 rounded-full"
                     style={{ backgroundColor: getOrderStatusColor(order.orderStatus) }}
                   >
-                    <Text className="text-white text-xs font-bold">
+                    <Text className="text-white text-xs font-medium">
                       {order.orderStatus.toUpperCase()}
                     </Text>
                   </View>
@@ -290,12 +290,12 @@ const TraderTransport: React.FC = () => {
                 {/* PAYMENT INFO */}
                 <View className="bg-gray-50 p-4">
                   <View className="flex-row justify-between items-center mb-3">
-                    <Text className="text-base font-semibold">💰 Payment Status</Text>
+                    <Text className="text-base font-medium">💰 Payment Status</Text>
                     <View 
                       className="px-3 py-1 rounded-full"
                       style={{ backgroundColor: getStatusColor(order.traderToAdminPayment.paymentStatus) }}
                     >
-                      <Text className="text-white text-xs font-bold">
+                      <Text className="text-white text-xs font-medium">
                         {order.traderToAdminPayment.paymentStatus.toUpperCase()}
                       </Text>
                     </View>
@@ -304,19 +304,19 @@ const TraderTransport: React.FC = () => {
                   <View className="flex-row justify-between">
                     <View className="flex-1">
                       <Text className="text-gray-500 text-sm mb-1">Total Amount</Text>
-                      <Text className="text-base font-bold">
+                      <Text className="text-base font-medium">
                         ₹{order.traderToAdminPayment.totalAmount.toLocaleString()}
                       </Text>
                     </View>
                     <View className="flex-1 px-4">
                       <Text className="text-gray-500 text-sm mb-1">Paid Amount</Text>
-                      <Text className="text-base font-bold text-green-600">
+                      <Text className="text-base font-medium text-green-600">
                         ₹{order.traderToAdminPayment.paidAmount.toLocaleString()}
                       </Text>
                     </View>
                     <View className="flex-1">
                       <Text className="text-gray-500 text-sm mb-1">Remaining</Text>
-                      <Text className="text-base font-bold text-red-600">
+                      <Text className="text-base font-medium text-red-600">
                         ₹{order.traderToAdminPayment.remainingAmount.toLocaleString()}
                       </Text>
                     </View>
@@ -325,7 +325,7 @@ const TraderTransport: React.FC = () => {
 
                 {/* PRODUCT ITEMS */}
                 <View className="p-4">
-                  <Text className="text-base font-semibold text-gray-700 mb-3">📦 Order Items</Text>
+                  <Text className="text-base font-medium text-gray-700 mb-3">📦 Order Items</Text>
                   <View className="bg-gray-50 rounded-lg">
                     {order.productItems.map((item, idx) => (
                       <View
@@ -334,12 +334,12 @@ const TraderTransport: React.FC = () => {
                       >
                         <View className="flex-row justify-between">
                           <View>
-                            <Text className="font-semibold text-gray-800">{item.productId}</Text>
+                            <Text className="font-medium text-gray-800">{item.productId}</Text>
                             <Text className="text-gray-500 text-sm">Grade: {item.grade}</Text>
                           </View>
                           <View className="items-end">
                             <Text className="text-gray-600">Qty: {item.quantity}</Text>
-                            <Text className="font-bold text-gray-800">
+                            <Text className="font-medium text-gray-800">
                               ₹{item.totalAmount.toLocaleString()}
                             </Text>
                           </View>
@@ -352,7 +352,7 @@ const TraderTransport: React.FC = () => {
                 {/* TRANSPORTER INFO */}
                 {order.transporterDetails && (
                   <View className="bg-blue-50 mx-4 p-3 rounded-lg mb-4 border border-blue-100">
-                    <Text className="font-semibold text-blue-800 mb-2">🚚 Transporter Details</Text>
+                    <Text className="font-medium text-blue-800 mb-2">🚚 Transporter Details</Text>
                     <View className="flex-row justify-between mb-2">
                       <View>
                         <Text className="text-gray-600 text-sm">Name</Text>
@@ -388,10 +388,10 @@ const TraderTransport: React.FC = () => {
                   <View className="mx-4 mb-4 bg-cyan-50 rounded-xl border-2 border-cyan-400 p-4">
                     <View className="flex-row justify-between items-center mb-3">
                       <View className="flex-1">
-                        <Text className="text-cyan-800 font-semibold text-sm mb-1">
+                        <Text className="text-cyan-800 font-medium text-sm mb-1">
                           🔐 Delivery Secret Key Generated
                         </Text>
-                        <Text className="text-cyan-900 text-xl font-bold tracking-wider font-mono">
+                        <Text className="text-cyan-900 text-xl font-medium tracking-wider font-mono">
                           {order.traderDeliveryKey}
                         </Text>
                       </View>
@@ -404,13 +404,13 @@ const TraderTransport: React.FC = () => {
                         onPress={() => copyToClipboard(order.traderDeliveryKey!)}
                         className="flex-1 bg-cyan-600 py-3 rounded-lg items-center"
                       >
-                        <Text className="text-white font-semibold">📋 Copy Key</Text>
+                        <Text className="text-white font-medium">📋 Copy Key</Text>
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() => showKeyDetails(order)}
                         className="flex-1 bg-cyan-500 py-3 rounded-lg items-center"
                       >
-                        <Text className="text-white font-semibold">ℹ️ Details</Text>
+                        <Text className="text-white font-medium">ℹ️ Details</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -419,7 +419,7 @@ const TraderTransport: React.FC = () => {
                 {/* WAITING FOR PAYMENT MESSAGE */}
                 {order.traderToAdminPayment.paymentStatus !== "paid" && (
                   <View className="mx-4 mb-4 bg-yellow-100 p-3 rounded-lg border border-yellow-300">
-                    <Text className="text-yellow-900 font-bold">
+                    <Text className="text-yellow-900 font-medium">
                       ⏳ Delivery key will be generated once full payment is completed
                     </Text>
                     <Text className="text-yellow-800 text-sm mt-1">
@@ -431,14 +431,14 @@ const TraderTransport: React.FC = () => {
                 {/* DELIVERY STATUS */}
                 {order.deliveryStatus && (
                   <View className="mx-4 mb-4">
-                    <Text className="font-semibold text-gray-700 mb-2">📍 Delivery Status</Text>
+                    <Text className="font-medium text-gray-700 mb-2">📍 Delivery Status</Text>
                     <View 
                       className="self-start px-3 py-1 rounded-full"
                       style={{ 
                         backgroundColor: order.deliveryStatus === "delivered" ? "#10b981" : "#f59e0b" 
                       }}
                     >
-                      <Text className="text-white text-xs font-bold">
+                      <Text className="text-white text-xs font-medium">
                         {order.deliveryStatus.toUpperCase()}
                       </Text>
                     </View>
@@ -472,20 +472,20 @@ const TraderTransport: React.FC = () => {
         <View className="flex-1 bg-black/50 justify-center items-center p-4">
           <View className="bg-white rounded-2xl w-full max-w-md overflow-hidden">
             <View className="p-6">
-              <Text className="text-2xl font-bold text-gray-800 mb-4">
+              <Text className="text-2xl font-medium text-gray-800 mb-4">
                 🔐 Delivery Key Instructions
               </Text>
               
               <View className="bg-teal-50 p-4 rounded-xl border-2 border-teal-500 mb-6">
-                <Text className="text-teal-800 font-semibold text-sm mb-2">
+                <Text className="text-teal-800 font-medium text-sm mb-2">
                   Your Delivery Key:
                 </Text>
-                <Text className="text-2xl font-bold text-teal-900 tracking-wider font-mono text-center py-2">
+                <Text className="text-2xl font-medium text-teal-900 tracking-wider font-mono text-center py-2">
                   {selectedOrder?.traderDeliveryKey}
                 </Text>
               </View>
 
-              <Text className="text-base font-semibold text-gray-800 mb-3">
+              <Text className="text-base font-medium text-gray-800 mb-3">
                 📌 How to use this key:
               </Text>
               <View className="pl-4 mb-4">
@@ -497,7 +497,7 @@ const TraderTransport: React.FC = () => {
               </View>
 
               <View className="bg-red-50 p-3 rounded-lg border border-red-200 mb-6">
-                <Text className="text-red-700 font-semibold text-sm">
+                <Text className="text-red-700 font-medium text-sm">
                   ⚠️ Keep this key secure. Only share it when you receive the goods!
                 </Text>
               </View>
@@ -506,7 +506,7 @@ const TraderTransport: React.FC = () => {
                 onPress={() => setShowKeyModal(false)}
                 className="bg-blue-500 py-4 rounded-lg items-center"
               >
-                <Text className="text-white text-lg font-semibold">Got it!</Text>
+                <Text className="text-white text-lg font-medium">Got it!</Text>
               </TouchableOpacity>
             </View>
           </View>

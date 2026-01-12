@@ -2794,10 +2794,11 @@ const TraderOrderHistory: React.FC = () => {
     mobile: '',
     email: '',
   });
-
-  useEffect(() => {
-    fetchTraderInfo();
-  }, []);
+const [farmers, setFarmers] = useState<any[]>([]);
+useEffect(() => {
+  fetchTraderInfo();
+  fetchFarmers(); // Add this line
+}, []);
 
   const fetchTraderInfo = async () => {
     try {
@@ -2845,7 +2846,22 @@ const TraderOrderHistory: React.FC = () => {
       setLoading(false);
     }
   };
-
+const getFarmerInfo = (farmerId: string) => {
+  const farmer = farmers.find(f => f.farmerId === farmerId);
+  if (!farmer) return { name: 'Unknown', mobile: 'N/A', location: 'N/A' };
+  
+  const locationParts = [
+    farmer.personalInfo?.villageGramaPanchayat,
+    farmer.personalInfo?.taluk,
+    farmer.personalInfo?.district
+  ].filter(Boolean);
+  
+  return {
+    name: farmer.personalInfo?.name || 'Unknown',
+    mobile: farmer.personalInfo?.mobileNo || 'N/A',
+    location: locationParts.length > 0 ? locationParts.join(', ') : 'N/A'
+  };
+};
   const toggleExpand = (orderId: string) => {
     setExpandedOrders(prev =>
       prev.includes(orderId)
@@ -2853,7 +2869,16 @@ const TraderOrderHistory: React.FC = () => {
         : [...prev, orderId]
     );
   };
-
+const fetchFarmers = async () => {
+  try {
+    const response = await axios.get('https://kisan.etpl.ai/farmer/register/all');
+    if (response.data.success) {
+      setFarmers(response.data.data || []);
+    }
+  } catch (err) {
+    console.error('Error fetching farmers:', err);
+  }
+};
   const openPaymentModal = (order: Order) => {
     setPaymentModal({
       visible: true,
@@ -3211,22 +3236,31 @@ const handlePayment = async () => {
                   {isExpanded && (
                     <View className="p-4 border-t border-gray-200">
                       {/* Farmer Info */}
-                      <View className="mb-4">
-                        <Text className="text-gray-500 font-medium mb-2">
-                          Farmer Information
-                        </Text>
-                        <View className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                          <Text className="font-medium text-gray-800">
-                            Name: {order.farmerName || '-'}
-                          </Text>
-                          <Text className="text-gray-700">
-                            Mobile: {order.farmerMobile || '-'}
-                          </Text>
-                          <Text className="text-gray-700">
-                            Farmer ID: {order.farmerId}
-                          </Text>
-                        </View>
-                      </View>
+                   {/* Farmer Info */}
+<View className="mb-4">
+  <Text className="text-gray-500 font-medium mb-2">
+    Farmer Information
+  </Text>
+  {(() => {
+    const farmerInfo = getFarmerInfo(order.farmerId);
+    return (
+      <View className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+        <Text className="font-medium text-gray-800">
+          Name: {farmerInfo.name}
+        </Text>
+        <Text className="text-gray-700">
+          Mobile: {farmerInfo.mobile}
+        </Text>
+        <Text className="text-gray-700">
+          Location: {farmerInfo.location}
+        </Text>
+        <Text className="text-gray-700">
+          Farmer ID: {order.farmerId}
+        </Text>
+      </View>
+    );
+  })()}
+</View>
 
                       {/* Products */}
                       <View className="mb-4">

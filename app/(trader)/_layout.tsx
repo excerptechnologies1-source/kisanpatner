@@ -36,7 +36,13 @@ export default function TabLayout() {
         }}
       />
 
-
+<Tabs.Screen
+        name="TransportOrder"
+        options={{
+          title: "TransportOrder",
+          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+        }}
+      />
 
       {/* PROFILE */}
       <Tabs.Screen

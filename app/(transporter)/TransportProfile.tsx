@@ -1,26 +1,12 @@
+
+
+
+
+
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { router } from "expo-router";
-import {
-  ArrowLeft,
-  Building,
-  Car,
-  CheckCircle,
-  CreditCard,
-  Download,
-  Edit,
-  Eye,
-  FileText as FilePdf,
-  FileText,
-  Mail,
-  MapPin,
-  Phone,
-  Shield,
-  Truck,
-  User,
-  X
-} from 'lucide-react-native';
+import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -28,12 +14,37 @@ import {
   Image,
   Linking,
   Modal,
-  SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+// Icon mapping to match TransportVehicles style
+const Icons = {
+  FaArrowLeft: 'arrow-left',
+  FaBuilding: 'building',
+  FaCar: 'car',
+  FaCheckCircle: 'check-circle',
+  FaCreditCard: 'credit-card',
+  FaDownload: 'download',
+  FaEdit: 'edit',
+  FaEye: 'eye',
+  FaFile: 'file-o',
+  FaFilePdf: 'file-pdf-o',
+  FaFileText: 'file-text-o',
+  FaEnvelope: 'envelope',
+  FaMapMarker: 'map-marker',
+  FaPhone: 'phone',
+  FaShield: 'shield',
+  FaStar: 'star',
+  FaTruck: 'truck',
+  FaUser: 'user',
+  FaFileImage: 'file-image-o',
+  FaTimes: 'times'
+};
 
 interface TransportProfileData {
   personalInfo: {
@@ -92,12 +103,12 @@ interface TransportProfileData {
 }
 
 const TransportProfile: React.FC = () => {
-  const navigation = useNavigation();
   const [profile, setProfile] = useState<TransportProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [viewingDocument, setViewingDocument] = useState<{name: string, url: string} | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const API_BASE = 'https://kisan.etpl.ai';
 
   useEffect(() => {
     fetchProfile();
@@ -116,24 +127,36 @@ const TransportProfile: React.FC = () => {
       }
 
       let response;
-      const API_BASE = 'https://kisan.etpl.ai/transport';
+      const TRANSPORT_API_BASE = `${API_BASE}/api/transporter`;
       
+      // Try to fetch by ID first
       if (userId && userId !== 'undefined') {
         try {
-          response = await axios.get(`${API_BASE}/profile/${userId}`);
+          response = await axios.get(`${TRANSPORT_API_BASE}/profile/${userId}`);
         } catch (idError) {
+          // Try by mobile number if ID fails
           if (mobileNo) {
-            response = await axios.get(`${API_BASE}/mobile/${mobileNo}`);
+            response = await axios.get(`${TRANSPORT_API_BASE}/mobile/${mobileNo}`);
           } else {
             throw idError;
           }
         }
       } else if (mobileNo) {
-        response = await axios.get(`${API_BASE}/mobile/${mobileNo}`);
+        response = await axios.get(`${TRANSPORT_API_BASE}/mobile/${mobileNo}`);
       }
 
       if (response?.data.success) {
         const userData = response.data.data;
+        
+        console.log('Full API Response:', JSON.stringify(userData, null, 2));
+        
+        // Merge vehicleDocuments into documents for easier access
+        const allDocuments = {
+          ...(userData.documents || {}),
+          ...(userData.transportInfo?.vehicleDocuments || {})
+        };
+        
+        console.log('All merged documents:', allDocuments);
         
         setProfile({
           personalInfo: {
@@ -168,15 +191,17 @@ const TransportProfile: React.FC = () => {
             branch: userData.bankDetails?.branch || '',
             upiId: userData.bankDetails?.upiId || ''
           },
-          documents: userData.documents || {},
+          documents: allDocuments,
           rating: userData.rating || 0,
           totalTrips: userData.totalTrips || 0
         });
         
+        // Update userId in AsyncStorage if we got it from mobile lookup
         if (!userId && userData._id) {
           await AsyncStorage.setItem('userId', userData._id);
         }
         
+        // Update transporter_data in AsyncStorage
         await AsyncStorage.setItem('transporter_data', JSON.stringify(userData));
       } else {
         throw new Error(response?.data?.message || 'Failed to fetch profile');
@@ -184,17 +209,19 @@ const TransportProfile: React.FC = () => {
     } catch (error: any) {
       console.error('Error fetching profile:', error);
       
+      // More specific error messages
       if (error.response?.status === 404) {
         setError('Profile not found. Please complete your registration first.');
       } else if (error.response?.status === 401) {
         setError('Session expired. Please login again.');
         setTimeout(() => {
-          navigation.navigate('Login' as never);
+          router.push('/(login)/Login');
         }, 2000);
       } else {
         setError(error.message || 'Failed to load profile data. Please check your connection.');
       }
       
+      // Fallback to AsyncStorage data
       const storedData = await AsyncStorage.getItem('transporter_data');
       if (storedData) {
         try {
@@ -245,53 +272,156 @@ const TransportProfile: React.FC = () => {
   };
 
   const handleEditProfile = () => {
-    router.replace("/transportscreen/EditTransportProfile")
+    router.push('/(tabs)/transporterpages/EditTransportProfile');
+  };
+
+  // Fix: Format document URL properly
+  const formatDocumentUrl = (url: string): string => {
+    if (!url) {
+      console.log('formatDocumentUrl: Empty URL provided');
+      return '';
+    }
+    
+    console.log('formatDocumentUrl - Input:', url);
+    
+    // Clean the URL - remove any leading/trailing slashes
+    const cleanUrl = url.trim();
+    
+    // If it's already a full URL, return as is
+    if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+      console.log('formatDocumentUrl - Already full URL:', cleanUrl);
+      return cleanUrl;
+    }
+    
+    // Handle different URL formats
+    let finalUrl = '';
+    
+    if (cleanUrl.startsWith('uploads/')) {
+      finalUrl = `${API_BASE}/${cleanUrl}`;
+    } else if (cleanUrl.startsWith('/uploads/')) {
+      finalUrl = `${API_BASE}${cleanUrl}`;
+    } else if (cleanUrl.includes('/')) {
+      // Has some path but doesn't start with uploads
+      finalUrl = `${API_BASE}/${cleanUrl}`;
+    } else {
+      // Just a filename
+      finalUrl = `${API_BASE}/uploads/${cleanUrl}`;
+    }
+    
+    console.log('formatDocumentUrl - Output:', finalUrl);
+    return finalUrl;
   };
 
   const handleViewDocument = (name: string, url: string) => {
-    setViewingDocument({ name, url });
+    console.log('handleViewDocument called:', { name, url });
+    
+    if (!url) {
+      Alert.alert('Error', `Document URL is not available for ${name}`);
+      return;
+    }
+    
+    const formattedUrl = formatDocumentUrl(url);
+    console.log('Viewing document:', { 
+      name, 
+      originalUrl: url, 
+      formattedUrl,
+      'URL starts with uploads/': url.startsWith('uploads/'),
+      'URL starts with /uploads/': url.startsWith('/uploads/')
+    });
+    
+    // Check if it's an image or PDF
+    const isImage = url.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|bmp)$/);
+    const isPdf = url.toLowerCase().match(/\.pdf$/);
+    
+    if (!isImage && !isPdf) {
+      Alert.alert(
+        'Document Type',
+        'This document type cannot be previewed. Would you like to download it?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Download', onPress: () => handleDownloadDocument(url, name) }
+        ]
+      );
+      return;
+    }
+    
+    setViewingDocument({ name, url: formattedUrl });
     setModalVisible(true);
   };
 
   const handleDownloadDocument = async (url: string, filename: string) => {
     try {
-      const supported = await Linking.canOpenURL(url);
+      const formattedUrl = formatDocumentUrl(url);
+      console.log('Downloading document:', { filename, formattedUrl });
+      
+      const supported = await Linking.canOpenURL(formattedUrl);
       if (supported) {
-        await Linking.openURL(url);
+        await Linking.openURL(formattedUrl);
       } else {
-        Alert.alert('Error', 'Cannot open this file');
+        // Try different approaches for different file types
+        const fileExtension = filename.split('.').pop()?.toLowerCase();
+        const baseFilename = filename.split('.').slice(0, -1).join('.') || filename;
+        const safeFilename = baseFilename.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        
+        Alert.alert(
+          'Download Document',
+          `Download ${filename}?`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+              text: 'Download', 
+              onPress: async () => {
+                try {
+                  // Create a temporary link and trigger download
+                  const link = document.createElement('a');
+                  link.href = formattedUrl;
+                  link.download = `${safeFilename}.${fileExtension || 'jpg'}`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  
+                  Alert.alert('Success', 'Download started in browser');
+                } catch (linkError) {
+                  console.error('Error creating download link:', linkError);
+                  Alert.alert('Error', 'Cannot download this file directly. Please use a browser.');
+                }
+              }
+            }
+          ]
+        );
       }
-    } catch (error) {
-      Alert.alert('Error', 'Failed to download document');
+    } catch (error: any) {
+      console.error('Error downloading document:', error);
+      Alert.alert('Error', `Failed to download document: ${error.message}`);
     }
   };
 
   const documentCategories = [
     {
       title: 'Personal Documents',
-      icon: <User size={20} color="#3b82f6" />,
+      icon: <Icon name={Icons.FaUser} size={20} color="#5B5AF7" />,
       documents: [
-        { key: 'panCard', label: 'PAN Card', icon: <FileText size={20} color="#3b82f6" /> },
-        { key: 'aadharFront', label: 'Aadhar Card (Front)', icon: <CreditCard size={20} color="#3b82f6" /> },
-        { key: 'aadharBack', label: 'Aadhar Card (Back)', icon: <CreditCard size={20} color="#3b82f6" /> }
+        { key: 'panCard', label: 'PAN Card', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
+        { key: 'aadharFront', label: 'Aadhar Card (Front)', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> },
+        { key: 'aadharBack', label: 'Aadhar Card (Back)', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> }
       ]
     },
     {
       title: 'Vehicle Documents',
-      icon: <Car size={20} color="#3b82f6" />,
+      icon: <Icon name={Icons.FaCar} size={20} color="#5B5AF7" />,
       documents: [
-        { key: 'rcBook', label: 'RC Book', icon: <FileText size={20} color="#3b82f6" /> },
-        { key: 'insuranceDoc', label: 'Insurance Document', icon: <Shield size={20} color="#3b82f6" /> },
-        { key: 'pollutionCert', label: 'Pollution Certificate', icon: <FileText size={20} color="#3b82f6" /> },
-        { key: 'permitDoc', label: 'Permit Document', icon: <FileText size={20} color="#3b82f6" /> },
-        { key: 'driverLicense', label: 'Driver License', icon: <CreditCard size={20} color="#3b82f6" /> }
+        { key: 'rcBook', label: 'RC Book', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
+        { key: 'insuranceDoc', label: 'Insurance Document', icon: <Icon name={Icons.FaShield} size={20} color="#5B5AF7" /> },
+        { key: 'pollutionCert', label: 'Pollution Certificate', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
+        { key: 'permitDoc', label: 'Permit Document', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
+        { key: 'driverLicense', label: 'Driver License', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> }
       ]
     },
     {
       title: 'Bank Documents',
-      icon: <Building size={20} color="#3b82f6" />,
+      icon: <Icon name={Icons.FaBuilding} size={20} color="#5B5AF7" />,
       documents: [
-        { key: 'bankPassbook', label: 'Bank Passbook', icon: <CreditCard size={20} color="#3b82f6" /> }
+        { key: 'bankPassbook', label: 'Bank Passbook', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> }
       ]
     }
   ];
@@ -299,8 +429,8 @@ const TransportProfile: React.FC = () => {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-50">
-        <ActivityIndicator size="large" color="#3b82f6" />
-        <Text className="mt-4 text-lg font-medium text-gray-600">Loading profile...</Text>
+        <ActivityIndicator size="large" color="#5B5AF7" />
+        <Text className="mt-4 text-lg text-gray-600">Loading profile...</Text>
       </View>
     );
   }
@@ -319,7 +449,7 @@ const TransportProfile: React.FC = () => {
             </TouchableOpacity>
             <TouchableOpacity
               className="px-6 py-3 bg-green-500 rounded-lg"
-              onPress={() => navigation.navigate('Login' as never)}
+              onPress={() => router.push('/(login)/Login')}
             >
               <Text className="text-white font-medium">Go to Login</Text>
             </TouchableOpacity>
@@ -338,7 +468,7 @@ const TransportProfile: React.FC = () => {
           </Text>
           <TouchableOpacity
             className="px-6 py-3 bg-orange-500 rounded-lg self-center"
-            onPress={() => navigation.navigate('TransportRegistration' as never)}
+            onPress={() => router.push('/(auth)/onboarding')}
           >
             <Text className="text-white font-medium">Complete Registration</Text>
           </TouchableOpacity>
@@ -366,43 +496,73 @@ const TransportProfile: React.FC = () => {
                 onPress={() => setModalVisible(false)}
                 className="p-2"
               >
-                <X size={24} color="#666" />
+                <Icon name={Icons.FaTimes} size={24} color="#999" />
               </TouchableOpacity>
             </View>
             <ScrollView className="p-6">
-              {viewingDocument?.url && viewingDocument.url.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-                <Image
-                  source={{ uri: viewingDocument.url }}
-                  className="w-full h-96 rounded-lg"
-                  resizeMode="contain"
-                />
+              {viewingDocument?.url ? (
+                <>
+                  {viewingDocument.url.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|bmp)$/) ? (
+                    <Image
+                      source={{ uri: viewingDocument.url }}
+                      className="w-full h-96 rounded-lg"
+                      resizeMode="contain"
+                    />
+                  ) : viewingDocument.url.toLowerCase().match(/\.pdf$/) ? (
+                    <View className="p-8 bg-gray-50 rounded-lg items-center">
+                      <Icon name={Icons.FaFilePdf} size={80} color="#e74c3c" />
+                      <Text className="mt-4 text-gray-600 text-center font-medium">
+                        PDF document: {viewingDocument.name}
+                      </Text>
+                      <Text className="mt-2 text-xs text-gray-400 text-center" numberOfLines={2}>
+                        URL: {viewingDocument.url}
+                      </Text>
+                      <TouchableOpacity
+                        className="mt-4 px-6 py-3 bg-blue-500 rounded-lg"
+                        onPress={() => Linking.openURL(viewingDocument.url)}
+                      >
+                        <Text className="text-white font-medium">Open PDF in Browser</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <View className="p-8 bg-gray-50 rounded-lg items-center">
+                      <Icon name={Icons.FaFile} size={80} color="#95a5a6" />
+                      <Text className="mt-4 text-gray-600 text-center font-medium">
+                        Document: {viewingDocument.name}
+                      </Text>
+                      <Text className="mt-2 text-xs text-gray-400 text-center" numberOfLines={2}>
+                        URL: {viewingDocument.url}
+                      </Text>
+                      <TouchableOpacity
+                        className="mt-4 px-6 py-3 bg-blue-500 rounded-lg"
+                        onPress={() => Linking.openURL(viewingDocument.url)}
+                      >
+                        <Text className="text-white font-medium">Open Document</Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </>
               ) : (
-                <View className="p-8 bg-gray-50 rounded-lg items-center">
-                  <FilePdf size={80} color="#ef4444" />
-                  <Text className="mt-4 text-gray-600 text-center font-medium">
-                    PDF document: {viewingDocument?.name}
-                  </Text>
-                  <TouchableOpacity
-                    className="mt-4 px-6 py-3 bg-blue-500 rounded-lg"
-                    onPress={() => Linking.openURL(viewingDocument?.url || '')}
-                  >
-                    <Text className="text-white font-medium">Open Document</Text>
-                  </TouchableOpacity>
+                <View className="p-8 items-center justify-center">
+                  <Icon name={Icons.FaFile} size={60} color="#95a5a6" />
+                  <Text className="mt-4 text-gray-600">No document available</Text>
                 </View>
               )}
             </ScrollView>
             <View className="flex-row gap-3 p-6 border-t border-gray-200">
-              <TouchableOpacity
-                className="flex-1 flex-row items-center justify-center gap-2 px-4 py-3 bg-green-500 rounded-lg"
-                onPress={() => {
-                  if (viewingDocument) {
-                    handleDownloadDocument(viewingDocument.url, viewingDocument.name);
-                  }
-                }}
-              >
-                <Download size={20} color="white" />
-                <Text className="text-white font-medium font-medium">Download</Text>
-              </TouchableOpacity>
+              {viewingDocument?.url && (
+                <TouchableOpacity
+                  className="flex-1 flex-row items-center justify-center gap-2 px-4 py-3 bg-green-500 rounded-lg"
+                  onPress={() => {
+                    if (viewingDocument) {
+                      handleDownloadDocument(viewingDocument.url, viewingDocument.name);
+                    }
+                  }}
+                >
+                  <Icon name={Icons.FaDownload} size={20} color="white" />
+                  <Text className="text-white font-medium">Download</Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity
                 className="px-6 py-3 bg-red-500 rounded-lg"
                 onPress={() => setModalVisible(false)}
@@ -414,60 +574,84 @@ const TransportProfile: React.FC = () => {
         </View>
       </Modal>
 
-      {/* Main Content */}
-      <ScrollView className="flex-1" contentContainerClassName="pb-8">
-        {/* Header */}
+         {/* Header */}
         <View className="flex-row items-center justify-between p-6 bg-white border-b border-gray-200">
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={() => router.push('/(transporter)/home')}
             className="p-2 rounded-full bg-gray-100"
           >
-            <ArrowLeft size={24} color="#374151" />
+            <Icon name={Icons.FaArrowLeft} size={24} color="#000" />
           </TouchableOpacity>
           <Text className="text-2xl font-medium text-gray-900">My Profile</Text>
           <TouchableOpacity
-            className="flex-row items-center gap-2 px-4 py-2 bg-blue-500 rounded-lg"
+            className="flex-row items-center gap-2 px-4 py-2 bg-purple-600 rounded-lg"
             onPress={handleEditProfile}
           >
-            <Edit size={18} color="white" />
+            <Icon name={Icons.FaEdit} size={18} color="white" />
             <Text className="text-white font-medium">Edit Profile</Text>
           </TouchableOpacity>
         </View>
 
+      {/* Main Content */}
+      <ScrollView className="flex-1" contentContainerClassName="pb-8">
+     
+
+        {/* Stats Card */}
+        <View className="flex-row gap-4 mx-6 mt-6">
+          <View className="flex-1 bg-blue-500 rounded-xl p-5 flex-row items-center gap-4 shadow-sm shadow-blue-200">
+            <View className="bg-white/20 p-3 rounded-full">
+              <Icon name={Icons.FaStar} size={24} color="white" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-white text-sm opacity-90">Rating</Text>
+              <Text className="text-white text-2xl font-bold">{profile.rating.toFixed(1)} ⭐</Text>
+            </View>
+          </View>
+          <View className="flex-1 bg-purple-500 rounded-xl p-5 flex-row items-center gap-4 shadow-sm shadow-purple-200">
+            <View className="bg-white/20 p-3 rounded-full">
+              <Icon name={Icons.FaTruck} size={24} color="white" />
+            </View>
+            <View className="flex-1">
+              <Text className="text-white text-sm opacity-90">Total Trips</Text>
+              <Text className="text-white text-2xl font-bold">{profile.totalTrips}</Text>
+            </View>
+          </View>
+        </View>
+
         {/* Personal Information */}
-        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm">
-          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-            <User size={24} color="#3b82f6" />
+        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
+          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+            <Icon name={Icons.FaUser} size={24} color="#5B5AF7" />
             <Text className="text-xl font-medium text-gray-900">Personal Information</Text>
           </View>
           
           <View className="space-y-4 mb-6">
             <View className="flex-row items-center gap-4">
               <View className="bg-blue-50 p-3 rounded-lg">
-                <User size={20} color="#3b82f6" />
+                <Icon name={Icons.FaUser} size={20} color="#5B5AF7" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Full Name</Text>
+                <Text className="text-sm text-gray-500">Full Name</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.name}</Text>
               </View>
             </View>
 
             <View className="flex-row items-center gap-4">
               <View className="bg-green-50 p-3 rounded-lg">
-                <Phone size={20} color="#10b981" />
+                <Icon name={Icons.FaPhone} size={20} color="#27ae60" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Mobile Number</Text>
+                <Text className="text-sm text-gray-500">Mobile Number</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.mobileNo}</Text>
               </View>
             </View>
 
             <View className="flex-row items-center gap-4">
               <View className="bg-yellow-50 p-3 rounded-lg">
-                <Mail size={20} color="#f59e0b" />
+                <Icon name={Icons.FaEnvelope} size={20} color="#f39c12" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Email</Text>
+                <Text className="text-sm text-gray-500">Email</Text>
                 <Text className="text-base font-medium text-gray-900">
                   {profile.personalInfo.email || 'Not provided'}
                 </Text>
@@ -476,10 +660,10 @@ const TransportProfile: React.FC = () => {
 
             <View className="flex-row items-center gap-4">
               <View className="bg-purple-50 p-3 rounded-lg">
-                <MapPin size={20} color="#8b5cf6" />
+                <Icon name={Icons.FaMapMarker} size={20} color="#9b59b6" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Complete Address</Text>
+                <Text className="text-sm text-gray-500">Complete Address</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.address}</Text>
               </View>
             </View>
@@ -488,29 +672,29 @@ const TransportProfile: React.FC = () => {
           <View className="bg-gray-50 rounded-lg p-5">
             <View className="flex-row justify-between mb-4">
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">State</Text>
+                <Text className="text-sm text-gray-500">State</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.state}</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">District</Text>
+                <Text className="text-sm text-gray-500">District</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.district}</Text>
               </View>
             </View>
             
             <View className="flex-row justify-between mb-4">
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Taluk</Text>
+                <Text className="text-sm text-gray-500">Taluk</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.taluk}</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Pincode</Text>
+                <Text className="text-sm text-gray-500">Pincode</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.pincode}</Text>
               </View>
             </View>
             
             {profile.personalInfo.villageGramaPanchayat && (
               <View className="mb-4">
-                <Text className="text-sm font-medium text-gray-500">Village/Grama Panchayat</Text>
+                <Text className="text-sm text-gray-500">Village/Grama Panchayat</Text>
                 <Text className="text-base font-medium text-gray-900">
                   {profile.personalInfo.villageGramaPanchayat}
                 </Text>
@@ -519,14 +703,14 @@ const TransportProfile: React.FC = () => {
             
             {profile.personalInfo.post && (
               <View className="mb-4">
-                <Text className="text-sm font-medium text-gray-500">Post</Text>
+                <Text className="text-sm text-gray-500">Post</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.post}</Text>
               </View>
             )}
             
             {profile.personalInfo.location && (
               <View>
-                <Text className="text-sm font-medium text-gray-500">Location</Text>
+                <Text className="text-sm text-gray-500">Location</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.personalInfo.location}</Text>
               </View>
             )}
@@ -534,29 +718,29 @@ const TransportProfile: React.FC = () => {
         </View>
 
         {/* Transport Information */}
-        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm">
-          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-            <Truck size={24} color="#3b82f6" />
+        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
+          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+            <Icon name={Icons.FaTruck} size={24} color="#5B5AF7" />
             <Text className="text-xl font-medium text-gray-900">Transport Information</Text>
           </View>
           
           <View className="space-y-4 mb-6">
             <View className="flex-row items-center gap-4">
               <View className="bg-blue-50 p-3 rounded-lg">
-                <Truck size={20} color="#3b82f6" />
+                <Icon name={Icons.FaTruck} size={20} color="#5B5AF7" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Vehicle Type</Text>
+                <Text className="text-sm text-gray-500">Vehicle Type</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.transportInfo.vehicleType}</Text>
               </View>
             </View>
 
             <View className="flex-row items-center gap-4">
               <View className="bg-green-50 p-3 rounded-lg">
-                <Truck size={20} color="#10b981" />
+                <Icon name={Icons.FaTruck} size={20} color="#27ae60" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Vehicle Capacity</Text>
+                <Text className="text-sm text-gray-500">Vehicle Capacity</Text>
                 <Text className="text-base font-medium text-gray-900">
                   {profile.transportInfo.vehicleCapacity.value} {profile.transportInfo.vehicleCapacity.unit}
                 </Text>
@@ -565,10 +749,10 @@ const TransportProfile: React.FC = () => {
 
             <View className="flex-row items-center gap-4">
               <View className="bg-yellow-50 p-3 rounded-lg">
-                <CreditCard size={20} color="#f59e0b" />
+                <Icon name={Icons.FaCreditCard} size={20} color="#f39c12" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm font-medium text-gray-500">Vehicle Number</Text>
+                <Text className="text-sm text-gray-500">Vehicle Number</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.transportInfo.vehicleNumber}</Text>
               </View>
             </View>
@@ -578,25 +762,25 @@ const TransportProfile: React.FC = () => {
           {profile.transportInfo.driverInfo?.driverName && (
             <View className="bg-gray-50 rounded-lg p-5 mb-6">
               <View className="flex-row items-center gap-3 mb-4">
-                <User size={20} color="#3b82f6" />
+                <Icon name={Icons.FaUser} size={20} color="#5B5AF7" />
                 <Text className="text-lg font-medium text-gray-900">Driver Information</Text>
               </View>
               <View className="flex-row flex-wrap justify-between">
                 <View className="min-w-[45%] mb-3">
-                  <Text className="text-sm font-medium text-gray-500">Driver Name</Text>
+                  <Text className="text-sm text-gray-500">Driver Name</Text>
                   <Text className="text-base font-medium text-gray-900">
                     {profile.transportInfo.driverInfo.driverName}
                   </Text>
                 </View>
                 <View className="min-w-[45%] mb-3">
-                  <Text className="text-sm font-medium text-gray-500">Driver Mobile</Text>
+                  <Text className="text-sm text-gray-500">Driver Mobile</Text>
                   <Text className="text-base font-medium text-gray-900">
                     {profile.transportInfo.driverInfo.driverMobileNo}
                   </Text>
                 </View>
                 {profile.transportInfo.driverInfo.driverAge && (
                   <View className="min-w-[45%]">
-                    <Text className="text-sm font-medium text-gray-500">Driver Age</Text>
+                    <Text className="text-sm text-gray-500">Driver Age</Text>
                     <Text className="text-base font-medium text-gray-900">
                       {profile.transportInfo.driverInfo.driverAge} years
                     </Text>
@@ -605,105 +789,46 @@ const TransportProfile: React.FC = () => {
               </View>
             </View>
           )}
-
-          {/* Vehicle Documents */}
-          {profile.transportInfo.vehicleDocuments && Object.keys(profile.transportInfo.vehicleDocuments).length > 0 && (
-            <View className="bg-blue-50 rounded-lg p-5 border border-blue-100">
-              <View className="flex-row items-center gap-3 mb-4">
-                <FileText size={20} color="#3b82f6" />
-                <Text className="text-lg font-medium text-gray-900">Vehicle Documents</Text>
-              </View>
-              <View className="space-y-3">
-                {profile.transportInfo.vehicleDocuments.rcBook && (
-                  <View className="bg-white rounded-lg p-4 border border-gray-200">
-                    <View className="flex-row items-center gap-3 mb-3">
-                      <FileText size={20} color="#3b82f6" />
-                      <Text className="text-base font-medium text-gray-900">RC Book</Text>
-                    </View>
-                    <View className="flex-row gap-2">
-                      <TouchableOpacity
-                        className="flex-1 flex-row items-center justify-center gap-2 py-2 bg-blue-500 rounded-lg"
-                        onPress={() => handleViewDocument('RC Book', profile.transportInfo.vehicleDocuments!.rcBook!)}
-                      >
-                        <Eye size={16} color="white" />
-                        <Text className="text-white font-medium">View</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        className="w-12 items-center justify-center py-2 bg-green-500 rounded-lg"
-                        onPress={() => handleDownloadDocument(profile.transportInfo.vehicleDocuments!.rcBook!, 'RC_Book.pdf')}
-                      >
-                        <Download size={16} color="white" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
-                
-                {profile.transportInfo.vehicleDocuments.insuranceDoc && (
-                  <View className="bg-white rounded-lg p-4 border border-gray-200">
-                    <View className="flex-row items-center gap-3 mb-3">
-                      <Shield size={20} color="#10b981" />
-                      <Text className="text-base font-medium text-gray-900">Insurance</Text>
-                    </View>
-                    <View className="flex-row gap-2">
-                      <TouchableOpacity
-                        className="flex-1 flex-row items-center justify-center gap-2 py-2 bg-blue-500 rounded-lg"
-                        onPress={() => handleViewDocument('Insurance Document', profile.transportInfo.vehicleDocuments!.insuranceDoc!)}
-                      >
-                        <Eye size={16} color="white" />
-                        <Text className="text-white font-medium">View</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        className="w-12 items-center justify-center py-2 bg-green-500 rounded-lg"
-                        onPress={() => handleDownloadDocument(profile.transportInfo.vehicleDocuments!.insuranceDoc!, 'Insurance.pdf')}
-                      >
-                        <Download size={16} color="white" />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                )}
-              </View>
-            </View>
-          )}
         </View>
 
         {/* Bank Details */}
-        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm">
-          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-            <Building size={24} color="#3b82f6" />
+        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
+          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+            <Icon name={Icons.FaBuilding} size={24} color="#5B5AF7" />
             <Text className="text-xl font-medium text-gray-900">Bank Details</Text>
           </View>
           
           <View className="space-y-5">
             <View>
-              <Text className="text-sm font-medium text-gray-500">Account Holder Name</Text>
+              <Text className="text-sm text-gray-500">Account Holder Name</Text>
               <Text className="text-base font-medium text-gray-900">{profile.bankDetails.accountHolderName}</Text>
             </View>
             
             <View>
-              <Text className="text-sm font-medium text-gray-500">Bank Name</Text>
+              <Text className="text-sm text-gray-500">Bank Name</Text>
               <Text className="text-base font-medium text-gray-900">{profile.bankDetails.bankName}</Text>
             </View>
             
             <View>
-              <Text className="text-sm font-medium text-gray-500">Account Number</Text>
+              <Text className="text-sm text-gray-500">Account Number</Text>
               <Text className="text-base font-medium text-gray-900">{profile.bankDetails.accountNumber}</Text>
             </View>
             
             <View>
-              <Text className="text-sm font-medium text-gray-500">IFSC Code</Text>
+              <Text className="text-sm text-gray-500">IFSC Code</Text>
               <Text className="text-base font-medium text-gray-900">{profile.bankDetails.ifscCode}</Text>
             </View>
             
             {profile.bankDetails.branch && (
               <View>
-                <Text className="text-sm font-medium text-gray-500">Branch</Text>
+                <Text className="text-sm text-gray-500">Branch</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.bankDetails.branch}</Text>
               </View>
             )}
             
             {profile.bankDetails.upiId && (
               <View>
-                <Text className="text-sm font-medium text-gray-500">UPI ID</Text>
+                <Text className="text-sm text-gray-500">UPI ID</Text>
                 <Text className="text-base font-medium text-gray-900">{profile.bankDetails.upiId}</Text>
               </View>
             )}
@@ -712,9 +837,9 @@ const TransportProfile: React.FC = () => {
 
         {/* Documents Section */}
         {profile.documents && Object.keys(profile.documents).length > 0 && (
-          <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm">
-            <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-200">
-              <FileText size={24} color="#3b82f6" />
+          <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
+            <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
+              <Icon name={Icons.FaFileText} size={24} color="#5B5AF7" />
               <Text className="text-xl font-medium text-gray-900">Uploaded Documents</Text>
             </View>
             
@@ -732,7 +857,7 @@ const TransportProfile: React.FC = () => {
                     <Text className="text-lg font-medium text-gray-900">{category.title}</Text>
                   </View>
                   
-                  <View className="space-y-3">
+                  <View className="space-y-4">
                     {categoryDocuments.map((doc) => {
                       const documentUrl = profile.documents![doc.key as keyof typeof profile.documents] as string;
                       return (
@@ -749,9 +874,14 @@ const TransportProfile: React.FC = () => {
                             <View className="flex-1">
                               <Text className="text-base font-medium text-gray-900">{doc.label}</Text>
                               <View className="flex-row items-center gap-1 mt-1">
-                                <CheckCircle size={14} color="#10b981" />
+                                <Icon name={Icons.FaCheckCircle} size={14} color="#27ae60" />
                                 <Text className="text-xs text-green-600 font-medium">Uploaded</Text>
                               </View>
+                              {documentUrl && (
+                                <Text className="text-xs text-gray-400 font-mono mt-1" numberOfLines={1}>
+                                  {documentUrl.substring(0, 30)}...
+                                </Text>
+                              )}
                             </View>
                           </View>
                           
@@ -760,14 +890,14 @@ const TransportProfile: React.FC = () => {
                               className="flex-1 flex-row items-center justify-center gap-2 py-3 bg-blue-500 rounded-lg"
                               onPress={() => handleViewDocument(doc.label, documentUrl)}
                             >
-                              <Eye size={16} color="white" />
+                              <Icon name={Icons.FaEye} size={16} color="white" />
                               <Text className="text-white font-medium">View Document</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                               className="w-14 items-center justify-center py-3 bg-green-500 rounded-lg"
-                              onPress={() => handleDownloadDocument(documentUrl, `${doc.label.replace(/\s+/g, '_')}.pdf`)}
+                              onPress={() => handleDownloadDocument(documentUrl, doc.label)}
                             >
-                              <Download size={16} color="white" />
+                              <Icon name={Icons.FaDownload} size={16} color="white" />
                             </TouchableOpacity>
                           </View>
                         </TouchableOpacity>
@@ -779,9 +909,9 @@ const TransportProfile: React.FC = () => {
             })}
             
             {/* Missing Documents */}
-            <View className="bg-orange-50 rounded-lg p-5 border border-orange-200">
+            <View className="bg-orange-50 rounded-lg p-5 border border-orange-200 mt-6">
               <Text className="text-lg font-medium text-orange-700 mb-2">Missing Documents</Text>
-              <Text className="text-sm text-gray-600 mb-4 font-medium">
+              <Text className="text-sm text-gray-600 mb-4">
                 The following documents are not uploaded yet. Please upload them through the edit profile section or contact support.
               </Text>
               <View className="flex-row flex-wrap gap-2">
