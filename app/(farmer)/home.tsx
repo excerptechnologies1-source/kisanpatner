@@ -193,90 +193,73 @@ const fetchUnreadCount = async () => {
 };
 
   // ✅ CORRECTED FETCH FUNCTION FOR YOUR API STRUCTURE
-  const fetchCropPhotos = async () => {
+const fetchCropPhotos = async () => {
   setIsLoadingCropPhotos(true);
   setCropPhotosError(null);
 
   try {
-    // 1️⃣ Get farmerId from AsyncStorage
-    const farmerId = await AsyncStorage.getItem('farmerId');
-    if (!farmerId) {
-      throw new Error('Farmer not logged in');
-    }
+    // 1️⃣ Get farmerId
+    const farmerId = await AsyncStorage.getItem("farmerId");
+    if (!farmerId) throw new Error("Farmer not logged in");
 
-    // 2️⃣ Call API
+    // 2️⃣ API call
     const response = await fetch(
       `https://kisan.etpl.ai/product/by-farmer/${farmerId}`
     );
 
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw new Error(`HTTP error: ${response.status}`);
     }
 
-    const apiResponse = await response.json();
+    const result = await response.json();
 
-    if (!Array.isArray(apiResponse.data) || apiResponse.data.length === 0) {
+    if (!Array.isArray(result.data)) {
       setCropPhotosList([]);
       return;
     }
 
-    // 3️⃣ Filter products by farmerId (SAFETY CHECK)
-    const farmerProducts = apiResponse.data.filter(
-      (product: any) => product.farmerId === farmerId
+    // 3️⃣ Filter farmer crops
+    const farmerCrops = result.data.filter(
+      (crop: any) => crop.farmerId === farmerId
     );
 
-    if (farmerProducts.length === 0) {
-      setCropPhotosList([]);
-      return;
-    }
-
-    // 4️⃣ Find latest updated product
-    const latestProduct = farmerProducts.reduce(
-      (latest: any, current: any) => {
-        if (!latest) return current;
-
-        const latestTime = Date.parse(latest.updatedAt);
-        const currentTime = Date.parse(current.updatedAt);
-
-        return currentTime > latestTime ? current : latest;
-      },
-      null
+    // 4️⃣ SORT BY updatedAt (LATEST FIRST)
+    farmerCrops.sort(
+      (a: any, b: any) =>
+        new Date(b.updatedAt).getTime() -
+        new Date(a.updatedAt).getTime()
     );
 
-    // 5️⃣ Extract gradePhotos from gradePrices
-    if (
-      !latestProduct ||
-      !Array.isArray(latestProduct.gradePrices) ||
-      latestProduct.gradePrices.length === 0
-    ) {
-      setCropPhotosList([]);
-      return;
-    }
+    // 5️⃣ Pick ONE image PER crop
+    const imagesPerCrop: string[] = [];
 
-    // 6️⃣ Collect ALL gradePhotos
-    const gradePhotos: string[] = [];
+    for (const crop of farmerCrops) {
+      let pickedImage: string | null = null;
 
-    latestProduct.gradePrices.forEach((grade: any) => {
-      if (Array.isArray(grade.gradePhotos)) {
-        grade.gradePhotos.forEach((photo: string) => {
-          const cleanPath = photo.replace(/\\/g, '/');
-          gradePhotos.push(`https://kisan.etpl.ai/${cleanPath}`);
-        });
+      for (const grade of crop.gradePrices || []) {
+        if (grade.gradePhotos?.length > 0) {
+          const cleanPath = grade.gradePhotos[0].replace(/\\/g, "/");
+          pickedImage = `https://kisan.etpl.ai/${cleanPath}`;
+          break; // ✅ only one image per crop
+        }
       }
-    });
 
-    // 7️⃣ Update UI
-    setCropPhotosList(gradePhotos);
+      if (pickedImage) {
+        imagesPerCrop.push(pickedImage);
+      }
+    }
 
-  } catch (error) {
-    console.error('Grade photo fetch error:', error);
-    setCropPhotosError(
-      error instanceof Error ? error.message : 'Something went wrong'
-    );
+    // 6️⃣ Update UI (optional: limit to latest 4)
+    setCropPhotosList(imagesPerCrop.slice(0, 4));
+
+  } catch (error: any) {
+    console.error("Crop photo fetch error:", error);
+    setCropPhotosError(error.message || "Something went wrong");
   } finally {
     setIsLoadingCropPhotos(false);
   }
 };
+
 
 
   // Call on component mount

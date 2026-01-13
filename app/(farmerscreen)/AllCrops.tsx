@@ -6,13 +6,12 @@
 //   ChevronLeft,
 //   ChevronRight,
 //   Clock,
-//   Heart,
 //   MapPin,
 //   MessageCircle,
 //   Package,
 //   ShoppingBag,
 //   TrendingUp,
-//   X,
+//   X
 // } from 'lucide-react-native';
 // import React, { useEffect, useState } from 'react';
 // import {
@@ -29,6 +28,7 @@
 //   View,
 // } from 'react-native';
 // import { SafeAreaView } from 'react-native-safe-area-context';
+// import { useRouter,router } from "expo-router";
 
 // const { width } = Dimensions.get('window');
 
@@ -149,6 +149,7 @@
 //     try {
 //       setLoading(true);
 //       const farmerId = await AsyncStorage.getItem('farmerId');
+//       console.log(farmerId);
 //       if (!farmerId) {
 //         throw new Error('Farmer not logged in');
 //       }
@@ -418,10 +419,10 @@
 
 //   if (loading && !refreshing) {
 //     return (
-//       <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-//         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//       <SafeAreaView className="flex-1 bg-white">
+//         <View className="flex-1 justify-center items-center">
 //           <ActivityIndicator size="large" color="#16a34a" />
-//           <Text style={{ marginTop: 16, color: '#6b7280', fontSize: 16 }}>
+//           <Text className="mt-4 text-gray-500 text-base">
 //             Loading your products...
 //           </Text>
 //         </View>
@@ -430,63 +431,35 @@
 //   }
 
 //   return (
-//     <SafeAreaView style={{ flex: 1, backgroundColor: '#f9fafb' }}>
+//     <SafeAreaView className="flex-1 bg-gray-50">
 //       {/* Header */}
-//       <View style={{
-//         flexDirection: 'row',
-//         alignItems: 'center',
-//         justifyContent: 'space-between',
-//         paddingHorizontal: 16,
-//         paddingVertical: 12,
-//         backgroundColor: '#fff',
-//         borderBottomWidth: 1,
-//         borderBottomColor: '#e5e7eb',
-//       }}>
-//         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//       <View className="flex-row items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+//         <View className="flex-row items-center">
 //           <TouchableOpacity
-//             onPress={() => {/* Navigate back */}}
-//             style={{ padding: 8, marginRight: 8 }}
+//             onPress={() => router.back()}
+//             className="p-2 mr-2"
 //           >
 //             <ChevronLeft size={24} color="#374151" />
 //           </TouchableOpacity>
 //           <View>
-//             <Text style={{ fontSize: 20, fontWeight: '600', color: '#111827' }}>
+//             <Text className="text-xl font-medium text-gray-900">
 //               My Products
 //             </Text>
-//             <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>
+//             <Text className="text-sm text-gray-500 mt-0.5">
 //               {products.length} products listed
 //             </Text>
 //           </View>
 //         </View>
 
-//         <View style={{ flexDirection: 'row', gap: 8 }}>
+//         <View className="flex-row gap-2">
 //           <TouchableOpacity
 //             onPress={() => {/* Navigate to notifications */}}
-//             style={{
-//               backgroundColor: '#fef3c7',
-//               paddingHorizontal: 12,
-//               paddingVertical: 8,
-//               borderRadius: 8,
-//               flexDirection: 'row',
-//               alignItems: 'center',
-//               position: 'relative',
-//             }}
+//             className="bg-amber-100 px-3 py-2 rounded-lg flex-row items-center relative"
 //           >
 //             <Bell size={18} color="#f59e0b" />
 //             {unreadCount > 0 && (
-//               <View style={{
-//                 position: 'absolute',
-//                 top: -4,
-//                 right: -4,
-//                 backgroundColor: '#ef4444',
-//                 borderRadius: 10,
-//                 minWidth: 20,
-//                 height: 20,
-//                 justifyContent: 'center',
-//                 alignItems: 'center',
-//                 paddingHorizontal: 4,
-//               }}>
-//                 <Text style={{ color: '#fff', fontSize: 10, fontWeight: '600' }}>
+//               <View className="absolute -top-1 -right-1 bg-red-500 rounded-full min-w-[20px] h-5 justify-center items-center px-1">
+//                 <Text className="text-white text-[10px] font-medium">
 //                   {unreadCount}
 //                 </Text>
 //               </View>
@@ -495,47 +468,25 @@
 
 //           <TouchableOpacity
 //             onPress={() => {/* Navigate to orders */}}
-//             style={{
-//               backgroundColor: '#3b82f6',
-//               paddingHorizontal: 12,
-//               paddingVertical: 8,
-//               borderRadius: 8,
-//               flexDirection: 'row',
-//               alignItems: 'center',
-//             }}
+//             className="bg-blue-500 px-3 py-2 rounded-lg flex-row items-center"
 //           >
 //             <Package size={18} color="#fff" />
-//             <Text style={{ color: '#fff', marginLeft: 6, fontWeight: '500' }}>
-//               Orders
-//             </Text>
 //           </TouchableOpacity>
 //         </View>
 //       </View>
 
 //       {/* Error Message */}
 //       {error && (
-//         <View style={{
-//           margin: 16,
-//           padding: 16,
-//           backgroundColor: '#fee2e2',
-//           borderRadius: 12,
-//           borderWidth: 1,
-//           borderColor: '#fecaca',
-//         }}>
-//           <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
-//             <View style={{
-//               backgroundColor: '#fecaca',
-//               padding: 8,
-//               borderRadius: 8,
-//               marginRight: 12,
-//             }}>
+//         <View className="m-4 p-4 bg-red-50 rounded-xl border border-red-200">
+//           <View className="flex-row items-start">
+//             <View className="bg-red-200 p-2 rounded-lg mr-3">
 //               <X size={20} color="#dc2626" />
 //             </View>
-//             <View style={{ flex: 1 }}>
-//               <Text style={{ fontWeight: '600', color: '#991b1b', marginBottom: 4 }}>
+//             <View className="flex-1">
+//               <Text className="font-medium text-red-900 mb-1">
 //                 Error
 //               </Text>
-//               <Text style={{ color: '#b91c1c', fontSize: 14 }}>
+//               <Text className="text-red-700 text-sm">
 //                 {error}
 //               </Text>
 //             </View>
@@ -545,8 +496,8 @@
 
 //       {/* Products List */}
 //       <ScrollView
-//         style={{ flex: 1 }}
-//         contentContainerStyle={{ padding: 16 }}
+//         className="flex-1"
+//         contentContainerClassName="p-4"
 //         refreshControl={
 //           <RefreshControl
 //             refreshing={refreshing}
@@ -568,101 +519,38 @@
 //           return (
 //             <View
 //               key={product._id}
-//               style={{
-//                 backgroundColor: '#fff',
-//                 borderRadius: 16,
-//                 marginBottom: 16,
-//                 overflow: 'hidden',
-//                 shadowColor: '#000',
-//                 shadowOffset: { width: 0, height: 2 },
-//                 shadowOpacity: 0.1,
-//                 shadowRadius: 8,
-//                 elevation: 3,
-//               }}
+//               className="bg-white rounded-lg mb-4 overflow-hidden border border-gray-200 p-3"
 //             >
 //               {/* Product Image */}
-//               <View style={{ position: 'relative' }}>
+//               <View className="relative">
 //                 <Image
 //                   source={{ uri: getImageUrl(product.cropPhotos[0]) }}
-//                   style={{ width: '100%', height: 200 }}
+//                   className="w-full h-[200px] rounded-xl"
 //                   resizeMode="cover"
 //                 />
                 
-//                 {/* Badges */}
-//                 <View style={{
-//                   position: 'absolute',
-//                   top: 12,
-//                   left: 12,
-//                   backgroundColor: '#16a34a',
-//                   paddingHorizontal: 12,
-//                   paddingVertical: 6,
-//                   borderRadius: 20,
-//                 }}>
-//                   <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>
-//                     {product.farmingType}
-//                   </Text>
-//                 </View>
 
-//                 <TouchableOpacity
-//                   style={{
-//                     position: 'absolute',
-//                     top: 12,
-//                     right: 12,
-//                     backgroundColor: '#fff',
-//                     width: 36,
-//                     height: 36,
-//                     borderRadius: 18,
-//                     justifyContent: 'center',
-//                     alignItems: 'center',
-//                   }}
-//                 >
-//                   <Heart size={20} color="#ef4444" />
-//                 </TouchableOpacity>
-
-//                 <View style={{
-//                   position: 'absolute',
-//                   bottom: 12,
-//                   left: 12,
-//                   backgroundColor: 'rgba(0,0,0,0.7)',
-//                   paddingHorizontal: 10,
-//                   paddingVertical: 4,
-//                   borderRadius: 6,
-//                 }}>
-//                   <Text style={{ color: '#fff', fontSize: 11, fontWeight: '500' }}>
+//                 <View className="absolute bottom-3 left-3 bg-black/70 px-2.5 py-1 rounded-md">
+//                   <Text className="text-white text-[11px] font-medium">
 //                     ID: {product.productId}
 //                   </Text>
 //                 </View>
 //               </View>
 
 //               {/* Product Details */}
-//               <View style={{ padding: 16 }}>
-//                 <View style={{ marginBottom: 12 }}>
-//                   <Text style={{
-//                     fontSize: 18,
-//                     fontWeight: '600',
-//                     color: '#111827',
-//                     marginBottom: 6,
-//                   }}>
+//               <View className="p-4">
+//                 <View className="mb-3">
+//                   <Text className="text-lg font-medium text-gray-900 mb-1.5">
 //                     {product.cropBriefDetails}
 //                   </Text>
-//                   <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-//                     <View style={{
-//                       backgroundColor: '#f3f4f6',
-//                       paddingHorizontal: 10,
-//                       paddingVertical: 4,
-//                       borderRadius: 6,
-//                     }}>
-//                       <Text style={{ fontSize: 12, color: '#374151', fontWeight: '500' }}>
+//                   <View className="flex-row flex-wrap gap-2">
+//                     <View className="bg-gray-100 px-2.5 py-1 rounded-md">
+//                       <Text className="text-xs text-gray-700 font-medium">
 //                         {product.categoryId.categoryName}
 //                       </Text>
 //                     </View>
-//                     <View style={{
-//                       backgroundColor: '#f3f4f6',
-//                       paddingHorizontal: 10,
-//                       paddingVertical: 4,
-//                       borderRadius: 6,
-//                     }}>
-//                       <Text style={{ fontSize: 12, color: '#374151', fontWeight: '500' }}>
+//                     <View className="bg-gray-100 px-2.5 py-1 rounded-md">
+//                       <Text className="text-xs text-gray-700 font-medium">
 //                         {product.subCategoryId.subCategoryName}
 //                       </Text>
 //                     </View>
@@ -670,46 +558,28 @@
 //                 </View>
 
 //                 {/* Stats Cards */}
-//                 <View style={{ flexDirection: 'row', gap: 8, marginBottom: 12 }}>
-//                   <View style={{
-//                     flex: 1,
-//                     backgroundColor: '#fef3c7',
-//                     padding: 12,
-//                     borderRadius: 10,
-//                     alignItems: 'center',
-//                   }}>
-//                     <Text style={{ fontSize: 24, fontWeight: '700', color: '#f59e0b' }}>
+//                 <View className="flex-row gap-2 mb-3">
+//                   <View className="flex-1 bg-amber-100 p-3 rounded-lg items-center">
+//                     <Text className="text-2xl font-medium text-amber-500">
 //                       {pendingOffersCount}
 //                     </Text>
-//                     <Text style={{ fontSize: 11, color: '#92400e', marginTop: 2 }}>
+//                     <Text className="text-[11px] text-amber-900 mt-0.5">
 //                       Pending Offers
 //                     </Text>
 //                   </View>
-//                   <View style={{
-//                     flex: 1,
-//                     backgroundColor: '#d1fae5',
-//                     padding: 12,
-//                     borderRadius: 10,
-//                     alignItems: 'center',
-//                   }}>
-//                     <Text style={{ fontSize: 24, fontWeight: '700', color: '#16a34a' }}>
+//                   <View className="flex-1 bg-green-100 p-3 rounded-lg items-center">
+//                     <Text className="text-2xl font-medium text-green-600">
 //                       {totalSalesCount}
 //                     </Text>
-//                     <Text style={{ fontSize: 11, color: '#065f46', marginTop: 2 }}>
+//                     <Text className="text-[11px] text-green-900 mt-0.5">
 //                       Total Sales
 //                     </Text>
 //                   </View>
-//                   <View style={{
-//                     flex: 1,
-//                     backgroundColor: '#dbeafe',
-//                     padding: 12,
-//                     borderRadius: 10,
-//                     alignItems: 'center',
-//                   }}>
-//                     <Text style={{ fontSize: 24, fontWeight: '700', color: '#2563eb' }}>
+//                   <View className="flex-1 bg-blue-100 p-3 rounded-lg items-center">
+//                     <Text className="text-2xl font-medium text-blue-600">
 //                       {product.gradePrices.length}
 //                     </Text>
-//                     <Text style={{ fontSize: 11, color: '#1e40af', marginTop: 2 }}>
+//                     <Text className="text-[11px] text-blue-900 mt-0.5">
 //                       Grades
 //                     </Text>
 //                   </View>
@@ -718,45 +588,37 @@
 //                 {/* View All Grades Button */}
 //                 <TouchableOpacity
 //                   onPress={() => openGradeModal(product)}
-//                   style={{
-//                     backgroundColor: '#16a34a',
-//                     paddingVertical: 14,
-//                     borderRadius: 10,
-//                     flexDirection: 'row',
-//                     justifyContent: 'center',
-//                     alignItems: 'center',
-//                     marginBottom: 12,
-//                   }}
+//                   className="bg-green-600 py-3.5 rounded-xl flex-row justify-center items-center mb-3"
 //                 >
-//                   <Text style={{ color: '#fff', fontWeight: '600', fontSize: 15, marginRight: 8 }}>
+//                   <Text className="text-white font-medium text-[15px] mr-2">
 //                     View All Grades & Offers
 //                   </Text>
 //                   <ChevronRight size={18} color="#fff" />
 //                 </TouchableOpacity>
 
 //                 {/* Product Info */}
-//                 <View style={{ gap: 8 }}>
-//                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//                 <View className="gap-2 flex-row justify-between flex-wrap border-t border-gray-200 ">
+//                   <View className="flex-row items-center pt-3">
 //                     <Package size={16} color="#6b7280" />
-//                     <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 8 }}>
+//                     <Text className="text-[13px] text-gray-500 ml-2">
 //                       {product.packageMeasurement} {product.packagingType}
 //                     </Text>
 //                   </View>
-//                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//                   <View className="flex-row items-center">
 //                     <Calendar size={16} color="#6b7280" />
-//                     <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 8 }}>
+//                     <Text className="text-[13px] text-gray-500 ml-2">
 //                       {formatDate(product.deliveryDate)}
 //                     </Text>
 //                   </View>
-//                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//                   <View className="flex-row items-center">
 //                     <Clock size={16} color="#6b7280" />
-//                     <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 8 }}>
+//                     <Text className="text-[13px] text-gray-500 ml-2">
 //                       {product.deliveryTime}
 //                     </Text>
 //                   </View>
-//                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//                   <View className="flex-row items-center">
 //                     <MapPin size={16} color="#6b7280" />
-//                     <Text style={{ fontSize: 13, color: '#6b7280', marginLeft: 8 }}>
+//                     <Text className="text-[13px] text-gray-500 ml-2">
 //                       {product.nearestMarket}
 //                     </Text>
 //                   </View>
@@ -767,28 +629,13 @@
 //         })}
 
 //         {products.length === 0 && !loading && (
-//           <View style={{ paddingVertical: 64, alignItems: 'center' }}>
-//             <View style={{
-//               backgroundColor: '#f3f4f6',
-//               padding: 32,
-//               borderRadius: 24,
-//               alignItems: 'center',
-//             }}>
+//           <View className="py-16 items-center">
+//             <View className="bg-gray-100 p-8 rounded-3xl items-center">
 //               <Package size={48} color="#9ca3af" />
-//               <Text style={{
-//                 fontSize: 18,
-//                 fontWeight: '600',
-//                 color: '#6b7280',
-//                 marginTop: 16,
-//               }}>
+//               <Text className="text-lg font-medium text-gray-500 mt-4">
 //                 No products listed yet
 //               </Text>
-//               <Text style={{
-//                 fontSize: 14,
-//                 color: '#9ca3af',
-//                 marginTop: 8,
-//                 textAlign: 'center',
-//               }}>
+//               <Text className="text-sm text-gray-400 mt-2 text-center">
 //                 Start by adding your first product to see it here
 //               </Text>
 //             </View>
@@ -802,85 +649,56 @@
 //         animationType="slide"
 //         presentationStyle="pageSheet"
 //       >
-//         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-//           <View style={{
-//             flexDirection: 'row',
-//             alignItems: 'center',
-//             paddingHorizontal: 16,
-//             paddingVertical: 12,
-//             borderBottomWidth: 1,
-//             borderBottomColor: '#e5e7eb',
-//           }}>
+//         <SafeAreaView className="flex-1 bg-white">
+//           <View className="flex-row items-center px-4 py-3 border-b border-gray-200">
 //             <TouchableOpacity
 //               onPress={() => setShowGradeModal(false)}
-//               style={{ padding: 8 }}
+//               className="p-2"
 //             >
 //               <ChevronLeft size={24} color="#374151" />
 //             </TouchableOpacity>
-//             <View style={{ marginLeft: 12, flex: 1 }}>
-//               <Text style={{ fontSize: 20, fontWeight: '600', color: '#111827' }}>
+//             <View className="ml-3 flex-1">
+//               <Text className="text-xl font-medium text-gray-900">
 //                 All Grades
 //               </Text>
-//               <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>
+//               <Text className="text-sm text-gray-500 mt-0.5">
 //                 {selectedProduct?.cropBriefDetails}
 //               </Text>
 //             </View>
 //           </View>
 
-//           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
+//           <ScrollView className="flex-1" contentContainerClassName="p-4">
 //             {selectedProduct?.gradePrices.map((grade) => (
 //               <View
 //                 key={grade._id}
-//                 style={{
-//                   backgroundColor: '#fff',
-//                   borderWidth: 2,
-//                   borderColor: '#e5e7eb',
-//                   borderRadius: 16,
-//                   padding: 16,
-//                   marginBottom: 16,
-//                 }}
+//                 className="bg-white border-2 border-gray-200 rounded-2xl p-4 mb-4"
 //               >
 //                 {/* Grade Header */}
-//                 <View style={{
-//                   flexDirection: 'row',
-//                   justifyContent: 'space-between',
-//                   alignItems: 'flex-start',
-//                   marginBottom: 12,
-//                 }}>
-//                   <View style={{ flex: 1 }}>
-//                     <Text style={{ fontSize: 18, fontWeight: '600', color: '#111827' }}>
+//                 <View className="flex-row justify-between items-start mb-3">
+//                   <View className="flex-1">
+//                     <Text className="text-lg font-medium text-gray-900">
 //                       {grade.grade} Grade
 //                     </Text>
-//                     <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8, gap: 8 }}>
-//                       <View style={{
-//                         backgroundColor: '#d1fae5',
-//                         paddingHorizontal: 8,
-//                         paddingVertical: 4,
-//                         borderRadius: 6,
-//                       }}>
-//                         <Text style={{ fontSize: 11, fontWeight: '600', color: '#065f46' }}>
+//                     <View className="flex-row items-center mt-2 gap-2">
+//                       <View className="bg-green-100 px-2 py-1 rounded-md">
+//                         <Text className="text-[11px] font-medium text-green-900">
 //                           {grade.totalQty} {selectedProduct.unitMeasurement} available
 //                         </Text>
 //                       </View>
 //                       {grade.quantityType === 'bulk' && (
-//                         <View style={{
-//                           backgroundColor: '#dbeafe',
-//                           paddingHorizontal: 8,
-//                           paddingVertical: 4,
-//                           borderRadius: 6,
-//                         }}>
-//                           <Text style={{ fontSize: 11, fontWeight: '600', color: '#1e40af' }}>
+//                         <View className="bg-blue-100 px-2 py-1 rounded-md">
+//                           <Text className="text-[11px] font-medium text-blue-900">
 //                             Bulk Only
 //                           </Text>
 //                         </View>
 //                       )}
 //                     </View>
 //                   </View>
-//                   <View style={{ alignItems: 'flex-end' }}>
-//                     <Text style={{ fontSize: 28, fontWeight: '700', color: '#16a34a' }}>
+//                   <View className="items-end">
+//                     <Text className="text-[28px] font-medium text-green-600">
 //                       ₹{grade.pricePerUnit}
 //                     </Text>
-//                     <Text style={{ fontSize: 12, color: '#6b7280' }}>
+//                     <Text className="text-xs text-gray-500">
 //                       /{selectedProduct.unitMeasurement}
 //                     </Text>
 //                   </View>
@@ -888,23 +706,18 @@
 
 //                 {/* Purchase History Summary */}
 //                 {grade.purchaseHistory && grade.purchaseHistory.length > 0 && (
-//                   <View style={{ marginBottom: 12 }}>
-//                     <View style={{
-//                       flexDirection: 'row',
-//                       alignItems: 'center',
-//                       justifyContent: 'space-between',
-//                       marginBottom: 8,
-//                     }}>
-//                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+//                   <View className="mb-3">
+//                     <View className="flex-row items-center justify-between mb-2">
+//                       <View className="flex-row items-center">
 //                         <ShoppingBag size={16} color="#16a34a" />
-//                         <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827', marginLeft: 8 }}>
+//                         <Text className="text-[15px] font-medium text-gray-900 ml-2">
 //                           Recent Sales
 //                         </Text>
 //                       </View>
 //                       <TouchableOpacity
 //                         onPress={() => openPurchaseHistoryModal(selectedProduct, grade)}
 //                       >
-//                         <Text style={{ fontSize: 13, color: '#2563eb', fontWeight: '500' }}>
+//                         <Text className="text-[13px] text-blue-600 font-medium">
 //                           View All ({grade.purchaseHistory.length})
 //                         </Text>
 //                       </TouchableOpacity>
@@ -912,29 +725,22 @@
 //                     {grade.purchaseHistory.slice(0, 2).map((purchase, idx) => (
 //                       <View
 //                         key={idx}
-//                         style={{
-//                           backgroundColor: '#f0fdf4',
-//                           padding: 12,
-//                           borderRadius: 10,
-//                           borderWidth: 1,
-//                           borderColor: '#bbf7d0',
-//                           marginBottom: 8,
-//                         }}
+//                         className="bg-green-50 p-3 rounded-xl border border-green-200 mb-2"
 //                       >
-//                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-//                           <View style={{ flex: 1 }}>
-//                             <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+//                         <View className="flex-row justify-between items-center">
+//                           <View className="flex-1">
+//                             <Text className="text-sm font-medium text-gray-900">
 //                               {purchase.traderName}
 //                             </Text>
-//                             <Text style={{ fontSize: 11, color: '#6b7280', marginTop: 2 }}>
+//                             <Text className="text-[11px] text-gray-500 mt-0.5">
 //                               {new Date(purchase.purchaseDate).toLocaleDateString('en-IN')}
 //                             </Text>
 //                           </View>
-//                           <View style={{ alignItems: 'flex-end' }}>
-//                             <Text style={{ fontSize: 16, fontWeight: '700', color: '#16a34a' }}>
+//                           <View className="items-end">
+//                             <Text className="text-base font-medium text-green-600">
 //                               ₹{purchase.totalAmount.toLocaleString('en-IN')}
 //                             </Text>
-//                             <Text style={{ fontSize: 11, color: '#6b7280' }}>
+//                             <Text className="text-[11px] text-gray-500">
 //                               {purchase.quantity} × ₹{purchase.pricePerUnit}
 //                             </Text>
 //                           </View>
@@ -945,51 +751,35 @@
 //                 )}
 
 //                 {/* Action Buttons */}
-//                 <View style={{ marginBottom: 12, gap: 8 }}>
+//                 <View className="mb-3 gap-2">
 //                   <TouchableOpacity
-//                     style={{
-//                       flexDirection: 'row',
-//                       alignItems: 'center',
-//                       justifyContent: 'center',
-//                       paddingVertical: 14,
-//                       borderRadius: 10,
-//                       backgroundColor: grade.totalQty === 0 ? '#e5e7eb' : '#16a34a',
-//                     }}
+//                     className={`flex-row items-center justify-center py-3.5 rounded-xl ${
+//                       grade.totalQty === 0 ? 'bg-gray-200' : 'bg-green-600'
+//                     }`}
 //                     onPress={() => handleAcceptOffer(selectedProduct, grade)}
 //                     disabled={grade.totalQty === 0}
 //                   >
 //                     <Check size={18} color={grade.totalQty === 0 ? '#9ca3af' : '#fff'} />
-//                     <Text style={{
-//                       marginLeft: 8,
-//                       fontWeight: '600',
-//                       fontSize: 15,
-//                       color: grade.totalQty === 0 ? '#9ca3af' : '#fff',
-//                     }}>
+//                     <Text className={`ml-2 font-medium text-[15px] ${
+//                       grade.totalQty === 0 ? 'text-gray-400' : 'text-white'
+//                     }`}>
 //                       Accept Offer
 //                     </Text>
 //                   </TouchableOpacity>
 
 //                   <TouchableOpacity
-//                     style={{
-//                       flexDirection: 'row',
-//                       alignItems: 'center',
-//                       justifyContent: 'center',
-//                       paddingVertical: 14,
-//                       borderRadius: 10,
-//                       borderWidth: 2,
-//                       borderColor: grade.totalQty === 0 ? '#e5e7eb' : '#16a34a',
-//                       backgroundColor: grade.totalQty === 0 ? '#f9fafb' : '#fff',
-//                     }}
+//                     className={`flex-row items-center justify-center py-3.5 rounded-xl border-2 ${
+//                       grade.totalQty === 0
+//                         ? 'border-gray-200 bg-gray-50'
+//                         : 'border-green-600 bg-white'
+//                     }`}
 //                     onPress={() => handleMakeOffer(selectedProduct, grade)}
 //                     disabled={grade.totalQty === 0}
 //                   >
 //                     <TrendingUp size={18} color={grade.totalQty === 0 ? '#9ca3af' : '#16a34a'} />
-//                     <Text style={{
-//                       marginLeft: 8,
-//                       fontWeight: '600',
-//                       fontSize: 15,
-//                       color: grade.totalQty === 0 ? '#9ca3af' : '#16a34a',
-//                     }}>
+//                     <Text className={`ml-2 font-medium text-[15px] ${
+//                       grade.totalQty === 0 ? 'text-gray-400' : 'text-green-600'
+//                     }`}>
 //                       Make Offer
 //                     </Text>
 //                   </TouchableOpacity>
@@ -997,23 +787,16 @@
 
 //                 {/* Offers Summary */}
 //                 {grade.offers && grade.offers.length > 0 && (
-//                   <View style={{ paddingTop: 12, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
+//                   <View className="pt-3 border-t border-gray-200">
 //                     <TouchableOpacity
 //                       onPress={() => openOffersModal(selectedProduct, grade)}
-//                       style={{
-//                         flexDirection: 'row',
-//                         justifyContent: 'space-between',
-//                         alignItems: 'center',
-//                         padding: 12,
-//                         backgroundColor: '#fef3c7',
-//                         borderRadius: 10,
-//                       }}
+//                       className="flex-row justify-between items-center p-3 bg-amber-100 rounded-xl"
 //                     >
 //                       <View>
-//                         <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+//                         <Text className="text-[15px] font-medium text-gray-900">
 //                           View All Offers
 //                         </Text>
-//                         <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+//                         <Text className="text-xs text-gray-500 mt-0.5">
 //                           {grade.offers.filter(o => o.status === 'pending').length} pending offers
 //                         </Text>
 //                       </View>
@@ -1023,23 +806,23 @@
 //                 )}
 
 //                 {/* Quick Stats */}
-//                 <View style={{ marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
-//                   <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
-//                     <View style={{ alignItems: 'center' }}>
-//                       <Text style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Offers</Text>
-//                       <Text style={{ fontSize: 20, fontWeight: '700', color: '#111827' }}>
+//                 <View className="mt-3 pt-3 border-t border-gray-200">
+//                   <View className="flex-row justify-around">
+//                     <View className="items-center">
+//                       <Text className="text-xs text-gray-500 mb-1">Offers</Text>
+//                       <Text className="text-xl font-medium text-gray-900">
 //                         {grade.offers?.length || 0}
 //                       </Text>
 //                     </View>
-//                     <View style={{ alignItems: 'center' }}>
-//                       <Text style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Sold</Text>
-//                       <Text style={{ fontSize: 20, fontWeight: '700', color: '#111827' }}>
+//                     <View className="items-center">
+//                       <Text className="text-xs text-gray-500 mb-1">Sold</Text>
+//                       <Text className="text-xl font-medium text-gray-900">
 //                         {grade.purchaseHistory?.length || 0}
 //                       </Text>
 //                     </View>
-//                     <View style={{ alignItems: 'center' }}>
-//                       <Text style={{ fontSize: 12, color: '#6b7280', marginBottom: 4 }}>Available</Text>
-//                       <Text style={{ fontSize: 20, fontWeight: '700', color: '#111827' }}>
+//                     <View className="items-center">
+//                       <Text className="text-xs text-gray-500 mb-1">Available</Text>
+//                       <Text className="text-xl font-medium text-gray-900">
 //                         {grade.totalQty}
 //                       </Text>
 //                     </View>
@@ -1057,141 +840,89 @@
 //         animationType="slide"
 //         presentationStyle="pageSheet"
 //       >
-//         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-//           <View style={{
-//             flexDirection: 'row',
-//             alignItems: 'center',
-//             paddingHorizontal: 16,
-//             paddingVertical: 12,
-//             borderBottomWidth: 1,
-//             borderBottomColor: '#e5e7eb',
-//           }}>
+//         <SafeAreaView className="flex-1 bg-white">
+//           <View className="flex-row items-center px-4 py-3 border-b border-gray-200">
 //             <TouchableOpacity
 //               onPress={() => setShowOffersModal(false)}
-//               style={{ padding: 8 }}
+//               className="p-2"
 //             >
 //               <ChevronLeft size={24} color="#374151" />
 //             </TouchableOpacity>
-//             <View style={{ marginLeft: 12, flex: 1 }}>
-//               <Text style={{ fontSize: 20, fontWeight: '600', color: '#111827' }}>
+//             <View className="ml-3 flex-1">
+//               <Text className="text-xl font-medium text-gray-900">
 //                 All Offers
 //               </Text>
-//               <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>
+//               <Text className="text-sm text-gray-500 mt-0.5">
 //                 {selectedGrade?.grade} Grade
 //               </Text>
 //             </View>
 //           </View>
 
-//           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
+//           <ScrollView className="flex-1" contentContainerClassName="p-4">
 //             {selectedGrade?.offers && selectedGrade.offers.length > 0 ? (
 //               selectedGrade.offers.map((offer) => (
 //                 <View
 //                   key={offer._id}
-//                   style={{
-//                     backgroundColor: '#fff',
-//                     borderWidth: 2,
-//                     borderColor:
-//                       offer.status === 'pending' ? '#fde047' :
-//                       offer.status === 'accepted' ? '#86efac' :
-//                       offer.status === 'rejected' ? '#fca5a5' :
-//                       '#93c5fd',
-//                     borderRadius: 16,
-//                     padding: 16,
-//                     marginBottom: 12,
-//                   }}
+//                   className={`bg-white border-2 rounded-2xl p-4 mb-3 ${
+//                     offer.status === 'pending' ? 'border-yellow-300' :
+//                     offer.status === 'accepted' ? 'border-green-300' :
+//                     offer.status === 'rejected' ? 'border-red-300' :
+//                     'border-blue-300'
+//                   }`}
 //                 >
-//                   <View style={{
-//                     flexDirection: 'row',
-//                     justifyContent: 'space-between',
-//                     alignItems: 'flex-start',
-//                     marginBottom: 12,
-//                   }}>
-//                     <View style={{ flex: 1 }}>
-//                       <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+//                   <View className="flex-row justify-between items-start mb-3">
+//                     <View className="flex-1">
+//                       <Text className="text-[15px] font-medium text-gray-900">
 //                         {offer.traderName || `Trader ${offer.traderId.substring(0, 8)}...`}
 //                       </Text>
-//                       <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+//                       <Text className="text-xs text-gray-500 mt-1">
 //                         {new Date(offer.createdAt).toLocaleDateString('en-IN')}
 //                       </Text>
 //                     </View>
-//                     <View style={{
-//                       paddingHorizontal: 10,
-//                       paddingVertical: 4,
-//                       borderRadius: 12,
-//                       backgroundColor:
-//                         offer.status === 'pending' ? '#fef3c7' :
-//                         offer.status === 'accepted' ? '#d1fae5' :
-//                         offer.status === 'rejected' ? '#fee2e2' :
-//                         '#dbeafe',
-//                     }}>
-//                       <Text style={{
-//                         fontSize: 11,
-//                         fontWeight: '600',
-//                         color:
-//                           offer.status === 'pending' ? '#92400e' :
-//                           offer.status === 'accepted' ? '#065f46' :
-//                           offer.status === 'rejected' ? '#991b1b' :
-//                           '#1e40af',
-//                       }}>
+//                     <View className={`px-2.5 py-1 rounded-xl ${
+//                       offer.status === 'pending' ? 'bg-amber-100' :
+//                       offer.status === 'accepted' ? 'bg-green-100' :
+//                       offer.status === 'rejected' ? 'bg-red-50' :
+//                       'bg-blue-100'
+//                     }`}>
+//                       <Text className={`text-[11px] font-medium ${
+//                         offer.status === 'pending' ? 'text-amber-900' :
+//                         offer.status === 'accepted' ? 'text-green-900' :
+//                         offer.status === 'rejected' ? 'text-red-900' :
+//                         'text-blue-900'
+//                       }`}>
 //                         {offer.status.toUpperCase()}
 //                       </Text>
 //                     </View>
 //                   </View>
 
-//                   <View style={{
-//                     backgroundColor: '#f9fafb',
-//                     padding: 12,
-//                     borderRadius: 10,
-//                     marginBottom: 12,
-//                   }}>
-//                     <View style={{
-//                       flexDirection: 'row',
-//                       justifyContent: 'space-between',
-//                       marginBottom: 8,
-//                     }}>
-//                       <Text style={{ fontSize: 13, color: '#6b7280' }}>Offered Price:</Text>
-//                       <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+//                   <View className="bg-gray-50 p-3 rounded-xl mb-3">
+//                     <View className="flex-row justify-between mb-2">
+//                       <Text className="text-[13px] text-gray-500">Offered Price:</Text>
+//                       <Text className="text-[15px] font-medium text-gray-900">
 //                         ₹{offer.offeredPrice}/{selectedProduct?.unitMeasurement}
 //                       </Text>
 //                     </View>
-//                     <View style={{
-//                       flexDirection: 'row',
-//                       justifyContent: 'space-between',
-//                       marginBottom: 8,
-//                     }}>
-//                       <Text style={{ fontSize: 13, color: '#6b7280' }}>Quantity:</Text>
-//                       <Text style={{ fontSize: 15, fontWeight: '600', color: '#111827' }}>
+//                     <View className="flex-row justify-between mb-2">
+//                       <Text className="text-[13px] text-gray-500">Quantity:</Text>
+//                       <Text className="text-[15px] font-medium text-gray-900">
 //                         {offer.quantity} {selectedProduct?.unitMeasurement}
 //                       </Text>
 //                     </View>
-//                     <View style={{
-//                       flexDirection: 'row',
-//                       justifyContent: 'space-between',
-//                       paddingTop: 8,
-//                       borderTopWidth: 1,
-//                       borderTopColor: '#e5e7eb',
-//                     }}>
-//                       <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827' }}>
+//                     <View className="flex-row justify-between pt-2 border-t border-gray-200">
+//                       <Text className="text-sm font-medium text-gray-900">
 //                         Total Amount:
 //                       </Text>
-//                       <Text style={{ fontSize: 18, fontWeight: '700', color: '#16a34a' }}>
+//                       <Text className="text-lg font-medium text-green-600">
 //                         ₹{(offer.offeredPrice * offer.quantity).toLocaleString('en-IN')}
 //                       </Text>
 //                     </View>
 //                   </View>
 
 //                   {offer.status === 'pending' && selectedProduct && selectedGrade && (
-//                     <View style={{ flexDirection: 'row', gap: 8 }}>
+//                     <View className="flex-row gap-2">
 //                       <TouchableOpacity
-//                         style={{
-//                           flex: 1,
-//                           flexDirection: 'row',
-//                           alignItems: 'center',
-//                           justifyContent: 'center',
-//                           paddingVertical: 12,
-//                           backgroundColor: '#16a34a',
-//                           borderRadius: 10,
-//                         }}
+//                         className="flex-1 flex-row items-center justify-center py-3 bg-green-600 rounded-xl"
 //                         onPress={() => acceptTraderOffer(
 //                           selectedProduct._id,
 //                           selectedGrade._id,
@@ -1202,39 +933,23 @@
 //                         )}
 //                       >
 //                         <Check size={16} color="#fff" />
-//                         <Text style={{ marginLeft: 6, fontWeight: '600', color: '#fff' }}>
+//                         <Text className="ml-1.5 font-medium text-white">
 //                           Accept
 //                         </Text>
 //                       </TouchableOpacity>
 
 //                       <TouchableOpacity
-//                         style={{
-//                           flex: 1,
-//                           flexDirection: 'row',
-//                           alignItems: 'center',
-//                           justifyContent: 'center',
-//                           paddingVertical: 12,
-//                           backgroundColor: '#3b82f6',
-//                           borderRadius: 10,
-//                         }}
+//                         className="flex-1 flex-row items-center justify-center py-3 bg-blue-500 rounded-xl"
 //                         onPress={() => openCounterOfferModal(selectedProduct, selectedGrade, offer)}
 //                       >
 //                         <TrendingUp size={16} color="#fff" />
-//                         <Text style={{ marginLeft: 6, fontWeight: '600', color: '#fff' }}>
+//                         <Text className="ml-1.5 font-medium text-white">
 //                           Counter
 //                         </Text>
 //                       </TouchableOpacity>
 
 //                       <TouchableOpacity
-//                         style={{
-//                           flex: 1,
-//                           flexDirection: 'row',
-//                           alignItems: 'center',
-//                           justifyContent: 'center',
-//                           paddingVertical: 12,
-//                           backgroundColor: '#ef4444',
-//                           borderRadius: 10,
-//                         }}
+//                         className="flex-1 flex-row items-center justify-center py-3 bg-red-500 rounded-xl"
 //                         onPress={() => rejectTraderOffer(
 //                           selectedProduct._id,
 //                           selectedGrade._id,
@@ -1242,7 +957,7 @@
 //                         )}
 //                       >
 //                         <X size={16} color="#fff" />
-//                         <Text style={{ marginLeft: 6, fontWeight: '600', color: '#fff' }}>
+//                         <Text className="ml-1.5 font-medium text-white">
 //                           Reject
 //                         </Text>
 //                       </TouchableOpacity>
@@ -1250,19 +965,15 @@
 //                   )}
 
 //                   {offer.status === 'countered' && (
-//                     <View style={{
-//                       backgroundColor: '#dbeafe',
-//                       padding: 12,
-//                       borderRadius: 10,
-//                     }}>
-//                       <Text style={{ fontSize: 14, fontWeight: '600', color: '#1e3a8a', marginBottom: 6 }}>
+//                     <View className="bg-blue-100 p-3 rounded-xl">
+//                       <Text className="text-sm font-medium text-blue-950 mb-1.5">
 //                         Your Counter Offer
 //                       </Text>
-//                       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-//                         <Text style={{ fontSize: 12, color: '#1e40af' }}>
+//                       <View className="flex-row justify-between">
+//                         <Text className="text-xs text-blue-700">
 //                           ₹{offer.counterPrice} × {offer.counterQuantity} = ₹{((offer.counterPrice || 0) * (offer.counterQuantity || 0)).toLocaleString('en-IN')}
 //                         </Text>
-//                         <Text style={{ fontSize: 11, color: '#2563eb' }}>
+//                         <Text className="text-[11px] text-blue-600">
 //                           Waiting for response
 //                         </Text>
 //                       </View>
@@ -1271,28 +982,13 @@
 //                 </View>
 //               ))
 //             ) : (
-//               <View style={{ paddingVertical: 64, alignItems: 'center' }}>
-//                 <View style={{
-//                   backgroundColor: '#f3f4f6',
-//                   padding: 32,
-//                   borderRadius: 24,
-//                   alignItems: 'center',
-//                 }}>
+//               <View className="py-16 items-center">
+//                 <View className="bg-gray-100 p-8 rounded-3xl items-center">
 //                   <MessageCircle size={48} color="#9ca3af" />
-//                   <Text style={{
-//                     fontSize: 18,
-//                     fontWeight: '600',
-//                     color: '#6b7280',
-//                     marginTop: 16,
-//                   }}>
+//                   <Text className="text-lg font-medium text-gray-500 mt-4">
 //                     No offers yet
 //                   </Text>
-//                   <Text style={{
-//                     fontSize: 14,
-//                     color: '#9ca3af',
-//                     marginTop: 8,
-//                     textAlign: 'center',
-//                   }}>
+//                   <Text className="text-sm text-gray-400 mt-2 text-center">
 //                     Offers from traders will appear here
 //                   </Text>
 //                 </View>
@@ -1308,80 +1004,56 @@
 //         animationType="slide"
 //         presentationStyle="pageSheet"
 //       >
-//         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-//           <View style={{
-//             flexDirection: 'row',
-//             alignItems: 'center',
-//             paddingHorizontal: 16,
-//             paddingVertical: 12,
-//             borderBottomWidth: 1,
-//             borderBottomColor: '#e5e7eb',
-//           }}>
+//         <SafeAreaView className="flex-1 bg-white">
+//           <View className="flex-row items-center px-4 py-3 border-b border-gray-200">
 //             <TouchableOpacity
 //               onPress={() => setShowPurchaseHistoryModal(false)}
-//               style={{ padding: 8 }}
+//               className="p-2"
 //             >
 //               <ChevronLeft size={24} color="#374151" />
 //             </TouchableOpacity>
-//             <View style={{ marginLeft: 12, flex: 1 }}>
-//               <Text style={{ fontSize: 20, fontWeight: '600', color: '#111827' }}>
+//             <View className="ml-3 flex-1">
+//               <Text className="text-xl font-medium text-gray-900">
 //                 Purchase History
 //               </Text>
-//               <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 2 }}>
+//               <Text className="text-sm text-gray-500 mt-0.5">
 //                 {selectedGrade?.grade} Grade
 //               </Text>
 //             </View>
 //           </View>
 
-//           <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
+//           <ScrollView className="flex-1" contentContainerClassName="p-4">
 //             {selectedGrade?.purchaseHistory && selectedGrade.purchaseHistory.length > 0 ? (
 //               selectedGrade.purchaseHistory.map((purchase, idx) => (
 //                 <View
 //                   key={idx}
-//                   style={{
-//                     backgroundColor: '#f0fdf4',
-//                     borderWidth: 1,
-//                     borderColor: '#bbf7d0',
-//                     borderRadius: 12,
-//                     padding: 16,
-//                     marginBottom: 12,
-//                   }}
+//                   className="bg-green-50 border border-green-200 rounded-xl p-4 mb-3"
 //                 >
-//                   <View style={{
-//                     flexDirection: 'row',
-//                     justifyContent: 'space-between',
-//                     alignItems: 'flex-start',
-//                     marginBottom: 12,
-//                   }}>
-//                     <View style={{ flex: 1 }}>
-//                       <Text style={{ fontSize: 16, fontWeight: '600', color: '#111827' }}>
+//                   <View className="flex-row justify-between items-start mb-3">
+//                     <View className="flex-1">
+//                       <Text className="text-base font-medium text-gray-900">
 //                         {purchase.traderName}
 //                       </Text>
-//                       <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+//                       <Text className="text-xs text-gray-500 mt-1">
 //                         ID: {purchase.traderId}
 //                       </Text>
 //                     </View>
-//                     <View style={{ alignItems: 'flex-end' }}>
-//                       <Text style={{ fontSize: 20, fontWeight: '700', color: '#16a34a' }}>
+//                     <View className="items-end">
+//                       <Text className="text-xl font-medium text-green-600">
 //                         ₹{purchase.totalAmount.toLocaleString('en-IN')}
 //                       </Text>
-//                       <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 2 }}>
+//                       <Text className="text-xs text-gray-500 mt-0.5">
 //                         {purchase.quantity} × ₹{purchase.pricePerUnit}
 //                       </Text>
 //                     </View>
 //                   </View>
 
-//                   <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-//                     <Text style={{ fontSize: 12, color: '#6b7280' }}>
+//                   <View className="flex-row justify-between items-center">
+//                     <Text className="text-xs text-gray-500">
 //                       {new Date(purchase.purchaseDate).toLocaleString('en-IN')}
 //                     </Text>
-//                     <View style={{
-//                       backgroundColor: '#16a34a',
-//                       paddingHorizontal: 8,
-//                       paddingVertical: 4,
-//                       borderRadius: 6,
-//                     }}>
-//                       <Text style={{ fontSize: 10, fontWeight: '600', color: '#fff' }}>
+//                     <View className="bg-green-600 px-2 py-1 rounded-md">
+//                       <Text className="text-[10px] font-medium text-white">
 //                         {purchase.purchaseType === 'direct' ? 'Direct Purchase' : 'Offer Accepted'}
 //                       </Text>
 //                     </View>
@@ -1389,28 +1061,13 @@
 //                 </View>
 //               ))
 //             ) : (
-//               <View style={{ paddingVertical: 64, alignItems: 'center' }}>
-//                 <View style={{
-//                   backgroundColor: '#f3f4f6',
-//                   padding: 32,
-//                   borderRadius: 24,
-//                   alignItems: 'center',
-//                 }}>
+//               <View className="py-16 items-center">
+//                 <View className="bg-gray-100 p-8 rounded-3xl items-center">
 //                   <ShoppingBag size={48} color="#9ca3af" />
-//                   <Text style={{
-//                     fontSize: 18,
-//                     fontWeight: '600',
-//                     color: '#6b7280',
-//                     marginTop: 16,
-//                   }}>
+//                   <Text className="text-lg font-medium text-gray-500 mt-4">
 //                     No sales yet
 //                   </Text>
-//                   <Text style={{
-//                     fontSize: 14,
-//                     color: '#9ca3af',
-//                     marginTop: 8,
-//                     textAlign: 'center',
-//                   }}>
+//                   <Text className="text-sm text-gray-400 mt-2 text-center">
 //                     Your sales history will appear here
 //                   </Text>
 //                 </View>
@@ -1426,30 +1083,11 @@
 //         transparent
 //         animationType="fade"
 //       >
-//         <View style={{
-//           flex: 1,
-//           backgroundColor: 'rgba(0,0,0,0.5)',
-//           justifyContent: 'center',
-//           alignItems: 'center',
-//           padding: 16,
-//         }}>
-//           <View style={{
-//             backgroundColor: '#fff',
-//             borderRadius: 20,
-//             width: '100%',
-//             maxWidth: 400,
-//           }}>
-//             <View style={{
-//               padding: 20,
-//               borderBottomWidth: 1,
-//               borderBottomColor: '#e5e7eb',
-//             }}>
-//               <View style={{
-//                 flexDirection: 'row',
-//                 justifyContent: 'space-between',
-//                 alignItems: 'center',
-//               }}>
-//                 <Text style={{ fontSize: 20, fontWeight: '600', color: '#111827' }}>
+//         <View className="flex-1 bg-black/50 justify-center items-center p-4">
+//           <View className="bg-white rounded-2xl w-full max-w-[400px]">
+//             <View className="p-5 border-b border-gray-200">
+//               <View className="flex-row justify-between items-center">
+//                 <Text className="text-xl font-medium text-gray-900">
 //                   Make an Offer
 //                 </Text>
 //                 <TouchableOpacity
@@ -1458,37 +1096,24 @@
 //                     setDirectOfferPrice('');
 //                     setDirectOfferQuantity('');
 //                   }}
-//                   style={{
-//                     width: 32,
-//                     height: 32,
-//                     justifyContent: 'center',
-//                     alignItems: 'center',
-//                   }}
+//                   className="w-8 h-8 justify-center items-center"
 //                 >
 //                   <X size={24} color="#6b7280" />
 //                 </TouchableOpacity>
 //               </View>
-//               <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>
+//               <Text className="text-sm text-gray-500 mt-1">
 //                 {selectedProduct?.cropBriefDetails} • {selectedGrade?.grade}
 //               </Text>
 //             </View>
 
-//             <ScrollView style={{ maxHeight: 400 }}>
-//               <View style={{ padding: 20 }}>
-//                 <View style={{ marginBottom: 16 }}>
-//                   <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827', marginBottom: 8 }}>
+//             <ScrollView className="max-h-[400px]">
+//               <View className="p-5">
+//                 <View className="mb-4">
+//                   <Text className="text-sm font-medium text-gray-900 mb-2">
 //                     Price per {selectedProduct?.unitMeasurement || 'unit'} (₹)
 //                   </Text>
 //                   <TextInput
-//                     style={{
-//                       borderWidth: 1,
-//                       borderColor: '#d1d5db',
-//                       borderRadius: 10,
-//                       paddingHorizontal: 16,
-//                       paddingVertical: 12,
-//                       fontSize: 16,
-//                       backgroundColor: '#f9fafb',
-//                     }}
+//                     className="border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-50"
 //                     value={directOfferPrice}
 //                     onChangeText={setDirectOfferPrice}
 //                     placeholder="Enter offer price"
@@ -1496,20 +1121,12 @@
 //                   />
 //                 </View>
 
-//                 <View style={{ marginBottom: 16 }}>
-//                   <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827', marginBottom: 8 }}>
+//                 <View className="mb-4">
+//                   <Text className="text-sm font-medium text-gray-900 mb-2">
 //                     Quantity ({selectedProduct?.unitMeasurement || 'units'})
 //                   </Text>
 //                   <TextInput
-//                     style={{
-//                       borderWidth: 1,
-//                       borderColor: '#d1d5db',
-//                       borderRadius: 10,
-//                       paddingHorizontal: 16,
-//                       paddingVertical: 12,
-//                       fontSize: 16,
-//                       backgroundColor: '#f9fafb',
-//                     }}
+//                     className="border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-50"
 //                     value={directOfferQuantity}
 //                     onChangeText={setDirectOfferQuantity}
 //                     placeholder="Enter quantity"
@@ -1518,17 +1135,11 @@
 //                 </View>
 
 //                 {directOfferPrice && directOfferQuantity && (
-//                   <View style={{
-//                     backgroundColor: '#d1fae5',
-//                     padding: 16,
-//                     borderRadius: 12,
-//                     borderWidth: 1,
-//                     borderColor: '#86efac',
-//                   }}>
-//                     <Text style={{ fontSize: 13, fontWeight: '600', color: '#065f46', marginBottom: 4 }}>
+//                   <View className="bg-green-100 p-4 rounded-xl border border-green-300">
+//                     <Text className="text-[13px] font-medium text-green-900 mb-1">
 //                       Total Amount
 //                     </Text>
-//                     <Text style={{ fontSize: 28, fontWeight: '700', color: '#16a34a' }}>
+//                     <Text className="text-[28px] font-medium text-green-600">
 //                       ₹{(parseFloat(directOfferPrice) * parseFloat(directOfferQuantity)).toLocaleString('en-IN')}
 //                     </Text>
 //                   </View>
@@ -1536,43 +1147,24 @@
 //               </View>
 //             </ScrollView>
 
-//             <View style={{
-//               flexDirection: 'row',
-//               gap: 12,
-//               padding: 20,
-//               borderTopWidth: 1,
-//               borderTopColor: '#e5e7eb',
-//             }}>
+//             <View className="flex-row gap-3 p-5 border-t border-gray-200">
 //               <TouchableOpacity
-//                 style={{
-//                   flex: 1,
-//                   paddingVertical: 14,
-//                   borderRadius: 10,
-//                   borderWidth: 1,
-//                   borderColor: '#d1d5db',
-//                   alignItems: 'center',
-//                 }}
+//                 className="flex-1 py-3.5 rounded-xl border border-gray-300 items-center"
 //                 onPress={() => {
 //                   setShowDirectOfferModal(false);
 //                   setDirectOfferPrice('');
 //                   setDirectOfferQuantity('');
 //                 }}
 //               >
-//                 <Text style={{ fontWeight: '600', color: '#374151' }}>
+//                 <Text className="font-medium text-gray-700">
 //                   Cancel
 //                 </Text>
 //               </TouchableOpacity>
 //               <TouchableOpacity
-//                 style={{
-//                   flex: 1,
-//                   paddingVertical: 14,
-//                   backgroundColor: '#16a34a',
-//                   borderRadius: 10,
-//                   alignItems: 'center',
-//                 }}
+//                 className="flex-1 py-3.5 bg-green-600 rounded-xl items-center"
 //                 onPress={submitDirectOffer}
 //               >
-//                 <Text style={{ fontWeight: '600', color: '#fff' }}>
+//                 <Text className="font-medium text-white">
 //                   Submit Offer
 //                 </Text>
 //               </TouchableOpacity>
@@ -1587,86 +1179,49 @@
 //         transparent
 //         animationType="fade"
 //       >
-//         <View style={{
-//           flex: 1,
-//           backgroundColor: 'rgba(0,0,0,0.5)',
-//           justifyContent: 'center',
-//           alignItems: 'center',
-//           padding: 16,
-//         }}>
-//           <View style={{
-//             backgroundColor: '#fff',
-//             borderRadius: 20,
-//             width: '100%',
-//             maxWidth: 400,
-//           }}>
-//             <View style={{
-//               padding: 20,
-//               borderBottomWidth: 1,
-//               borderBottomColor: '#e5e7eb',
-//             }}>
-//               <View style={{
-//                 flexDirection: 'row',
-//                 justifyContent: 'space-between',
-//                 alignItems: 'center',
-//               }}>
-               
+//         <View className="flex-1 bg-black/50 justify-center items-center p-4">
+//           <View className="bg-white rounded-2xl w-full max-w-[400px]">
+//             <View className="p-5 border-b border-gray-200">
+//               <View className="flex-row justify-between items-center">
+//                 <Text className="text-xl font-medium text-gray-900">
+//                   Counter Offer
+//                 </Text>
 //                 <TouchableOpacity
 //                   onPress={() => {
 //                     setShowCounterModal(false);
 //                     setCounterPrice('');
 //                     setCounterQuantity('');
 //                   }}
-//                   style={{
-//                     width: 32,
-//                     height: 32,
-//                     justifyContent: 'center',
-//                     alignItems: 'center',
-//                   }}
+//                   className="w-8 h-8 justify-center items-center"
 //                 >
 //                   <X size={24} color="#6b7280" />
 //                 </TouchableOpacity>
 //               </View>
-//               <Text style={{ fontSize: 14, color: '#6b7280', marginTop: 4 }}>
+//               <Text className="text-sm text-gray-500 mt-1">
 //                 {selectedProduct?.cropBriefDetails} • {selectedGrade?.grade}
 //               </Text>
 //             </View>
 
-//             <ScrollView style={{ maxHeight: 400 }}>
-//               <View style={{ padding: 20 }}>
+//             <ScrollView className="max-h-[400px]">
+//               <View className="p-5">
 //                 {/* Trader's Original Offer */}
-//                 <View style={{
-//                   backgroundColor: '#fef3c7',
-//                   padding: 12,
-//                   borderRadius: 10,
-//                   marginBottom: 16,
-//                   borderWidth: 1,
-//                   borderColor: '#fde047',
-//                 }}>
-//                   <Text style={{ fontSize: 13, fontWeight: '600', color: '#92400e', marginBottom: 4 }}>
+//                 <View className="bg-amber-100 p-3 rounded-xl mb-4 border border-yellow-300">
+//                   <Text className="text-[13px] font-medium text-amber-900 mb-1">
 //                     Trader's Offer
 //                   </Text>
-//                   <Text style={{ fontSize: 14, color: '#78350f' }}>
+//                   <Text className="text-sm text-amber-900">
 //                     ₹{selectedOffer?.offeredPrice} × {selectedOffer?.quantity} = ₹
 //                     {selectedOffer ? (selectedOffer.offeredPrice * selectedOffer.quantity).toLocaleString('en-IN') : '0'}
 //                   </Text>
 //                 </View>
 
 //                 {/* Counter Price Input */}
-//                 <View style={{ marginBottom: 16 }}>
-//                   <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827', marginBottom: 8 }}>
+//                 <View className="mb-4">
+//                   <Text className="text-sm font-medium text-gray-900 mb-2">
 //                     Your Counter Price (₹/{selectedProduct?.unitMeasurement || 'unit'})
 //                   </Text>
 //                   <TextInput
-//                     style={{
-//                       borderWidth: 1,
-//                       borderColor: '#d1d5db',
-//                       borderRadius: 10,
-//                       paddingHorizontal: 16,
-//                       paddingVertical: 12,
-//                       fontSize: 16,
-//                       backgroundColor: '#f9fafb',
-//                     }}
+//                     className="border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-50"
 //                     value={counterPrice}
 //                     onChangeText={setCounterPrice}
 //                     placeholder="Enter your counter price"
@@ -1675,20 +1230,12 @@
 //                 </View>
 
 //                 {/* Counter Quantity Input */}
-//                 <View style={{ marginBottom: 16 }}>
-//                   <Text style={{ fontSize: 14, fontWeight: '600', color: '#111827', marginBottom: 8 }}>
+//                 <View className="mb-4">
+//                   <Text className="text-sm font-medium text-gray-900 mb-2">
 //                     Quantity ({selectedProduct?.unitMeasurement || 'units'})
 //                   </Text>
 //                   <TextInput
-//                     style={{
-//                       borderWidth: 1,
-//                       borderColor: '#d1d5db',
-//                       borderRadius: 10,
-//                       paddingHorizontal: 16,
-//                       paddingVertical: 12,
-//                       fontSize: 16,
-//                       backgroundColor: '#f9fafb',
-//                     }}
+//                     className="border border-gray-300 rounded-xl px-4 py-3 text-base bg-gray-50"
 //                     value={counterQuantity}
 //                     onChangeText={setCounterQuantity}
 //                     placeholder="Enter quantity"
@@ -1698,17 +1245,11 @@
 
 //                 {/* Total Counter Amount */}
 //                 {counterPrice && counterQuantity && (
-//                   <View style={{
-//                     backgroundColor: '#d1fae5',
-//                     padding: 16,
-//                     borderRadius: 12,
-//                     borderWidth: 1,
-//                     borderColor: '#86efac',
-//                   }}>
-//                     <Text style={{ fontSize: 13, fontWeight: '600', color: '#065f46', marginBottom: 4 }}>
+//                   <View className="bg-green-100 p-4 rounded-xl border border-green-300">
+//                     <Text className="text-[13px] font-medium text-green-900 mb-1">
 //                       Total Counter Amount
 //                     </Text>
-//                     <Text style={{ fontSize: 28, fontWeight: '700', color: '#16a34a' }}>
+//                     <Text className="text-[28px] font-medium text-green-600">
 //                       ₹{(parseFloat(counterPrice) * parseFloat(counterQuantity)).toLocaleString('en-IN')}
 //                     </Text>
 //                   </View>
@@ -1717,43 +1258,24 @@
 //             </ScrollView>
 
 //             {/* Modal Footer Buttons */}
-//             <View style={{
-//               flexDirection: 'row',
-//               gap: 12,
-//               padding: 20,
-//               borderTopWidth: 1,
-//               borderTopColor: '#e5e7eb',
-//             }}>
+//             <View className="flex-row gap-3 p-5 border-t border-gray-200">
 //               <TouchableOpacity
-//                 style={{
-//                   flex: 1,
-//                   paddingVertical: 14,
-//                   borderRadius: 10,
-//                   borderWidth: 1,
-//                   borderColor: '#d1d5db',
-//                   alignItems: 'center',
-//                 }}
+//                 className="flex-1 py-3.5 rounded-xl border border-gray-300 items-center"
 //                 onPress={() => {
 //                   setShowCounterModal(false);
 //                   setCounterPrice('');
 //                   setCounterQuantity('');
 //                 }}
 //               >
-//                 <Text style={{ fontWeight: '600', color: '#374151' }}>
+//                 <Text className="font-medium text-gray-700">
 //                   Cancel
 //                 </Text>
 //               </TouchableOpacity>
 //               <TouchableOpacity
-//                 style={{
-//                   flex: 1,
-//                   paddingVertical: 14,
-//                   backgroundColor: '#16a34a',
-//                   borderRadius: 10,
-//                   alignItems: 'center',
-//                 }}
+//                 className="flex-1 py-3.5 bg-green-600 rounded-xl items-center"
 //                 onPress={submitCounterOffer}
 //               >
-//                 <Text style={{ fontWeight: '600', color: '#fff' }}>
+//                 <Text className="font-medium text-white">
 //                   Send Counter Offer
 //                 </Text>
 //               </TouchableOpacity>
@@ -1770,8 +1292,8 @@
 
 
 
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from "expo-router";
 import {
   Bell,
   Calendar,
@@ -1779,7 +1301,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  MapPin,
   MessageCircle,
   Package,
   ShoppingBag,
@@ -1801,7 +1322,6 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter,router } from "expo-router";
 
 const { width } = Dimensions.get('window');
 
@@ -1832,6 +1352,7 @@ interface PurchaseHistory {
 interface GradePrice {
   grade: string;
   pricePerUnit: number;
+  gradephotos?: string[];
   totalQty: number;
   _id: string;
   status?: string;
@@ -1910,6 +1431,7 @@ const FarmerProducts = () => {
       const response = await fetch(`https://kisan.etpl.ai/product/farmer-notifications/${farmerId}`);
       const data = await response.json();
       
+      
       if (data.success) {
         setUnreadCount(data.unreadCount);
       }
@@ -1930,7 +1452,11 @@ const FarmerProducts = () => {
       if (!response.ok) throw new Error('Failed to fetch products');
 
       const data = await response.json();
-      setProducts(data.data || []);
+      const sortedProducts = (data.data || []).sort((a, b) => 
+  new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+);
+setProducts(sortedProducts);
+      //setProducts(data.data || []);
       setError(null);
     } catch (err: any) {
       setError(err.message || 'An error occurred');
@@ -2295,12 +1821,37 @@ const FarmerProducts = () => {
             >
               {/* Product Image */}
               <View className="relative">
-                <Image
+                {/* <Image
                   source={{ uri: getImageUrl(product.cropPhotos[0]) }}
                   className="w-full h-[200px] rounded-xl"
                   resizeMode="cover"
-                />
-                
+                /> */}
+                {/* Product Image Slider */}
+<View className="relative">
+  <ScrollView 
+    horizontal 
+    pagingEnabled
+    showsHorizontalScrollIndicator={false}
+  >
+    {product.gradePrices.flatMap(grade => grade.gradePhotos || []).map((photo, idx) => (
+      <Image
+        key={idx}
+        source={{ uri: getImageUrl(photo) }}
+        className="rounded-xl"
+        style={{ width: width - 32, height: 200 }}
+        resizeMode="cover"
+      />
+    ))}
+  </ScrollView>
+  {/* Pagination dots */}
+
+  <View className="absolute bottom-3 left-3 bg-black/70 px-2.5 py-1 rounded-md">
+    <Text className="text-white text-[11px] font-medium">
+      ID: {product.productId}
+    </Text>
+  </View>
+</View>
+
 
                 <View className="absolute bottom-3 left-3 bg-black/70 px-2.5 py-1 rounded-md">
                   <Text className="text-white text-[11px] font-medium">
@@ -2315,7 +1866,7 @@ const FarmerProducts = () => {
                   <Text className="text-lg font-medium text-gray-900 mb-1.5">
                     {product.cropBriefDetails}
                   </Text>
-                  <View className="flex-row flex-wrap gap-2">
+                  {/* <View className="flex-row flex-wrap gap-2">
                     <View className="bg-gray-100 px-2.5 py-1 rounded-md">
                       <Text className="text-xs text-gray-700 font-medium">
                         {product.categoryId.categoryName}
@@ -2326,7 +1877,7 @@ const FarmerProducts = () => {
                         {product.subCategoryId.subCategoryName}
                       </Text>
                     </View>
-                  </View>
+                  </View> */}
                 </View>
 
                 {/* Stats Cards */}
@@ -2373,7 +1924,7 @@ const FarmerProducts = () => {
                   <View className="flex-row items-center pt-3">
                     <Package size={16} color="#6b7280" />
                     <Text className="text-[13px] text-gray-500 ml-2">
-                      {product.packageMeasurement} {product.packagingType}
+         {product.packagingType}{product.unitMeasurement}
                     </Text>
                   </View>
                   <View className="flex-row items-center">
@@ -2388,12 +1939,12 @@ const FarmerProducts = () => {
                       {product.deliveryTime}
                     </Text>
                   </View>
-                  <View className="flex-row items-center">
+                  {/* <View className="flex-row items-center">
                     <MapPin size={16} color="#6b7280" />
                     <Text className="text-[13px] text-gray-500 ml-2">
                       {product.nearestMarket}
                     </Text>
-                  </View>
+                  </View> */}
                 </View>
               </View>
             </View>

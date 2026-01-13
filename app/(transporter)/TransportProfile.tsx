@@ -7,6 +7,26 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { router } from 'expo-router';
+import {
+  ArrowLeft,
+  Building2,
+  Car,
+  CheckCircle,
+  CreditCard,
+  Download,
+  Edit,
+  Eye,
+  File,
+  FileText,
+  Mail,
+  MapPin,
+  Phone,
+  Shield,
+  Star,
+  Truck,
+  User,
+  X
+} from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
@@ -15,36 +35,12 @@ import {
   Linking,
   Modal,
   ScrollView,
+  StatusBar,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-// Icon mapping to match TransportVehicles style
-const Icons = {
-  FaArrowLeft: 'arrow-left',
-  FaBuilding: 'building',
-  FaCar: 'car',
-  FaCheckCircle: 'check-circle',
-  FaCreditCard: 'credit-card',
-  FaDownload: 'download',
-  FaEdit: 'edit',
-  FaEye: 'eye',
-  FaFile: 'file-o',
-  FaFilePdf: 'file-pdf-o',
-  FaFileText: 'file-text-o',
-  FaEnvelope: 'envelope',
-  FaMapMarker: 'map-marker',
-  FaPhone: 'phone',
-  FaShield: 'shield',
-  FaStar: 'star',
-  FaTruck: 'truck',
-  FaUser: 'user',
-  FaFileImage: 'file-image-o',
-  FaTimes: 'times'
-};
 
 interface TransportProfileData {
   personalInfo: {
@@ -399,29 +395,29 @@ const TransportProfile: React.FC = () => {
   const documentCategories = [
     {
       title: 'Personal Documents',
-      icon: <Icon name={Icons.FaUser} size={20} color="#5B5AF7" />,
+      icon: <User size={20} color="#4F46E5" />,
       documents: [
-        { key: 'panCard', label: 'PAN Card', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
-        { key: 'aadharFront', label: 'Aadhar Card (Front)', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> },
-        { key: 'aadharBack', label: 'Aadhar Card (Back)', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> }
+        { key: 'panCard', label: 'PAN Card', icon: <FileText size={20} color="#4F46E5" /> },
+        { key: 'aadharFront', label: 'Aadhar Card (Front)', icon: <CreditCard size={20} color="#4F46E5" /> },
+        { key: 'aadharBack', label: 'Aadhar Card (Back)', icon: <CreditCard size={20} color="#4F46E5" /> }
       ]
     },
     {
       title: 'Vehicle Documents',
-      icon: <Icon name={Icons.FaCar} size={20} color="#5B5AF7" />,
+      icon: <Car size={20} color="#4F46E5" />,
       documents: [
-        { key: 'rcBook', label: 'RC Book', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
-        { key: 'insuranceDoc', label: 'Insurance Document', icon: <Icon name={Icons.FaShield} size={20} color="#5B5AF7" /> },
-        { key: 'pollutionCert', label: 'Pollution Certificate', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
-        { key: 'permitDoc', label: 'Permit Document', icon: <Icon name={Icons.FaFileText} size={20} color="#5B5AF7" /> },
-        { key: 'driverLicense', label: 'Driver License', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> }
+        { key: 'rcBook', label: 'RC Book', icon: <FileText size={20} color="#4F46E5" /> },
+        { key: 'insuranceDoc', label: 'Insurance Document', icon: <Shield size={20} color="#4F46E5" /> },
+        { key: 'pollutionCert', label: 'Pollution Certificate', icon: <FileText size={20} color="#4F46E5" /> },
+        { key: 'permitDoc', label: 'Permit Document', icon: <FileText size={20} color="#4F46E5" /> },
+        { key: 'driverLicense', label: 'Driver License', icon: <CreditCard size={20} color="#4F46E5" /> }
       ]
     },
     {
       title: 'Bank Documents',
-      icon: <Icon name={Icons.FaBuilding} size={20} color="#5B5AF7" />,
+      icon: <Building2 size={20} color="#4F46E5" />,
       documents: [
-        { key: 'bankPassbook', label: 'Bank Passbook', icon: <Icon name={Icons.FaCreditCard} size={20} color="#5B5AF7" /> }
+        { key: 'bankPassbook', label: 'Bank Passbook', icon: <CreditCard size={20} color="#4F46E5" /> }
       ]
     }
   ];
@@ -429,8 +425,8 @@ const TransportProfile: React.FC = () => {
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-50">
-        <ActivityIndicator size="large" color="#5B5AF7" />
-        <Text className="mt-4 text-lg text-gray-600">Loading profile...</Text>
+        <ActivityIndicator size="large" color="#4F46E5" />
+        <Text className="mt-4 text-base font-medium text-gray-500">Loading profile...</Text>
       </View>
     );
   }
@@ -478,7 +474,8 @@ const TransportProfile: React.FC = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50">
+    <SafeAreaView className="flex-1 bg-gray-50 pt-4">
+      <StatusBar barStyle="dark-content" backgroundColor="#f9fafb" />
       {/* Document Viewer Modal */}
       <Modal
         animationType="slide"
@@ -487,360 +484,310 @@ const TransportProfile: React.FC = () => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="flex-1 bg-black/80 justify-center items-center p-5">
-          <View className="bg-white rounded-xl w-full max-h-[90%] overflow-hidden">
-            <View className="flex-row justify-between items-center p-6 border-b border-gray-200">
-              <Text className="text-lg font-medium text-gray-800">
+          <View className="bg-white rounded-2xl w-full max-h-[90%] overflow-hidden">
+            <View className="flex-row justify-between items-center p-5 border-b border-gray-100">
+              <Text className="text-lg font-bold text-gray-900">
                 {viewingDocument?.name || 'Document'}
               </Text>
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
-                className="p-2"
+                className="p-2 bg-gray-100 rounded-full"
               >
-                <Icon name={Icons.FaTimes} size={24} color="#999" />
+                <X size={20} color="#6B7280" />
               </TouchableOpacity>
             </View>
-            <ScrollView className="p-6">
+            <ScrollView className="p-5">
               {viewingDocument?.url ? (
                 <>
                   {viewingDocument.url.toLowerCase().match(/\.(jpg|jpeg|png|gif|webp|bmp)$/) ? (
                     <Image
                       source={{ uri: viewingDocument.url }}
-                      className="w-full h-96 rounded-lg"
+                      className="w-full h-96 rounded-xl"
                       resizeMode="contain"
                     />
                   ) : viewingDocument.url.toLowerCase().match(/\.pdf$/) ? (
-                    <View className="p-8 bg-gray-50 rounded-lg items-center">
-                      <Icon name={Icons.FaFilePdf} size={80} color="#e74c3c" />
-                      <Text className="mt-4 text-gray-600 text-center font-medium">
-                        PDF document: {viewingDocument.name}
+                    <View className="p-8 bg-gray-50 rounded-xl items-center border border-gray-200 border-dashed">
+                      <FileText size={64} color="#EF4444" />
+                      <Text className="mt-4 text-gray-900 text-center font-semibold text-lg">
+                        PDF Document
                       </Text>
-                      <Text className="mt-2 text-xs text-gray-400 text-center" numberOfLines={2}>
-                        URL: {viewingDocument.url}
+                      <Text className="mt-1 text-sm text-gray-500 text-center mb-6">
+                        {viewingDocument.name}
                       </Text>
                       <TouchableOpacity
-                        className="mt-4 px-6 py-3 bg-blue-500 rounded-lg"
+                        className="flex-row items-center gap-2 px-6 py-3 bg-indigo-600 rounded-xl"
                         onPress={() => Linking.openURL(viewingDocument.url)}
                       >
-                        <Text className="text-white font-medium">Open PDF in Browser</Text>
+                        <Download size={20} color="white" />
+                        <Text className="text-white font-semibold">Open PDF</Text>
                       </TouchableOpacity>
                     </View>
                   ) : (
-                    <View className="p-8 bg-gray-50 rounded-lg items-center">
-                      <Icon name={Icons.FaFile} size={80} color="#95a5a6" />
-                      <Text className="mt-4 text-gray-600 text-center font-medium">
-                        Document: {viewingDocument.name}
+                    <View className="p-8 bg-gray-50 rounded-xl items-center border border-gray-200 border-dashed">
+                      <File size={64} color="#9CA3AF" />
+                      <Text className="mt-4 text-gray-900 text-center font-semibold text-lg">
+                        Document File
                       </Text>
-                      <Text className="mt-2 text-xs text-gray-400 text-center" numberOfLines={2}>
-                        URL: {viewingDocument.url}
+                      <Text className="mt-1 text-sm text-gray-500 text-center mb-6">
+                        {viewingDocument.name}
                       </Text>
                       <TouchableOpacity
-                        className="mt-4 px-6 py-3 bg-blue-500 rounded-lg"
+                        className="flex-row items-center gap-2 px-6 py-3 bg-indigo-600 rounded-xl"
                         onPress={() => Linking.openURL(viewingDocument.url)}
                       >
-                        <Text className="text-white font-medium">Open Document</Text>
+                        <Download size={20} color="white" />
+                        <Text className="text-white font-semibold">Open Document</Text>
                       </TouchableOpacity>
                     </View>
                   )}
                 </>
               ) : (
                 <View className="p-8 items-center justify-center">
-                  <Icon name={Icons.FaFile} size={60} color="#95a5a6" />
-                  <Text className="mt-4 text-gray-600">No document available</Text>
+                  <File size={48} color="#D1D5DB" />
+                  <Text className="mt-4 text-gray-500">No document available</Text>
                 </View>
               )}
             </ScrollView>
-            <View className="flex-row gap-3 p-6 border-t border-gray-200">
+            <View className="flex-row gap-3 p-5 border-t border-gray-100">
               {viewingDocument?.url && (
                 <TouchableOpacity
-                  className="flex-1 flex-row items-center justify-center gap-2 px-4 py-3 bg-green-500 rounded-lg"
+                  className="flex-1 flex-row items-center justify-center gap-2 px-4 py-3.5 bg-indigo-600 rounded-xl"
                   onPress={() => {
                     if (viewingDocument) {
                       handleDownloadDocument(viewingDocument.url, viewingDocument.name);
                     }
                   }}
                 >
-                  <Icon name={Icons.FaDownload} size={20} color="white" />
-                  <Text className="text-white font-medium">Download</Text>
+                  <Download size={20} color="white" />
+                  <Text className="text-white font-bold">Download</Text>
                 </TouchableOpacity>
               )}
               <TouchableOpacity
-                className="px-6 py-3 bg-red-500 rounded-lg"
+                className="flex-1 items-center justify-center py-3.5 bg-gray-100 rounded-xl"
                 onPress={() => setModalVisible(false)}
               >
-                <Text className="text-white font-medium">Close</Text>
+                <Text className="text-gray-700 font-bold">Close</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
 
-         {/* Header */}
-        <View className="flex-row items-center justify-between p-6 bg-white border-b border-gray-200">
-          <TouchableOpacity
+      {/* Header */}
+      <View className="px-5 pb-4 bg-gray-50">
+        <View className="flex-row items-center justify-between mb-4">
+             <TouchableOpacity
             onPress={() => router.push('/(transporter)/home')}
-            className="p-2 rounded-full bg-gray-100"
+            className="w-10 h-10 bg-white rounded-full items-center justify-center shadow-sm border border-gray-100"
           >
-            <Icon name={Icons.FaArrowLeft} size={24} color="#000" />
+            <ArrowLeft size={20} color="#1F2937" />
           </TouchableOpacity>
-          <Text className="text-2xl font-medium text-gray-900">My Profile</Text>
+          <Text className="text-xl font-bold text-gray-900">My Profile</Text>
           <TouchableOpacity
-            className="flex-row items-center gap-2 px-4 py-2 bg-purple-600 rounded-lg"
+            className="w-10 h-10 bg-indigo-50 rounded-full items-center justify-center"
             onPress={handleEditProfile}
           >
-            <Icon name={Icons.FaEdit} size={18} color="white" />
-            <Text className="text-white font-medium">Edit Profile</Text>
+            <Edit size={20} color="#4F46E5" />
           </TouchableOpacity>
         </View>
+      </View>
 
       {/* Main Content */}
-      <ScrollView className="flex-1" contentContainerClassName="pb-8">
-     
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-10" showsVerticalScrollIndicator={false}>
 
         {/* Stats Card */}
-        <View className="flex-row gap-4 mx-6 mt-6">
-          <View className="flex-1 bg-blue-500 rounded-xl p-5 flex-row items-center gap-4 shadow-sm shadow-blue-200">
-            <View className="bg-white/20 p-3 rounded-full">
-              <Icon name={Icons.FaStar} size={24} color="white" />
+        <View className="flex-row gap-4 mb-6">
+          <View className="flex-1 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <View className="w-10 h-10 bg-yellow-50 rounded-full items-center justify-center mb-3">
+              <Star size={20} color="#F59E0B" />
             </View>
-            <View className="flex-1">
-              <Text className="text-white text-sm opacity-90">Rating</Text>
-              <Text className="text-white text-2xl font-bold">{profile.rating.toFixed(1)} ⭐</Text>
-            </View>
+            <Text className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Rating</Text>
+            <Text className="text-gray-900 text-2xl font-bold">{profile.rating.toFixed(1)}</Text>
           </View>
-          <View className="flex-1 bg-purple-500 rounded-xl p-5 flex-row items-center gap-4 shadow-sm shadow-purple-200">
-            <View className="bg-white/20 p-3 rounded-full">
-              <Icon name={Icons.FaTruck} size={24} color="white" />
+          
+          <View className="flex-1 bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <View className="w-10 h-10 bg-indigo-50 rounded-full items-center justify-center mb-3">
+              <Truck size={20} color="#4F46E5" />
             </View>
-            <View className="flex-1">
-              <Text className="text-white text-sm opacity-90">Total Trips</Text>
-              <Text className="text-white text-2xl font-bold">{profile.totalTrips}</Text>
-            </View>
+            <Text className="text-gray-500 text-xs font-medium uppercase tracking-wider mb-1">Total Trips</Text>
+            <Text className="text-gray-900 text-2xl font-bold">{profile.totalTrips}</Text>
           </View>
         </View>
 
         {/* Personal Information */}
-        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
-          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-            <Icon name={Icons.FaUser} size={24} color="#5B5AF7" />
-            <Text className="text-xl font-medium text-gray-900">Personal Information</Text>
+        <View className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6">
+          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-50">
+            <View className="w-8 h-8 bg-blue-50 rounded-full items-center justify-center">
+              <User size={16} color="#2563EB" />
+            </View>
+            <Text className="text-lg font-bold text-gray-900">Personal Info</Text>
           </View>
           
-          <View className="space-y-4 mb-6">
-            <View className="flex-row items-center gap-4">
-              <View className="bg-blue-50 p-3 rounded-lg">
-                <Icon name={Icons.FaUser} size={20} color="#5B5AF7" />
+          <View className="space-y-6">
+            <View className="flex-row gap-4">
+              <View className="mt-1">
+                <User size={18} color="#9CA3AF" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-500">Full Name</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.name}</Text>
+                <Text className="text-sm text-gray-500 mb-0.5">Full Name</Text>
+                <Text className="text-base font-semibold text-gray-900">{profile.personalInfo.name}</Text>
               </View>
             </View>
 
-            <View className="flex-row items-center gap-4">
-              <View className="bg-green-50 p-3 rounded-lg">
-                <Icon name={Icons.FaPhone} size={20} color="#27ae60" />
+            <View className="flex-row gap-4">
+              <View className="mt-1">
+                <Phone size={18} color="#9CA3AF" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-500">Mobile Number</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.mobileNo}</Text>
+                <Text className="text-sm text-gray-500 mb-0.5">Mobile Number</Text>
+                <Text className="text-base font-semibold text-gray-900">{profile.personalInfo.mobileNo}</Text>
               </View>
             </View>
 
-            <View className="flex-row items-center gap-4">
-              <View className="bg-yellow-50 p-3 rounded-lg">
-                <Icon name={Icons.FaEnvelope} size={20} color="#f39c12" />
+            <View className="flex-row gap-4">
+              <View className="mt-1">
+                <Mail size={18} color="#9CA3AF" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-500">Email</Text>
-                <Text className="text-base font-medium text-gray-900">
+                <Text className="text-sm text-gray-500 mb-0.5">Email</Text>
+                <Text className="text-base font-semibold text-gray-900">
                   {profile.personalInfo.email || 'Not provided'}
                 </Text>
               </View>
             </View>
 
-            <View className="flex-row items-center gap-4">
-              <View className="bg-purple-50 p-3 rounded-lg">
-                <Icon name={Icons.FaMapMarker} size={20} color="#9b59b6" />
+            <View className="flex-row gap-4">
+              <View className="mt-1">
+                <MapPin size={18} color="#9CA3AF" />
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-500">Complete Address</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.address}</Text>
+                <Text className="text-sm text-gray-500 mb-0.5">Address</Text>
+                <Text className="text-base font-medium text-gray-900 leading-6">{profile.personalInfo.address}</Text>
+                <View className="flex-row flex-wrap gap-2 mt-2">
+                  <View className="bg-gray-100 px-2 py-1 rounded-md">
+                    <Text className="text-xs text-gray-600">{profile.personalInfo.district}</Text>
+                  </View>
+                  <View className="bg-gray-100 px-2 py-1 rounded-md">
+                    <Text className="text-xs text-gray-600">{profile.personalInfo.state}</Text>
+                  </View>
+                  <View className="bg-gray-100 px-2 py-1 rounded-md">
+                    <Text className="text-xs text-gray-600">{profile.personalInfo.pincode}</Text>
+                  </View>
+                </View>
               </View>
             </View>
-          </View>
-
-          <View className="bg-gray-50 rounded-lg p-5">
-            <View className="flex-row justify-between mb-4">
-              <View className="flex-1">
-                <Text className="text-sm text-gray-500">State</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.state}</Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm text-gray-500">District</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.district}</Text>
-              </View>
-            </View>
-            
-            <View className="flex-row justify-between mb-4">
-              <View className="flex-1">
-                <Text className="text-sm text-gray-500">Taluk</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.taluk}</Text>
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm text-gray-500">Pincode</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.pincode}</Text>
-              </View>
-            </View>
-            
-            {profile.personalInfo.villageGramaPanchayat && (
-              <View className="mb-4">
-                <Text className="text-sm text-gray-500">Village/Grama Panchayat</Text>
-                <Text className="text-base font-medium text-gray-900">
-                  {profile.personalInfo.villageGramaPanchayat}
-                </Text>
-              </View>
-            )}
-            
-            {profile.personalInfo.post && (
-              <View className="mb-4">
-                <Text className="text-sm text-gray-500">Post</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.post}</Text>
-              </View>
-            )}
-            
-            {profile.personalInfo.location && (
-              <View>
-                <Text className="text-sm text-gray-500">Location</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.personalInfo.location}</Text>
-              </View>
-            )}
           </View>
         </View>
 
         {/* Transport Information */}
-        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
-          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-            <Icon name={Icons.FaTruck} size={24} color="#5B5AF7" />
-            <Text className="text-xl font-medium text-gray-900">Transport Information</Text>
+        <View className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6">
+          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-50">
+            <View className="w-8 h-8 bg-indigo-50 rounded-full items-center justify-center">
+              <Truck size={16} color="#4F46E5" />
+            </View>
+            <Text className="text-lg font-bold text-gray-900">Transport Info</Text>
           </View>
           
-          <View className="space-y-4 mb-6">
-            <View className="flex-row items-center gap-4">
-              <View className="bg-blue-50 p-3 rounded-lg">
-                <Icon name={Icons.FaTruck} size={20} color="#5B5AF7" />
+          <View className="space-y-6">
+            <View className="flex-row justify-between">
+              <View className="flex-1">
+                <Text className="text-sm text-gray-500 mb-1">Vehicle Type</Text>
+                <Text className="text-base font-semibold text-gray-900">{profile.transportInfo.vehicleType}</Text>
               </View>
               <View className="flex-1">
-                <Text className="text-sm text-gray-500">Vehicle Type</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.transportInfo.vehicleType}</Text>
-              </View>
-            </View>
-
-            <View className="flex-row items-center gap-4">
-              <View className="bg-green-50 p-3 rounded-lg">
-                <Icon name={Icons.FaTruck} size={20} color="#27ae60" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm text-gray-500">Vehicle Capacity</Text>
-                <Text className="text-base font-medium text-gray-900">
-                  {profile.transportInfo.vehicleCapacity.value} {profile.transportInfo.vehicleCapacity.unit}
-                </Text>
-              </View>
-            </View>
-
-            <View className="flex-row items-center gap-4">
-              <View className="bg-yellow-50 p-3 rounded-lg">
-                <Icon name={Icons.FaCreditCard} size={20} color="#f39c12" />
-              </View>
-              <View className="flex-1">
-                <Text className="text-sm text-gray-500">Vehicle Number</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.transportInfo.vehicleNumber}</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Driver Information */}
-          {profile.transportInfo.driverInfo?.driverName && (
-            <View className="bg-gray-50 rounded-lg p-5 mb-6">
-              <View className="flex-row items-center gap-3 mb-4">
-                <Icon name={Icons.FaUser} size={20} color="#5B5AF7" />
-                <Text className="text-lg font-medium text-gray-900">Driver Information</Text>
-              </View>
-              <View className="flex-row flex-wrap justify-between">
-                <View className="min-w-[45%] mb-3">
-                  <Text className="text-sm text-gray-500">Driver Name</Text>
-                  <Text className="text-base font-medium text-gray-900">
-                    {profile.transportInfo.driverInfo.driverName}
-                  </Text>
+                <Text className="text-sm text-gray-500 mb-1">Vehicle Number</Text>
+                <View className="bg-gray-100 px-3 py-1.5 rounded-lg self-start">
+                  <Text className="text-base font-bold text-gray-900 uppercase">{profile.transportInfo.vehicleNumber}</Text>
                 </View>
-                <View className="min-w-[45%] mb-3">
-                  <Text className="text-sm text-gray-500">Driver Mobile</Text>
-                  <Text className="text-base font-medium text-gray-900">
-                    {profile.transportInfo.driverInfo.driverMobileNo}
-                  </Text>
+              </View>
+            </View>
+
+            <View>
+              <Text className="text-sm text-gray-500 mb-1">Capacity</Text>
+              <Text className="text-base font-semibold text-gray-900">
+                {profile.transportInfo.vehicleCapacity.value} {profile.transportInfo.vehicleCapacity.unit}
+              </Text>
+            </View>
+
+            {/* Driver Information Sub-section */}
+            {profile.transportInfo.driverInfo?.driverName && (
+              <View className="bg-gray-50 rounded-xl p-4 border border-gray-100 mt-2">
+                <View className="flex-row items-center gap-2 mb-3">
+                  <User size={16} color="#4B5563" />
+                  <Text className="text-sm font-bold text-gray-700">Driver Details</Text>
                 </View>
-                {profile.transportInfo.driverInfo.driverAge && (
-                  <View className="min-w-[45%]">
-                    <Text className="text-sm text-gray-500">Driver Age</Text>
-                    <Text className="text-base font-medium text-gray-900">
-                      {profile.transportInfo.driverInfo.driverAge} years
-                    </Text>
+                <View className="space-y-3">
+                  <View className="flex-row justify-between border-b border-gray-200 pb-2">
+                    <Text className="text-sm text-gray-500">Name</Text>
+                    <Text className="text-sm font-semibold text-gray-900">{profile.transportInfo.driverInfo.driverName}</Text>
                   </View>
-                )}
+                  <View className="flex-row justify-between border-b border-gray-200 pb-2">
+                    <Text className="text-sm text-gray-500">Mobile</Text>
+                    <Text className="text-sm font-semibold text-gray-900">{profile.transportInfo.driverInfo.driverMobileNo}</Text>
+                  </View>
+                  {profile.transportInfo.driverInfo.driverAge && (
+                    <View className="flex-row justify-between">
+                      <Text className="text-sm text-gray-500">Age</Text>
+                      <Text className="text-sm font-semibold text-gray-900">{profile.transportInfo.driverInfo.driverAge} years</Text>
+                    </View>
+                  )}
+                </View>
               </View>
-            </View>
-          )}
+            )}
+          </View>
         </View>
 
         {/* Bank Details */}
-        <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
-          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-            <Icon name={Icons.FaBuilding} size={24} color="#5B5AF7" />
-            <Text className="text-xl font-medium text-gray-900">Bank Details</Text>
+        <View className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6">
+          <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-50">
+            <View className="w-8 h-8 bg-green-50 rounded-full items-center justify-center">
+              <Building2 size={16} color="#059669" />
+            </View>
+            <Text className="text-lg font-bold text-gray-900">Bank Details</Text>
           </View>
           
           <View className="space-y-5">
             <View>
-              <Text className="text-sm text-gray-500">Account Holder Name</Text>
-              <Text className="text-base font-medium text-gray-900">{profile.bankDetails.accountHolderName}</Text>
+              <Text className="text-sm text-gray-500 mb-1">Account Holder</Text>
+              <Text className="text-base font-semibold text-gray-900">{profile.bankDetails.accountHolderName}</Text>
             </View>
             
-            <View>
-              <Text className="text-sm text-gray-500">Bank Name</Text>
-              <Text className="text-base font-medium text-gray-900">{profile.bankDetails.bankName}</Text>
-            </View>
-            
-            <View>
-              <Text className="text-sm text-gray-500">Account Number</Text>
-              <Text className="text-base font-medium text-gray-900">{profile.bankDetails.accountNumber}</Text>
-            </View>
-            
-            <View>
-              <Text className="text-sm text-gray-500">IFSC Code</Text>
-              <Text className="text-base font-medium text-gray-900">{profile.bankDetails.ifscCode}</Text>
-            </View>
-            
-            {profile.bankDetails.branch && (
-              <View>
-                <Text className="text-sm text-gray-500">Branch</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.bankDetails.branch}</Text>
+            <View className="flex-row justify-between">
+              <View className="flex-1">
+                <Text className="text-sm text-gray-500 mb-1">Bank Name</Text>
+                <Text className="text-base font-semibold text-gray-900">{profile.bankDetails.bankName}</Text>
               </View>
-            )}
-            
-            {profile.bankDetails.upiId && (
-              <View>
-                <Text className="text-sm text-gray-500">UPI ID</Text>
-                <Text className="text-base font-medium text-gray-900">{profile.bankDetails.upiId}</Text>
+              <View className="flex-1">
+                <Text className="text-sm text-gray-500 mb-1">Account Number</Text>
+                <Text className="text-base font-mono font-medium text-gray-900">{profile.bankDetails.accountNumber}</Text>
               </View>
-            )}
+            </View>
+            
+            <View className="flex-row justify-between">
+              <View className="flex-1">
+                <Text className="text-sm text-gray-500 mb-1">IFSC Code</Text>
+                <View className="bg-gray-100 px-2 py-1 rounded self-start">
+                  <Text className="text-bm font-mono font-medium text-gray-800">{profile.bankDetails.ifscCode}</Text>
+                </View>
+              </View>
+              {profile.bankDetails.upiId && (
+                <View className="flex-1">
+                  <Text className="text-sm text-gray-500 mb-1">UPI ID</Text>
+                  <Text className="text-base font-medium text-gray-900">{profile.bankDetails.upiId}</Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
 
         {/* Documents Section */}
         {profile.documents && Object.keys(profile.documents).length > 0 && (
-          <View className="bg-white rounded-xl mx-6 mt-6 p-6 shadow-sm border border-slate-100">
-            <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-              <Icon name={Icons.FaFileText} size={24} color="#5B5AF7" />
-              <Text className="text-xl font-medium text-gray-900">Uploaded Documents</Text>
+          <View className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-8">
+            <View className="flex-row items-center gap-3 mb-6 pb-4 border-b border-gray-50">
+              <View className="w-8 h-8 bg-purple-50 rounded-full items-center justify-center">
+                <FileText size={16} color="#7C3AED" />
+              </View>
+              <Text className="text-lg font-bold text-gray-900">Documents</Text>
             </View>
             
             {documentCategories.map((category, categoryIndex) => {
@@ -851,85 +798,56 @@ const TransportProfile: React.FC = () => {
               if (categoryDocuments.length === 0) return null;
               
               return (
-                <View key={categoryIndex} className="mb-6">
-                  <View className="flex-row items-center gap-3 mb-4">
+                <View key={categoryIndex} className="mb-6 last:mb-0">
+                  <View className="flex-row items-center gap-2 mb-3">
                     {category.icon}
-                    <Text className="text-lg font-medium text-gray-900">{category.title}</Text>
+                    <Text className="text-base font-semibold text-gray-900">{category.title}</Text>
                   </View>
                   
-                  <View className="space-y-4">
+                  <View className="space-y-3">
                     {categoryDocuments.map((doc) => {
                       const documentUrl = profile.documents![doc.key as keyof typeof profile.documents] as string;
                       return (
-                        <TouchableOpacity
-                          key={doc.key}
-                          className="bg-gray-50 rounded-lg p-5 border border-gray-200"
-                          onPress={() => handleViewDocument(doc.label, documentUrl)}
-                          activeOpacity={0.8}
-                        >
-                          <View className="flex-row items-center gap-4 mb-4">
-                            <View className="bg-blue-50 p-3 rounded-lg">
-                              {doc.icon}
-                            </View>
-                            <View className="flex-1">
-                              <Text className="text-base font-medium text-gray-900">{doc.label}</Text>
-                              <View className="flex-row items-center gap-1 mt-1">
-                                <Icon name={Icons.FaCheckCircle} size={14} color="#27ae60" />
-                                <Text className="text-xs text-green-600 font-medium">Uploaded</Text>
+                        <View key={doc.key} className="bg-gray-50 rounded-xl p-4 border border-gray-100">
+                          <View className="flex-row items-center justify-between mb-3">
+                            <View className="flex-row items-center gap-3 flex-1">
+                              <View className="w-10 h-10 bg-white rounded-lg items-center justify-center border border-gray-100 shadow-sm">
+                                {doc.icon}
                               </View>
-                              {documentUrl && (
-                                <Text className="text-xs text-gray-400 font-mono mt-1" numberOfLines={1}>
-                                  {documentUrl.substring(0, 30)}...
-                                </Text>
-                              )}
+                              <View className="flex-1">
+                                <Text className="text-sm font-semibold text-gray-900">{doc.label}</Text>
+                                <View className="flex-row items-center gap-1 mt-0.5">
+                                  <CheckCircle size={10} color="#059669" />
+                                  <Text className="text-[10px] text-green-600 font-bold uppercase tracking-wide">Uploaded</Text>
+                                </View>
+                              </View>
                             </View>
                           </View>
                           
                           <View className="flex-row gap-2">
                             <TouchableOpacity
-                              className="flex-1 flex-row items-center justify-center gap-2 py-3 bg-blue-500 rounded-lg"
+                              className="flex-1 flex-row items-center justify-center gap-1.5 py-2.5 bg-white border border-gray-200 rounded-lg shadow-sm"
                               onPress={() => handleViewDocument(doc.label, documentUrl)}
+                              activeOpacity={0.7}
                             >
-                              <Icon name={Icons.FaEye} size={16} color="white" />
-                              <Text className="text-white font-medium">View Document</Text>
+                              <Eye size={16} color="#4B5563" />
+                              <Text className="text-sm font-medium text-gray-700">View</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
-                              className="w-14 items-center justify-center py-3 bg-green-500 rounded-lg"
+                              className="w-10 items-center justify-center bg-gray-100 rounded-lg border border-gray-200"
                               onPress={() => handleDownloadDocument(documentUrl, doc.label)}
+                              activeOpacity={0.7}
                             >
-                              <Icon name={Icons.FaDownload} size={16} color="white" />
+                              <Download size={16} color="#4B5563" />
                             </TouchableOpacity>
                           </View>
-                        </TouchableOpacity>
+                        </View>
                       );
                     })}
                   </View>
                 </View>
               );
             })}
-            
-            {/* Missing Documents */}
-            <View className="bg-orange-50 rounded-lg p-5 border border-orange-200 mt-6">
-              <Text className="text-lg font-medium text-orange-700 mb-2">Missing Documents</Text>
-              <Text className="text-sm text-gray-600 mb-4">
-                The following documents are not uploaded yet. Please upload them through the edit profile section or contact support.
-              </Text>
-              <View className="flex-row flex-wrap gap-2">
-                {documentCategories.flatMap(category => 
-                  category.documents.filter(doc => 
-                    !profile.documents || !profile.documents[doc.key as keyof typeof profile.documents]
-                  ).map(doc => (
-                    <View
-                      key={doc.key}
-                      className="flex-row items-center gap-2 px-3 py-2 bg-orange-100 rounded-full"
-                    >
-                      {doc.icon}
-                      <Text className="text-xs text-orange-800 font-medium">{doc.label}</Text>
-                    </View>
-                  ))
-                )}
-              </View>
-            </View>
           </View>
         )}
       </ScrollView>
